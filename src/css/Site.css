@@ -1,0 +1,13 @@
+@font-face {
+  font-family: garet-heavy;
+  src: url(../assets/fonts/garet/Garet-Heavy.otf);
+}
+@font-face {
+  font-family: garet-book;
+  src: url(../assets/fonts/garet/Garet-Book.otf);
+}
+
+body{
+    background-color: #ffffff;
+    font-family: garet-book, "Segoe UI", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+}
