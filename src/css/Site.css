@@ -7,7 +7,40 @@
   src: url(../assets/fonts/garet/Garet-Book.otf);
 }
 
+html, body{
+    height: 100%;
+    margin: 0;
+}
+
 body{
-    background-color: #ffffff;
-    font-family: garet-book, "Segoe UI", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+  background-color: #f4fafb;
+  font-family: garet-book, "Segoe UI", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+}
+
+.input-search{
+  border-radius: 50px;
+  border: none;
+  width: 50%;
+  height: 80%;
+  padding: 5px;
+}
+
+.header-icon{
+  width: 50px;
+  height: 50px;
+}
+
+.header-title{
+  font-family: garet-heavy;
+  font-size: 32px;
+  padding: 0;
+  padding-top: 5px;
+  margin: 0;
+}
+
+.card{
+  border-radius: 15px;
+  padding: 15px;
+  margin: 15px;
+  background-color: #e6edf0;
 }

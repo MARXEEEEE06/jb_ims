@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, setShow } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./Login.css";
 import "../../css/Site.css";
 
 function Login(){
-    const [email, setEmail] = useState('');
+    const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
+    const [eyeToggle, setShow] = useState(false);
     const [isloading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -13,13 +14,13 @@ function Login(){
         e.preventDefault();
         setIsLoading(true);
         try{
-            const response = await fetch("http://localhost:5000/api/login",{
+            const response = await fetch("http://192.168.254.142:5000/api/login",{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email,
+                    username,
                     password
                 }),
             });
@@ -27,7 +28,7 @@ function Login(){
 
             if(response.ok){
                 alert("Login successfu!");
-                setEmail('');
+                setUserName('');
                 setPassword('');
                 navigate("/dashboard");
             }
@@ -46,22 +47,23 @@ function Login(){
             <h2 className="login-label">Login</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label>Email:</label>
+                    <label>username:</label>
                     <input
                         className='credential-field'
-                        type='email'
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder='Enter Email'
-                        required></input>
+                        type='text'
+                        value={username}
+                        onChange={(e) => setUserName(e.target.value)}
+                        placeholder='Enter username'
+                        required />
                     <label>Password:</label>
                     <input
                         className='credential-field'
-                        type='password'
+                        type={eyeToggle ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder='Enter Password'
-                        required></input>
+                        required />
+                    <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>{eyeToggle ? "Hide" : "Show"}</a>
                 </div>
                 <button disabled={isloading}>
                     {isloading ? "Logging in..." : "Login"}

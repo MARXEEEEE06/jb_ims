@@ -1,40 +1,49 @@
+import "../../css/Site.css"
 import "./Sidebar.css";
-import navicon_fallback from "../../assets/test/TemplateGrid_albedo.png";
-import avatar_fallback from "../../assets/ui/avatar-placeholder.jpg";
+import { 
+    home,
+    clipboard,
+    box, 
+    brand,
+    supplier,
+    stock_manage,
+    reports,
+    settings,
+    logout
+} from "../../assets/ui/Icons";
 
 function Sidebar(){
     return(
         <div className="sidebar">
             <div className="sidebar-header">
-                <img src={avatar_fallback} />
-                <p>Welcome back, <strong>Juan Dela Cruz</strong></p>
+                <p>Welcome back, <h1><strong>Juan Dela Cruz</strong></h1></p>
             </div>
             <div className="sidebar-nav-item">
                 <span className="nav-item nav-item-dashboard">
-                    <a href='/dashboard'><img src={navicon_fallback} />Dashboard</a>
+                    <a href='/dashboard'><img src={home} />Dashboard</a>
                 </span>
                 <span className="nav-item nav-item-inventory">
-                    <img src={navicon_fallback} />Inventory
+                    <img src={clipboard} />Inventory
                 </span>
                 <span className="nav-item nav-item-products">
-                    <img src={navicon_fallback} />Products
+                    <img src={box} />Products
                 </span>
                 <span className="nav-item nav-item-brands">
-                    <img src={navicon_fallback} />Brands
+                    <img src={brand} />Brands
                 </span>
                 <span className="nav-item nav-item-supplier">
-                    <img src={navicon_fallback} />Supplier
+                    <img src={supplier} />Supplier
                 </span>
                 <span className="nav-item nav-item-stock">
-                    <img src={navicon_fallback} />Stock Management
+                    <img src={stock_manage} />Stock Management
                 </span>
                 <span className="nav-item nav-item-reports">
-                    <img src={navicon_fallback} />Report/Logs
+                    <img src={reports} />Report/Logs
                 </span>
             </div>
             <div className="sidebar-footer">
-                <a className="sidebar-footer-item sidebar-item-settings">Settings</a>
-                <a className="sidebar-footer-item sidebar-item-logout">Logout</a>
+                <a className="sidebar-footer-item sidebar-item-settings"><img src={settings}/>Settings</a>
+                <a className="sidebar-footer-item sidebar-item-logout"><img src={logout} />Logout</a>
             </div>
         </div>
     )

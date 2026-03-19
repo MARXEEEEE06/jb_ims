@@ -1,8 +1,9 @@
 // Example using Node.js, Express, and the 'mysql' package
 const express = require('express');
-const mysql = require('mys`ql');
+const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // To handle Cross-Origin Resource Sharing
+const port = 5000;
 
 const app = express();
 app.use(cors());
@@ -11,9 +12,9 @@ app.use(bodyParser.json());
 // Database connection details
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
-  password: '@Lapidmarcdaniel0620',
-  database: 'your_database_name'
+  user: 'marx',
+  password: '12345678',
+  database: 'ims_db',
 });
 
 db.connect((err) => {
@@ -23,24 +24,31 @@ db.connect((err) => {
   console.log('Connected to MySQL Database');
 });
 
-// API endpoint to handle form submission
-app.post('/submit-form', (req, res) => {
-  const { name, email } = req.body;
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).send('Name and email are required');
-  }
+  // if (!username || !password) {
+  //   return res.status(400).send('Username and password are required');
+  // }
 
-  const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
-  db.query(sql, [name, email], (err, result) => {
+    const sql = 'SELECT * FROM login_credentials WHERE username = ? AND password = ?';
+  db.query(sql, [username, password], (err, results) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send('Error inserting data');
+      console.error('SQL Error: ', err);
+      return res.status(500).json({ error: 'Server error' });
     }
-    res.status(200).send('Data inserted successfully');
+
+    if (results.length > 0) {
+      // Login successful
+      const user = results[0];
+      res.json({ username: user.username, role: user.password });
+    } else {
+      // Login failed
+      res.status(401).json({ error: 'Invalid credentials' });
+    }
   });
 });
 
-app.listen(3001, () => {
-  console.log('Backend server running on port 3001');
+app.listen(port, () => {
+  console.log('Backend server running on port ' + port);
 });
