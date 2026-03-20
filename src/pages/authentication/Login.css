@@ -20,17 +20,12 @@
 }
 
 .credential-field{
-    height: 20px;
-    width: 95%;
-    border: none;
-    border-radius: 20px;
-    padding: 10px;
-    margin: 0 0 20px 0;
     transition: 400ms;
 }
 
 .credential-field:hover, .credential-field:focus{
     height: 30px;
+    border: 2px solid;
 }
 
 .eye-toggle{

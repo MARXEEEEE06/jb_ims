@@ -12,8 +12,10 @@ import stock_manage from "./update/stock-update.png";
 import reports from "./reports.png";
 import settings from "./gear.png";
 import logout from "./log-out.png";
+import favicon from "../../assets/ui/favicon.png";
 
 export {
+    favicon,
     box,
     supplier,
     supplier2,

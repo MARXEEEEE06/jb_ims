@@ -17,12 +17,42 @@ body{
   font-family: garet-book, "Segoe UI", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
 }
 
+input {
+  height: 20px;
+  width: 95%;
+  border: none;
+  border-radius: 50px;
+  padding: 10px;
+  margin: 0 0 20px 0;
+}
+
+.main-container{
+  display: grid;
+  grid-template-areas: 
+  "sidebar header"
+  "sidebar content";
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 60px 100%;
+  gap: 3px;
+  padding: 5px;
+  min-height: 100%;
+  height: 100vh;
+}
+
+.header{ grid-area: header; }
+.sidebar{ grid-area: sidebar; }
+.overview{ grid-area: content; }
+
 .input-search{
   border-radius: 50px;
-  border: none;
+  border: 1px solid;
+  height: 50%;
   width: 50%;
-  height: 80%;
   padding: 5px;
+}
+
+.input-search:hover, .input-search:focus{
+  border: 2px solid;
 }
 
 .header-icon{
@@ -43,4 +73,5 @@ body{
   padding: 15px;
   margin: 15px;
   background-color: #e6edf0;
+  box-shadow: 10px 10px 10px 5px rgba(0, 0, 0, 0.2);
 }

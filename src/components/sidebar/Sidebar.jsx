@@ -20,30 +20,30 @@ function Sidebar(){
             </div>
             <div className="sidebar-nav-item">
                 <span className="nav-item nav-item-dashboard">
-                    <a href='/dashboard'><img src={home} />Dashboard</a>
+                    <a href='/dashboard'><img src={home} alt={home}/>Dashboard</a>
                 </span>
                 <span className="nav-item nav-item-inventory">
-                    <img src={clipboard} />Inventory
+                    <a href='/inventory'><img src={clipboard} alt={clipboard}/>Inventory</a>
                 </span>
                 <span className="nav-item nav-item-products">
-                    <img src={box} />Products
+                    <a href='/products'><img src={box} alt={box}/>Products</a>
                 </span>
                 <span className="nav-item nav-item-brands">
-                    <img src={brand} />Brands
+                    <a href='/brands'><img src={brand} alt={brand}/>Brands</a>
                 </span>
                 <span className="nav-item nav-item-supplier">
-                    <img src={supplier} />Supplier
+                    <a href='/supplier'><img src={supplier} alt={supplier}/>Supplier</a>
                 </span>
                 <span className="nav-item nav-item-stock">
-                    <img src={stock_manage} />Stock Management
+                    <a href='/stock_management'><img src={stock_manage} alt={stock_manage}/>Stock Management</a>
                 </span>
                 <span className="nav-item nav-item-reports">
-                    <img src={reports} />Report/Logs
+                    <a href='/reports'><img src={reports} alt={reports}/>Report/Logs</a>
                 </span>
             </div>
             <div className="sidebar-footer">
-                <a className="sidebar-footer-item sidebar-item-settings"><img src={settings}/>Settings</a>
-                <a className="sidebar-footer-item sidebar-item-logout"><img src={logout} />Logout</a>
+                <a className="sidebar-footer-item nav-item sidebar-item-settings" href="/settings"><img src={settings} alt={settings}/>Settings</a>
+                <a className="sidebar-footer-item nav-item sidebar-item-logout" href="/logout"><img src={logout} alt={logout}/>Logout</a>
             </div>
         </div>
     )
