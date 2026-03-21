@@ -4,7 +4,7 @@ import Inventory from "./pages/inventory/Inventory";
 // import Products from "./pages/products/Products";
 // import Brands from "./pages/brands/Brands";
 // import Supplier from "./pages/supplier/Supplier";
-// import Stock from "./pages/stock_management/Stock_Management";
+import StockManagement from "./pages/inventory/Products";
 // import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/settings/Settings";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -17,6 +17,8 @@ function app(){
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Overview />} />
         <Route path="/inventory" element={<Inventory />} />
+        <Route path="/products" element={<StockManagement title="Products"/>} />
+        <Route path="/stocks" element={<StockManagement title="Stock Management"/>} />
         <Route path="/settings" element={<Settings title="Settings"/>} />
         <Route path="/logout" element={<Login />} />
 

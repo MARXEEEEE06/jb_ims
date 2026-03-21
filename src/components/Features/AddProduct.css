@@ -1,0 +1,62 @@
+.add-product{
+    background-color: #ffffff;
+    /* margin: 60% 20% 40% 20%; */
+    z-index: 10;
+}
+
+.modal-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-header button{
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    margin-right: 20px;
+    font-size: 40px;
+    cursor: pointer;
+    font-family: garet-book;
+    transition: 200ms;
+}
+.modal-header button{
+    font-size: 50px;
+    font-family: garet-heavy;
+}
+
+.add-product-form{
+    width: 70%;
+    margin: 0 15% 0 15%;
+}
+
+.form-button,
+.form-button button{
+    display: flex;
+    justify-content: right;
+    gap: 10px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.add-btn{
+    font-family: garet-book;
+    background-color: #4a7ff7;
+    padding: 10px;
+}
+.cancel-btn{
+    font-family: garet-book;
+    background-color: #f7984a;
+    padding: 10px;
+}
+
+.input-product-detail{
+    border: 1px solid #000000;
+    border-radius: 50px;
+}
+
+label{
+    display: flex;
+    justify-content: flex-start;
+}

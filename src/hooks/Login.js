@@ -1,13 +1,13 @@
-// Example using Node.js, Express, and the 'mysql' package
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // To handle Cross-Origin Resource Sharing
-const port = 5000;
+const cors = require('cors');
+const router = express.Router();
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
 
 // Database connection details
 const db = mysql.createConnection({
@@ -21,10 +21,10 @@ db.connect((err) => {
   if (err) {
     throw err;
   }
-  console.log('Connected to MySQL Database');
+  console.log('Login connected to MySQL Database');
 });
 
-app.post('/api/login', (req, res) => {
+router.post('/', (req, res) => {
   const { username, password } = req.body;
 
   // if (!username || !password) {
@@ -57,6 +57,4 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log('Backend server running on port ' + port);
-});
+module.exports = router;

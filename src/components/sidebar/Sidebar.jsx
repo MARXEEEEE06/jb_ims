@@ -35,7 +35,7 @@ function Sidebar(){
                     <a href='/supplier'><img src={supplier} alt={supplier}/>Supplier</a>
                 </span>
                 <span className="nav-item nav-item-stock">
-                    <a href='/stock_management'><img src={stock_manage} alt={stock_manage}/>Stock Management</a>
+                    <a href='/stocks'><img src={stock_manage} alt={stock_manage}/>Stock Management</a>
                 </span>
                 <span className="nav-item nav-item-reports">
                     <a href='/reports'><img src={reports} alt={reports}/>Report/Logs</a>
@@ -43,7 +43,7 @@ function Sidebar(){
             </div>
             <div className="sidebar-footer">
                 <a className="sidebar-footer-item nav-item sidebar-item-settings" href="/settings"><img src={settings} alt={settings}/>Settings</a>
-                <a className="sidebar-footer-item nav-item sidebar-item-logout" href="/logout"><img src={logout} alt={logout}/>Logout</a>
+                <a className="sidebar-footer-item nav-item sidebar-item-logout" href="/"><img src={logout} alt={logout}/>Logout</a>
             </div>
         </div>
     )

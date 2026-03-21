@@ -13,6 +13,11 @@ import reports from "./reports.png";
 import settings from "./gear.png";
 import logout from "./log-out.png";
 import favicon from "../../assets/ui/favicon.png";
+import plus from "../../assets/ui/update/add2.png"
+import pencil from "../../assets/ui/update/pencil1.png"
+import trashbin from "../../assets/ui/update/bin1.png"
+import eyeShowToggle from "../../assets/ui/eyeShowToggle.png"
+import eyeHideToggle from "../../assets/ui/eyeHideToggle.png"
 
 export {
     favicon,
@@ -30,4 +35,9 @@ export {
     reports,
     settings,
     logout,
+    plus,
+    pencil,
+    trashbin,
+    eyeShowToggle,
+    eyeHideToggle
 };

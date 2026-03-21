@@ -1,7 +1,7 @@
 import React, { useState, setShow } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./Login.css";
-import "../../css/Site.css";
+import { eyeShowToggle, eyeHideToggle } from "../../assets/ui/Icons";
 
 function Login(){
     const [username, setUserName] = useState('');
@@ -27,7 +27,7 @@ function Login(){
             const data = await response.json();
 
             if(response.ok){
-                alert("Login successfu!");
+                alert("Login successful!");
                 setUserName('');
                 setPassword('');
                 navigate("/dashboard");
@@ -43,11 +43,11 @@ function Login(){
 
     return(
         <><title>Login</title>
-        <div className="login-container">
-            <h2 className="login-label">Login</h2>
+        <div className='login-container'>
+            <h2 className='login-label'>Login</h2>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>username:</label>
+                <div className='form-group'>
+                    <label>Username:</label>
                     <input
                         className='credential-field'
                         type='text'
@@ -63,7 +63,7 @@ function Login(){
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder='Enter Password'
                         required />
-                    <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>{eyeToggle ? "Hide" : "Show"}</a>
+                    <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>{eyeToggle ? (<img src={ eyeShowToggle }/>) : (<img src={ eyeHideToggle }/>)}</a>
                 </div>
                 <button disabled={isloading}>
                     {isloading ? "Logging in..." : "Login"}

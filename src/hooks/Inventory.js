@@ -1,9 +1,8 @@
-// Example using Node.js, Express, and the 'mysql' package
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // To handle Cross-Origin Resource Sharing
-const port = 5001;
+const cors = require('cors');
+const router = express.Router();
 
 const app = express();
 app.use(cors());
@@ -21,11 +20,19 @@ db.connect((err) => {
   if (err) {
     throw err;
   }
-  console.log('Connected to MySQL Database');
+  console.log('Inventory connected to MySQL Database');
 });
 
-app.post('/api/inventory', (req, res) => {
+function getStatus(stock) {
+  if (stock === 0) return 'OUT OF STOCK';
+  if (stock < 10) return 'CRITICAL';
+  if (stock < 20) return 'LOW';
+  return 'IN-STOCK';
+}
+
+router.post('/', (req, res) => {
   const sql = `SELECT * FROM prod_dtls`;
+
   db.query(sql, (err, results) => {
     if (err) {
       console.error('SQL Error: ', err);
@@ -35,13 +42,16 @@ app.post('/api/inventory', (req, res) => {
     console.log('Query Results:', results);
 
     if (results.length > 0) {
-      res.json( results );
+      const items = results.map(item => ({
+        ...item,
+        status: getStatus(item.stock_quantity)
+      }));
+
+      res.json(items);
     } else {
       res.status(404).json({ error: 'Item not found.' });
     }
   });
 });
 
-app.listen(port, () => {
-  console.log('Backend server running on port ' + port);
-});
+module.exports = router;

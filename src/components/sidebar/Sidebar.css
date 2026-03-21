@@ -47,15 +47,15 @@
     height: 30px;
 }
 
-a{
-    color: #000000;
-    text-decoration: none;
-}
-
 .sidebar-footer {
     display: flex;
     flex-direction: column;
     padding-top: 50%;
     padding-left: 30%;
     gap: 8px;
+}
+
+a{
+    color: #000000;
+    text-decoration: none;
 }

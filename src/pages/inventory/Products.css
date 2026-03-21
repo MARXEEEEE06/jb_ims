@@ -1,0 +1,43 @@
+.products-container{
+    margin: 5%;
+    text-align: center;
+}
+
+table, th, td{
+}
+
+table{
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 1rem; /* vertical spacing */
+}
+
+th{
+    border: 1px solid black;
+    background-color: #c6d5db;
+}
+
+tr{
+    background-color: #ffffff;
+}
+
+tr:hover{
+  background-color: #c6d5db;
+  cursor: pointer;
+}
+
+th:nth-child(1), 
+td:nth-child(1){
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+}
+
+th:nth-last-child(1),
+td:nth-last-child(1){
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+td{
+    height: 3rem;
+}

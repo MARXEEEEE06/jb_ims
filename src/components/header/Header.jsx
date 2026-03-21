@@ -14,7 +14,7 @@ function HeaderOveriew(){
         "/products": "Products",
         "/brands": "Brands",
         "/supplier": "supplier",
-        "/stock": "Stock Management",
+        "/stocks": "Stock Management",
         "/reports": "Reports/Logs",
         "/settings": "Settings",
     }
