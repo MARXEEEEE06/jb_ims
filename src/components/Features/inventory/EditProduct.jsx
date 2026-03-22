@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "../../css/Site.css"
 import "./EditProduct.css";
 
-function EditProduct({ item, onClose }){
-    // const [prod_name, setProduct] = useState(''); 
-    // const [price, setPrice] = useState(''); 
-    // const [brand, setBrand] = useState(''); 
-    // const [variety, setVariety] = useState(''); 
-    // const [supplier, setSupplier] = useState(''); 
-    // const [category, setCategory] = useState(''); 
-    // const [unit, setUnit] = useState(''); 
+function EditProduct({ item, onClose, onRefresh }){
     const [prod_name, setProduct] = useState(item?.prod_name || '');
     const [brand, setBrand] = useState(item?.brand || '');
     const [supplier, setSupplier] = useState(item?.supplier || '');
@@ -44,6 +36,8 @@ function EditProduct({ item, onClose }){
             const data = await response.json();
 
             if(response.ok){
+                onRefresh();   // ✅ re-fetches the list
+                onClose();     // ✅ closes the modal
                 alert("Item updated successfully!");
             }
             else{

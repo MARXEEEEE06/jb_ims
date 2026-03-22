@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
-import AddProduct from "../../components/Features/AddProduct.jsx";
-import EditProduct from "../../components/Features/EditProduct.jsx";
+import AddProduct from "../../components/Features/inventory/AddProduct.jsx";
+import EditProduct from "../../components/Features/inventory/EditProduct.jsx";
+import RemoveProduct from '../../components/Features/inventory/RemoveModal.jsx';
 import "../../css/Site.css";
 import "./Products.css";
 import { 
@@ -11,7 +12,7 @@ import {
     trashbin
 } from "../../assets/ui/Icons.js";
 
-function Inventory(){
+function Products(){
     const [sku, setSKU] = useState(''); 
     const [product, setProduct] = useState(''); 
     const [brand, setBrand] = useState(''); 
@@ -23,6 +24,7 @@ function Inventory(){
 
     const [showAdd, setShowAdd] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
+    const [showRemove, setShowRemove] = useState(false);
     
     const [selectedItem, setSelectedItem] = useState(null);
 
@@ -30,31 +32,47 @@ function Inventory(){
         setSelectedItem(item);
     };
 
-    useEffect(() => {
-        const fetchInventory = async () => {
-            try{
-                const response = await fetch("http://192.168.254.142:5000/api/inventory",{
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({}),
-                });
-                const data = await response.json();
+    const handleRemoveProduct = async (productId) => {
+        if (!window.confirm("Are you sure you want to remove this product?")) return;
 
-                if(response.ok){
-                    setItems(Array.isArray(data) ? data : [data]);
-                    // alert("Items found.");
-                }
-                else{
-                    alert(data.error);
-                }
-            }catch(error){
-                alert("Server Error")
+        try {
+            const response = await fetch(`http://192.168.254.142:5000/api/removeproduct/${productId}`, {
+            method: "DELETE",
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+            alert("Product removed successfully");
+            setItems(prev => prev.filter(item => item.product_id !== productId)); // remove from UI
+            } else {
+            alert(data.error || "Failed to remove product");
             }
+        } catch (error) {
+            alert("Server error");
         }
-        fetchInventory();
-    },[]);
+    };
+
+    const fetchInventory = async () => {
+        try {
+            const response = await fetch("http://192.168.254.142:5000/api/inventory", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({}),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setItems(Array.isArray(data) ? data : [data]);
+            } else {
+                alert(data.error);
+            }
+        } catch (error) {
+            alert("Server Error");
+        }
+    };
+
+    useEffect(() => {
+        fetchInventory(); // still runs on mount
+    }, []);
 
     function getStatus(stock) {
         if (stock === 0) return 'OUT OF STOCK';
@@ -69,7 +87,7 @@ function Inventory(){
                 <HeaderOveriew />
                 <Sidebar />
                 <div className="products-container">
-                    <div className="item-table">
+                    <div className="products-table">
                         <table>
                             <thead>
                                 <tr>
@@ -84,32 +102,41 @@ function Inventory(){
                                     <th>STATUS</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {items.map((item, idx) => (
-                                    <tr
-                                        key={item.product_id}
-                                        onClick={() => setSelectedItem(item)}
-                                        style={{
-                                            backgroundColor: selectedItem?.product_id === item.product_id ? '#ddd' : ''
-                                        }}
-                                    >
-                                        <td>{item.SKU}</td>
-                                        <td>{item.prod_name}</td>
-                                        <td>{item.brand}</td>
-                                        <td>{item.variety}</td>
-                                        <td>{item.supplier}</td>
-                                        <td>{item.price}</td>
-                                        <td>{item.type}</td>
-                                        <td>{item.category}</td>
-                                        <td>{item.status}</td>
-                                    </tr>
-                                ))}
+                            <tbody className="products-tbody">
+                            {items.map((item) => {
+                                const isSelected = selectedItem?.product_id === item.product_id;
+
+                                return (
+                                <tr
+                                    key={item.product_id}
+                                    onClick={() =>
+                                    setSelectedItem(prev =>
+                                        prev?.product_id === item.product_id ? null : item
+                                    )
+                                    }
+                                    style={{
+                                    backgroundColor: isSelected ? '#ddd' : ''
+                                    }}
+                                >
+                                    <td>{item.SKU}</td>
+                                    <td>{item.prod_name}</td>
+                                    <td>{item.brand}</td>
+                                    <td>{item.variety}</td>
+                                    <td>{item.supplier}</td>
+                                    <td>{item.price}</td>
+                                    <td>{item.unit_type}</td>
+                                    <td>{item.category}</td>
+                                    <td className="product-status">{item.status}</td>
+                                </tr>
+                                );
+                            })}
                             </tbody>
                         </table>
                     </div>
-                    <div className="actions-button">
-                        <button onClick={() => setShowAdd(true)}><img src={plus}/>Add Product</button>
+                    <div className="product-actions-button">
+                        <button className="addProd-btn" onClick={() => setShowAdd(true)}><img src={plus}/> Add Product</button>
                         <button
+                            className="editProd-btn"
                             onClick={() => {
                                 if (!selectedItem) {
                                 alert("Select a product first");
@@ -117,14 +144,26 @@ function Inventory(){
                                 }
                                 setShowEdit(true);
                         }}>
-                            <img src={pencil}/>Edit Product
+                            <img src={pencil}/> Edit Product
                         </button>
-                        <button><img src={trashbin}/>Remove Product</button>
+                        <button 
+                            className="removeProd-btn" 
+                                onClick={() => {
+                                if (!selectedItem) {
+                                alert("Select a product first");
+                                return;
+                                }
+                                setShowRemove(true);
+                            }}>
+                            <img src={trashbin}/> 
+                            Remove Product</button>
                     </div>
                     {showAdd && (
                         <div className="modal-overlay">
                             <div className="modal-content">
-                                <AddProduct onClose={() => setShowAdd(false)} />
+                                <AddProduct 
+                                onClose={() => setShowAdd(false)} 
+                                onRefresh={fetchInventory} />
                             </div>
                         </div>
                     )}
@@ -133,7 +172,22 @@ function Inventory(){
                             <div className="modal-content">
                                 <EditProduct 
                                     item={selectedItem}
-                                    onClose={() => setShowEdit(false)} />
+                                    onClose={() => setShowEdit(false)}
+                                    onRefresh={fetchInventory} />
+                            </div>
+                        </div>
+                    )}
+                    {showRemove && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <RemoveProduct 
+                                    item={selectedItem}
+                                    onClose={() => setShowRemove(false)}
+                                    onRemoved={(id) => {
+                                        setItems(prev => prev.filter(item => item.product_id !== id));
+                                        setSelectedItem(null); // 🔴 CLEAR selection
+                                    }}
+                                />
                             </div>
                         </div>
                     )}
@@ -143,4 +197,4 @@ function Inventory(){
     );
 }
 
-export default Inventory;
+export default Products;

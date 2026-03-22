@@ -1,0 +1,26 @@
+.stocks-container{
+    margin: 5%;
+    text-align: center;
+}
+
+.stock-minus-btn{
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+}
+.stock-add-btn{
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+td button{
+    border: none;
+    background-color: #e6edf0;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: large;
+    cursor: pointer;
+}
+
+.product-status{
+    width: 10rem;
+}

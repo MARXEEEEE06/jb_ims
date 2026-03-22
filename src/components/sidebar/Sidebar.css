@@ -50,7 +50,7 @@
 .sidebar-footer {
     display: flex;
     flex-direction: column;
-    padding-top: 50%;
+    padding-top: 40%;
     padding-left: 30%;
     gap: 8px;
 }

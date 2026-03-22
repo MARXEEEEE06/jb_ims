@@ -1,36 +1,42 @@
-import { useLocation } from "react-router-dom";
-import "../../css/Site.css"
-import "./Header.css";
+import React from "react";
 import { favicon } from "../../assets/ui/Icons";
+import "./Header.css";
 
-function HeaderOveriew(){
-    const location = useLocation();
-    const hideSearchOn = ["/dashboard", "/settings"]; 
-    const showSearch = !hideSearchOn.includes(location.pathname);
-    
+function HeaderOverview({ items, field, keyword, setKeyword }) {
     const headerTitles = {
         "/dashboard": "Dashboard",
         "/inventory": "Inventory",
         "/products": "Products",
         "/brands": "Brands",
-        "/supplier": "supplier",
+        "/supplier": "Supplier",
         "/stocks": "Stock Management",
         "/reports": "Reports/Logs",
         "/settings": "Settings",
-    }
+        "/account-details": "Account Details",
+        "/security": "Security",
+        "/account-management": "Account Management",
+    };
 
-    const headerTitle = headerTitles[location.pathname] || "Page";
-    return(
+    const pathname = window.location.pathname;
+    const headerTitle = headerTitles[pathname] || "Page";
+    const hideSearchOn = ["/dashboard", "/settings"];
+    const showSearch = !hideSearchOn.includes(pathname);
+
+    return (
         <div className="header">
             <p className="header-title">{headerTitle}</p>
             {showSearch && (
-                <input className="input-search" 
-                type="text" 
-                placeholder="Search bar" />
+                <input
+                    className="input-search"
+                    type="text"
+                    placeholder="Search bar"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                />
             )}
-            <img className="header-icon" src={favicon} alt={favicon}/>
+            <img className="header-icon" src={favicon} alt="favicon" />
         </div>
-    )
+    );
 }
 
-export default HeaderOveriew;
+export default HeaderOverview;

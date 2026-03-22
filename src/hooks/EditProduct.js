@@ -44,21 +44,6 @@ router.post('/', (req, res) => {
 
     const sku = generateSKU(prod_name, brand, variety, supplier);
 
-    // const sql = `
-    // INSERT INTO prod_dtls (
-    //   prod_name,
-    //   price,
-    //   stock_quantity,
-    //   SKU,
-    //   brand,
-    //   variety,
-    //   supplier,
-    //   category,
-    //   unit_type
-    // )
-    // VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    // `;
-
     const sql = `
       UPDATE prod_dtls
       SET 
@@ -93,7 +78,7 @@ router.post('/', (req, res) => {
           console.error('SQL Error: ', err);
           return res.status(500).json({ error: 'Server error' });
         }
-        res.json({ message: 'Product editted', SKU: sku, id: results.insertId });
+        res.json({ message: 'Product edited', SKU: sku, id: results.insertId });
       }
     );
 });

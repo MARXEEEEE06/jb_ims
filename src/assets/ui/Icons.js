@@ -11,7 +11,7 @@ import brand from "./brand.png";
 import stock_manage from "./update/stock-update.png";
 import reports from "./reports.png";
 import settings from "./gear.png";
-import logout from "./log-out.png";
+import logout_icon from "./log-out.png";
 import favicon from "../../assets/ui/favicon.png";
 import plus from "../../assets/ui/update/add2.png"
 import pencil from "../../assets/ui/update/pencil1.png"
@@ -34,7 +34,7 @@ export {
     stock_manage,
     reports,
     settings,
-    logout,
+    logout_icon,
     plus,
     pencil,
     trashbin,

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import "../../css/Site.css"
 import "./AddProduct.css";
 
-function AddProduct(props){
+function AddProduct({ onClose, onRefresh }){
     const [prod_name, setProduct] = useState(''); 
     const [price, setPrice] = useState(''); 
     const [brand, setBrand] = useState(''); 
@@ -16,7 +15,7 @@ function AddProduct(props){
         e.preventDefault();
         setIsLoading(true);
         try{
-            const response = await fetch("http://192.168.254.142:5000/api/product",{
+            const response = await fetch("http://192.168.254.142:5000/api/add-product",{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -35,6 +34,8 @@ function AddProduct(props){
             const data = await response.json();
 
             if(response.ok){
+                onRefresh();   // ✅ re-fetches the list
+                onClose();     // ✅ closes the modal
                 alert("item added successfully!");
             }
             else{
@@ -50,7 +51,7 @@ function AddProduct(props){
         <div className="modal-add-product">
             <div className="modal-header">
                 <h1>Add Product</h1>
-                <button onClick={props.onClose}>X</button>
+                <button onClick={onClose}>X</button>
             </div>
             <div className="add-product-form">
                 <form>
@@ -77,7 +78,7 @@ function AddProduct(props){
                     
                     <div className="form-button">
                         <button className="add-btn" onClick={handleSubmit}>Add</button>
-                        <button className="cancel-btn" onClick={props.onClose}>Cancel</button>
+                        <button className="cancel-btn" onClick={onClose}>Cancel</button>
                     </div>
                 </form>
             </div>

@@ -36,7 +36,7 @@ h1{
   "sidebar header"
   "sidebar content";
   grid-template-columns: 1fr 3fr;
-  grid-template-rows: 60px 100%;
+  grid-template-rows: 60px 1fr;
   gap: 3px;
   padding: 5px;
   min-height: 100%;
@@ -107,4 +107,35 @@ h1{
 .required:after{
   content: "*";
   color: #FF0000;
+}
+
+table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 1rem; /* vertical spacing */
+}
+
+th{
+  border: 1px solid black;
+  background-color: #c6d5db;
+}
+
+tr{
+  background-color: #ffffff;
+}
+
+td{
+  height: 3rem;
+}
+
+th:nth-child(1), 
+td:nth-child(1){
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+
+th:nth-last-child(1),
+td:nth-last-child(1){
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
 }

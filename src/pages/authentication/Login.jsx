@@ -27,7 +27,9 @@ function Login(){
             const data = await response.json();
 
             if(response.ok){
-                alert("Login successful!");
+                console.log("Response data:", data);           // Does data.token exist?
+                localStorage.setItem("token", data.token);
+                console.log("Token saved:", localStorage.getItem("token")); // Did it save?
                 setUserName('');
                 setPassword('');
                 navigate("/dashboard");

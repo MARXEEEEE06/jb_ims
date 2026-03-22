@@ -7,15 +7,29 @@ app.use(cors());
 app.use(express.json());
 
 const loginRoute = require('./Login');
+const getProdCountRoute = require('./GetProdCount');
+const authRoute = require('./Auth');
 const inventoryRoute = require('./Inventory');
 const addProductRoute = require('./AddProduct');
 const editProductRoute = require('./EditProduct');
+const getUsersRoute = require('./GetUsers')
+const addUserRoute = require('./AddUser')
+const removeProductRoute = require('./RemoveProduct')
+const getTopSupplyRoute = require('./GetTopSupply')
+const stockChangeRoute = require('./StockChange')
 
 app.use('/api/login', loginRoute);
+app.use('/api/getprodcount', getProdCountRoute);
+app.use('/api/auth', authRoute);
 app.use('/api/inventory', inventoryRoute);
 app.use('/api/add-product', addProductRoute);
 app.use('/api/edit-product', editProductRoute);
+app.use('/api/getusers', getUsersRoute);
+app.use('/api/adduser', addUserRoute);
+app.use('/api/removeproduct', removeProductRoute);
+app.use('/api/gettopsupply', getTopSupplyRoute);
+app.use('/api/stock', stockChangeRoute);
 
-app.listen(5000, '0.0.0.0', () => {
+app.listen(5000, '192.168.254.142', () => {
   console.log('Server running on port 5000');
 });

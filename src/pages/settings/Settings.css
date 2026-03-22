@@ -1,0 +1,18 @@
+.settings-nav{
+    margin: 20px;
+}
+
+.settings-btn{
+    border: 1px solid #000000;
+    border-radius: 50px;
+    background-color: #ffffff;
+    margin-right: 10px;
+    padding: 10px;
+    transition: 300ms;
+}
+
+.settings-btn:hover{
+    background-color: #17224d;
+    color: #ffffff;
+    cursor: pointer;
+}

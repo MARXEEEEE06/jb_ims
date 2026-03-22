@@ -1,0 +1,28 @@
+.acc-manage-content{
+    border-radius: 50px;
+    background-color: #ffffff;
+    padding: 2rem;
+    margin: 0 40px 0 5px;
+}
+
+.content-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+tbody{
+    text-align: center;
+}
+
+.add-mem-btn{
+    font-family: garet-book;
+    background-color: #17224d;
+    color: #ffffff;
+    border-radius: 50px;
+}
+
+.add-mem-btn:hover{
+    background-color: #0c122b;
+    cursor: pointer;
+}

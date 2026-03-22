@@ -1,5 +1,4 @@
-// src/components/BarChart.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -8,28 +7,38 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
-function BarChart({ data }) {
-  const labels = data.map(item => item.product);
-  const supplyData = data.map(item => item.supply);
-  const demandData = data.map(item => item.demand);
+function SupplyChart() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchSupply = async () => {
+      try {
+        const response = await fetch('http://192.168.254.142:5000/api/gettopsupply');
+        const result = await response.json();
+        setData(result.map(item => ({
+          product: item.prod_name,
+          supply: item.stock_quantity,
+        })));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchSupply();
+  }, []);
 
   const chartData = {
-    labels,
+    labels: data.map(item => item.product),
     datasets: [
       {
         label: 'Supply',
-        data: supplyData,
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-      },
-      {
-        label: 'Demand',
-        data: demandData,
-        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        data: data.map(item => item.supply),
+        backgroundColor: 'rgb(75, 192, 75)',
+        borderColor: 'rgb(0,0,0)',
+        borderWidth: 1,
       },
     ],
   };
@@ -38,12 +47,12 @@ function BarChart({ data }) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top' },
-      title: { display: true, text: 'Supply vs Demand' },
+      legend: { display: true },
+      title: { display: true, text: 'Top 10 Supply Levels' },
     },
   };
 
   return <Bar data={chartData} options={options} />;
 }
 
-export default BarChart;
+export default SupplyChart;

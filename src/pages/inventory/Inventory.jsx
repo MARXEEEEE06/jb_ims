@@ -1,83 +1,140 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
-import HeaderOveriew from "../../components/header/Header.jsx";
-import "../../css/Site.css";
+import HeaderOverview from "../../components/header/Header.jsx";
+import "./Inventory.css";
 
-function Inventory(){
-    const [sku, setSKU] = useState(''); 
-    const [product, setProduct] = useState(''); 
-    const [brand, setBrand] = useState(''); 
-    const [variety, setVariety] = useState(''); 
-    const [supplier, setSupplier] = useState(''); 
-    const [stock, setStock] = useState(''); 
-    const [prod_status, setStatus] = useState('');
+// Import filter hooks
+import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
+import { useBrandFilter } from '../../hooks/filters/useBrandFilter';
+import { useSupplierFilter } from '../../hooks/filters/useSupplierFilter';
+import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
+import { useSort } from '../../hooks/filters/useSort';
+
+function Inventory() {
     const [items, setItems] = useState([]);
-    const [isloading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // 1️⃣ Start from raw items
+    const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
+    // 2️⃣ Apply brand filter on keywordFiltered
+    const { filtered: brandFiltered, brand, setBrand } = useBrandFilter(keywordFiltered, 'brand');
+
+    // 3️⃣ Apply supplier filter on brandFiltered
+    const { filtered: supplierFiltered, supplier, setSupplier } = useSupplierFilter(brandFiltered, 'supplier');
+
+    // 4️⃣ Apply status filter on supplierFiltered
+    const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'status');
+
+    // 5️⃣ Apply sorting on statusFiltered
+    const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
     useEffect(() => {
         const fetchInventory = async () => {
-            try{
+            try {
                 setIsLoading(true);
-                const response = await fetch("http://192.168.254.142:5000/api/inventory",{
+                const response = await fetch("http://192.168.254.142:5000/api/inventory", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({}),
                 });
                 const data = await response.json();
 
-                if(response.ok){
-                    setIsLoading(false);
+                if (response.ok) {
                     setItems(Array.isArray(data) ? data : [data]);
-                    // alert("Items found.");
-                }
-                else{
+                } else {
                     alert(data.error);
                 }
-            }catch(error){
-                alert("Server Error")
+            } catch (error) {
+                alert("Server Error");
+            } finally {
+                setIsLoading(false);
             }
-        }
+        };
+
         fetchInventory();
-    },[]);
+    }, []);
 
-    return(
-        <>
-            <div className="main-container">
-                <HeaderOveriew />
-                <Sidebar />
+    return (
+        <div className="main-container">
+            <HeaderOverview
+                items={items}
+                field="prod_name"
+                keyword={keyword}
+                setKeyword={setKeyword}
+            />
+            <Sidebar />
+
+            <div className="inventory-content">
+                <div className="filters-panel">
+                    {/* <input
+                        type="text"
+                        placeholder="Search product..."
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    /> */}
+                    <input
+                        type="text"
+                        placeholder="Filter by brand..."
+                        value={brand}
+                        onChange={(e) => setBrand(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Filter by supplier..."
+                        value={supplier}
+                        onChange={(e) => setSupplier(e.target.value)}
+                    />
+                    <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="">All Status</option>
+                        <option value="in-stock">In Stock</option>
+                        <option value="low">Low Stock</option>
+                        <option value="critical">Critical</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                    <select value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+                        <option value="">Sort by...</option>
+                        <option value="prod_name">Alphabetical</option>
+                        <option value="stock_quantity">Stock</option>
+                        <option value="status">Status</option>
+                    </select>
+                    <select value={order} onChange={(e) => setOrder(e.target.value)}>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+
                 <div className="item-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>SKU</th>
-                                <th>PRODUCT</th>
-                                <th>BRAND</th>
-                                <th>VARIETY</th>
-                                <th>SUPPLIER</th>
-                                <th>STOCK</th>
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items.map((item, idx) => (
-
-                                <tr key={idx}>
-                                    <td>{item.SKU}</td>
-                                    <td>{item.prod_name}</td>
-                                    <td>{item.brand}</td>
-                                    <td>{item.variety}</td>
-                                    <td>{item.supplier}</td>
-                                    <td>{item.stock_quantity}</td>
-                                    <td>{item.status}</td>
+                    {isLoading ? <p>Loading...</p> : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>PRODUCT</th>
+                                    <th>BRAND</th>
+                                    <th>VARIETY</th>
+                                    <th>SUPPLIER</th>
+                                    <th>STOCK</th>
+                                    <th>STATUS</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {finalFiltered.map((item, idx) => (
+                                    <tr key={idx}>
+                                        <td>{item.SKU}</td>
+                                        <td>{item.prod_name}</td>
+                                        <td>{item.brand}</td>
+                                        <td>{item.variety}</td>
+                                        <td>{item.supplier}</td>
+                                        <td>{item.stock_quantity}</td>
+                                        <td className="product-status">{item.status}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
