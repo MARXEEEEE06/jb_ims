@@ -28,7 +28,7 @@
     margin: 10px 0 10px 0;
     padding: 5px;
     padding-bottom: 10px;
-    transition: ease-out 300ms 10ms;
+    transition: ease-out 100ms 10ms;
 }
 
 .nav-item img {

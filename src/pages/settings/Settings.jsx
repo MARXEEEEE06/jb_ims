@@ -2,9 +2,9 @@ import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
-import AccountDetails from "../../components/Features/settings/AccountDetails.jsx";
-import Security from "../../components/Features/settings/Security.jsx";
-import AccountManagement from "../../components/Features/settings/AccountManagement.jsx";
+import AccountDetails from "../../components/features/settings/AccountDetails.jsx";
+import Security from "../../components/features/settings/Security.jsx";
+import AccountManagement from "../../components/features/settings/AccountManagement.jsx";
 import "./Settings.css";
 
 function Settings() {
@@ -35,7 +35,7 @@ function Settings() {
       <HeaderOveriew />
       <Sidebar />
       <div>
-        <div className="settings-nav">
+        <div className="container settings-container">
             <button
             className="settings-btn acc-det"
             onClick={() => setActiveTab("account-details")}>

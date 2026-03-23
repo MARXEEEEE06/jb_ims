@@ -1,29 +1,31 @@
-.dashboard-container div.overview{
-    /* background-color: rgb(26, 202, 255); */
-    padding: 10px;
-    height: 100%;
-}
-
-.overview{
+.dashboard-container{
     display: grid;
     grid-template-areas: 
     "data1 data2 data3"
     "chart1 chart1 chart2";
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 500px;
+    padding: 10px;
+    height: 100%;
 }
 
-.overview img{
+.dashboard-container img{
     width: 100px;
     height: 100px;
 }
 
-.overview div.card-data{
+.dashboard-container div.card-data{
     font-size: 1.3rem;
 }
 
 .card-data h1{
     font-family: garet-heavy;
+}
+
+.card-data p{
+    font-family: garet-heavy;
+    font-size: 3rem;
+    text-align: center;
 }
 
 .charts {
@@ -44,4 +46,5 @@
 .charts-bar1{
     /* background-color: blue; */
     grid-area: chart2;
+    width: 90%;
 }

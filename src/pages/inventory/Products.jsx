@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
-import AddProduct from "../../components/Features/inventory/AddProduct.jsx";
-import EditProduct from "../../components/Features/inventory/EditProduct.jsx";
-import RemoveProduct from '../../components/Features/inventory/RemoveModal.jsx';
+import AddProduct from "../../components/features/inventory/AddProduct.jsx";
+import EditProduct from "../../components/features/inventory/EditProduct.jsx";
+import RemoveProduct from '../../components/features/inventory/RemoveModal.jsx';
 import "../../css/Site.css";
 import "./Products.css";
 import { 
@@ -61,7 +61,13 @@ function Products(){
             });
             const data = await response.json();
             if (response.ok) {
-                setItems(Array.isArray(data) ? data : [data]);
+                const newItems = Array.isArray(data) ? data : [data];
+                setItems(newItems);
+
+                // ✅ sync selectedItem with the updated data
+                setSelectedItem(prev =>
+                    prev ? newItems.find(i => i.product_id === prev.product_id) ?? null : null
+                );
             } else {
                 alert(data.error);
             }
@@ -86,7 +92,7 @@ function Products(){
             <div className="main-container">
                 <HeaderOveriew />
                 <Sidebar />
-                <div className="products-container">
+                <div className="container products-container">
                     <div className="products-table">
                         <table>
                             <thead>
@@ -112,8 +118,7 @@ function Products(){
                                     onClick={() =>
                                     setSelectedItem(prev =>
                                         prev?.product_id === item.product_id ? null : item
-                                    )
-                                    }
+                                    )}
                                     style={{
                                     backgroundColor: isSelected ? '#ddd' : ''
                                     }}

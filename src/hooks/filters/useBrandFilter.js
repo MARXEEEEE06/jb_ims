@@ -1,10 +1,15 @@
 import { useState, useMemo } from "react";
 
-export function useBrandFilter(items) {
+export function useBrandFilter(items, allItems) {
   const [brand, setBrand] = useState('');
-  const filtered = useMemo(() => {
-    return brand ? items.filter(item => item.brand.toLowerCase().includes(brand.toLowerCase())) : items;
-  }, [items, brand]);
+  
+  const brands = useMemo(() => 
+    [...new Set(allItems.map(item => item.brand).filter(Boolean))].sort()
+  , [allItems]);
 
-  return { filtered, brand, setBrand };
+  const filtered = useMemo(() => 
+    brand ? items.filter(item => item.brand === brand) : items
+  , [items, brand]);
+
+  return { filtered, brand, setBrand, brands };
 }

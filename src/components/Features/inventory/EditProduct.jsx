@@ -30,7 +30,7 @@ function EditProduct({ item, onClose, onRefresh }){
                     supplier,
                     category,
                     unit_type: unit,  // must be provided
-                    stock_quantity: 0 // optional, backend default
+                    stock_quantity: item.stock_quantity // optional, backend default
                 })
             });
             const data = await response.json();

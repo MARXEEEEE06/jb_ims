@@ -54,7 +54,7 @@ function StockManagement(){
         <div className="main-container">
             <HeaderOveriew />
             <Sidebar />
-            <div className="stocks-container">
+            <div className="container stocks-container">
                 <table>
                     <thead>
                         <tr>

@@ -17,14 +17,11 @@ function Inventory() {
     // 1️⃣ Start from raw items
     const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
     // 2️⃣ Apply brand filter on keywordFiltered
-    const { filtered: brandFiltered, brand, setBrand } = useBrandFilter(keywordFiltered, 'brand');
-
+    const { filtered: brandFiltered, brand, setBrand, brands } = useBrandFilter(keywordFiltered, items);
     // 3️⃣ Apply supplier filter on brandFiltered
-    const { filtered: supplierFiltered, supplier, setSupplier } = useSupplierFilter(brandFiltered, 'supplier');
-
+    const { filtered: supplierFiltered, supplier, setSupplier, suppliers } = useSupplierFilter(brandFiltered, items);
     // 4️⃣ Apply status filter on supplierFiltered
     const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'status');
-
     // 5️⃣ Apply sorting on statusFiltered
     const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
@@ -64,7 +61,7 @@ function Inventory() {
             />
             <Sidebar />
 
-            <div className="inventory-content">
+            <div className="container inventory-content">
                 <div className="filters-panel">
                     {/* <input
                         type="text"
@@ -72,18 +69,19 @@ function Inventory() {
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
                     /> */}
-                    <input
-                        type="text"
-                        placeholder="Filter by brand..."
-                        value={brand}
-                        onChange={(e) => setBrand(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Filter by supplier..."
-                        value={supplier}
-                        onChange={(e) => setSupplier(e.target.value)}
-                    />
+                    <select value={brand} onChange={(e) => setBrand(e.target.value)}>
+                        <option value="">All Brands</option>
+                        {brands.map(b => (
+                            <option key={b} value={b}>{b}</option>
+                        ))}
+                    </select>
+
+                    <select value={supplier} onChange={(e) => setSupplier(e.target.value)}>
+                        <option value="">All Suppliers</option>
+                        {suppliers.map(s => (
+                            <option key={s} value={s}>{s}</option>
+                        ))}
+                    </select>
                     <select value={status} onChange={(e) => setStatus(e.target.value)}>
                         <option value="">All Status</option>
                         <option value="in-stock">In Stock</option>

@@ -50,10 +50,10 @@ function Dashboard() {
     if (loading) return null; // ✅ render nothing while checking
 
     return(
-        <div className="main-container dashboard-container">
+        <div className="main-container">
             <HeaderOveriew />
             <Sidebar />
-            <div className="overview">
+            <div className="container dashboard-container">
                 <div className="card card-data data-card-products">
                     <img src={products_box} alt={products_box}/>
                     <h1>Total Products</h1>
