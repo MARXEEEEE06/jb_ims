@@ -7,7 +7,7 @@ function Logs(){
             <HeaderOverview />
             <Sidebar />
             <div className="container reports-container">
-                Under construction
+                This page is under development.
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 function Security(){
     return(
         <div className="security-container">
-            HELLO WORLD
+            This page is under development.
         </div>
     );
 }

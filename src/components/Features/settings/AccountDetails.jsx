@@ -1,7 +1,7 @@
 function AccountDetails(){
     return(
         <div className="account-details-container">
-            HELLO WORLD
+            This page is under development.
         </div>
     );
 }

@@ -7,7 +7,7 @@ function Supplier(){
             <HeaderOverview />
             <Sidebar />
             <div className="container supplier-container">
-                Under construction
+                This page is under development.
             </div>
         </div>
     );

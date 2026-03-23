@@ -7,7 +7,7 @@ function Brands(){
             <HeaderOverview />
             <Sidebar />
             <div className="container brands-container">
-                Under construction
+                This page is under development.
             </div>
         </div>
     );
