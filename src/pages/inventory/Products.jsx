@@ -4,7 +4,8 @@ import HeaderOveriew from "../../components/header/Header.jsx";
 import AddProduct from "../../components/features/inventory/AddProduct.jsx";
 import EditProduct from "../../components/features/inventory/EditProduct.jsx";
 import RemoveProduct from '../../components/features/inventory/RemoveModal.jsx';
-import "../../css/Site.css";
+import BASE_URL from "../../hooks/server/config"
+import getStatusClass from '../../hooks/inventory/GetStatus.js';
 import "./Products.css";
 import { 
     plus,
@@ -36,7 +37,7 @@ function Products(){
         if (!window.confirm("Are you sure you want to remove this product?")) return;
 
         try {
-            const response = await fetch(`http://192.168.254.142:5000/api/removeproduct/${productId}`, {
+            const response = await fetch(`${BASE_URL}}/removeproduct/${productId}`, {
             method: "DELETE",
             });
 
@@ -54,7 +55,7 @@ function Products(){
 
     const fetchInventory = async () => {
         try {
-            const response = await fetch("http://192.168.254.142:5000/api/inventory", {
+            const response = await fetch(`${BASE_URL}/inventory`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({}),
@@ -86,6 +87,8 @@ function Products(){
         if (stock < 20) return 'LOW';
         return 'IN-STOCK';
     }
+
+    getStatusClass();
 
     return(
         <>
@@ -121,8 +124,7 @@ function Products(){
                                     )}
                                     style={{
                                     backgroundColor: isSelected ? '#ddd' : ''
-                                    }}
-                                >
+                                }}>
                                     <td>{item.SKU}</td>
                                     <td>{item.prod_name}</td>
                                     <td>{item.brand}</td>
@@ -131,7 +133,11 @@ function Products(){
                                     <td>{item.price}</td>
                                     <td>{item.unit_type}</td>
                                     <td>{item.category}</td>
-                                    <td className="product-status">{item.status}</td>
+                                    <td>
+                                        <div className={`status-container ${getStatusClass(item.stock_quantity)}`}>
+                                            {item.status}
+                                        </div>
+                                    </td>
                                 </tr>
                                 );
                             })}

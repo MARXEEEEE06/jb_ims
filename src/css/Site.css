@@ -17,7 +17,8 @@ body{
   font-family: garet-book, "Segoe UI", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
 }
 
-input {
+input,
+.add-user-input{
   height: 20px;
   width: 95%;
   border: none;
@@ -113,6 +114,44 @@ h1{
 .required:after{
   content: "*";
   color: #FF0000;
+}
+
+.status-container{
+  width: 10rem;
+  font-weight: bold;
+}
+
+/* Green */
+.status-in {
+  width: fit-content;
+  padding: 5px;
+  border-radius: 50px;
+  background-color: #2ecc71;
+}
+
+/* Orange */
+.status-low {
+  width: fit-content;
+  padding: 5px;
+  border-radius: 50px;
+  background-color: #f39c12;
+}
+
+/* Red */
+.status-crit {
+  width: fit-content;
+  padding: 5px;
+  border-radius: 50px;
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+
+.status-out {
+  width: fit-content;
+  padding: 5px;
+  border-radius: 50px;
+  background-color: #000000;
+  color: #ffffff;
 }
 
 table{

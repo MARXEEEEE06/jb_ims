@@ -23,7 +23,8 @@
     transition: 400ms;
 }
 
-.credential-field:hover, .credential-field:focus{
+.credential-field:hover, 
+.credential-field:focus{
     height: 30px;
     border: 2px solid;
 }
@@ -33,7 +34,7 @@
 }
 
 .eye-toggle img{
-    width: 30px;
+    width: 20px;
 }
 
 .login-container button{
@@ -57,4 +58,29 @@
 .login-container button.disabled{
     background-color: #aaa;
     cursor: not-allowed;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper .credential-field {
+    width: 95%;
+    transition: 400ms; /* ✅ make sure transition is on this too */
+}
+
+.password-wrapper .credential-field:hover,
+.password-wrapper .credential-field:focus {
+    height: 30px;
+    border: 2px solid;
+}
+
+.eye-toggle {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 32%;
+    transform: translateY(-32%);
+    transition: 400ms; /* ✅ moves with the input on resize */
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
+import BASE_URL from '../../hooks/server/config';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,7 +18,7 @@ function SupplyChart() {
   useEffect(() => {
     const fetchSupply = async () => {
       try {
-        const response = await fetch('http://192.168.254.142:5000/api/gettopsupply');
+        const response = await fetch(`${BASE_URL}/gettopsupply`);
         const result = await response.json();
         setData(result.map(item => ({
           product: item.prod_name,

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import BASE_URL from "../../../hooks/server/config";
 import AddUser from "../inventory/AddUser";
 import "./AccountManagement.css";
 
@@ -13,7 +14,7 @@ function AccountManagement() {
     // Fetch users from backend API
     const fetchUsers = async () => {
     try {
-        const response = await fetch("http://192.168.254.142:5000/api/getusers");
+        const response = await fetch(`${BASE_URL}/getusers`);
         if (!response.ok) throw new Error("Failed to fetch users");
 
         const data = await response.json();

@@ -1,3 +1,8 @@
 .add-user-input{
     border: 1px solid #000000;
 }
+
+.role-dropdown{
+    width: 30%;
+    height: 100%;
+}

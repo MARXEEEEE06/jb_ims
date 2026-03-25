@@ -1,6 +1,12 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Histogram from "../../components/charts/Histogram.jsx";
 import BarChart from "../../components/charts/BarChart.jsx";
 import { supplyDemandData } from "../../hooks/data/data.js";
+import Sidebar from "../../components/sidebar/Sidebar.jsx";
+import HeaderOveriew from "../../components/header/Header.jsx";
+import useAuth from "../../hooks/UserAuth";
+import BASE_URL from "../../hooks/server/config.js";
 import "./Dashboard.css";
 import "../../css/Site.css";
 import { 
@@ -8,12 +14,6 @@ import {
     supplier2,
     low_stock
 } from "../../assets/ui/Icons";
-import "../../css/Site.css";
-import Sidebar from "../../components/sidebar/Sidebar.jsx";
-import HeaderOveriew from "../../components/header/Header.jsx";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/UserAuth";
 
 function Dashboard() {
     const { user, loading } = useAuth();
@@ -36,7 +36,7 @@ function Dashboard() {
     useEffect(() => {
         const fetchStats = async () => {
         try {
-            const res = await fetch("http://192.168.254.142:5000/api/getprodcount");
+            const res = await fetch(`${BASE_URL}/getprodcount`);
             const data = await res.json();
             setStats(data);
         } catch (error) {

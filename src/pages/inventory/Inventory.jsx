@@ -3,6 +3,9 @@ import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOverview from "../../components/header/Header.jsx";
 import "./Inventory.css";
 
+import BASE_URL from '../../hooks/server/config.js';
+import getStatusClass from '../../hooks/inventory/GetStatus.js';
+
 // Import filter hooks
 import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
 import { useBrandFilter } from '../../hooks/filters/useBrandFilter';
@@ -29,7 +32,7 @@ function Inventory() {
         const fetchInventory = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch("http://192.168.254.142:5000/api/inventory", {
+                const response = await fetch(`${BASE_URL}/inventory`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({}),
@@ -50,6 +53,8 @@ function Inventory() {
 
         fetchInventory();
     }, []);
+
+    getStatusClass();
 
     return (
         <div className="main-container">
@@ -124,7 +129,11 @@ function Inventory() {
                                         <td>{item.variety}</td>
                                         <td>{item.supplier}</td>
                                         <td>{item.stock_quantity}</td>
-                                        <td className="product-status">{item.status}</td>
+                                        <td>
+                                            <div className={`status-container ${getStatusClass(item.stock_quantity)}`}>
+                                                {item.status}
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

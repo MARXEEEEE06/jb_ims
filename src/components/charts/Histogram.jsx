@@ -1,6 +1,7 @@
 // src/components/Histogram.jsx
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import BASE_URL from '../../hooks/server/config';
 import {
   Chart as ChartJS,
   CategoryScale,

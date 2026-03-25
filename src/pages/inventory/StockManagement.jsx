@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import BASE_URL from "../../hooks/server/config";
+import getStatusClass from "../../hooks/inventory/GetStatus";
 import HeaderOveriew from "../../components/header/Header";
 import Sidebar from "../../components/sidebar/Sidebar";
 import "./StockManagement.css";
@@ -9,7 +11,7 @@ function StockManagement(){
     const handleStockChange = async (productId, adjustment) => {
         console.log("productId:", productId, "adjustment:", adjustment); // ✅
         try {
-            const response = await fetch(`http://192.168.254.142:5000/api/stock/${productId}`, {
+            const response = await fetch(`${BASE_URL}/stock/${productId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ adjustment })
@@ -30,7 +32,7 @@ function StockManagement(){
 
     const fetchInventory = async () => {
         try {
-            const response = await fetch("http://192.168.254.142:5000/api/inventory", {
+            const response = await fetch(`${BASE_URL}/inventory`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({}),
@@ -49,6 +51,8 @@ function StockManagement(){
     useEffect(() => {
         fetchInventory(); // still runs on mount
     }, []);
+
+    getStatusClass();
 
     return(
         <div className="main-container">
@@ -81,7 +85,11 @@ function StockManagement(){
                                 onClick={() => handleStockChange(item.product_id, +1)}>+</button>
                             </td>
                             <td>{item.unit_type}</td>
-                            <td className="product-status">{item.status}</td>
+                            <td>
+                                <div className={`status-container ${getStatusClass(item.stock_quantity)}`}>
+                                    {item.status}
+                                </div>
+                            </td>
                         </tr>
                         );
                     })}

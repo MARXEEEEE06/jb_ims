@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BASE_URL from "../../../hooks/server/config";
 import "./AddProduct.css";
 
 function AddProduct({ onClose, onRefresh }){
@@ -15,7 +16,7 @@ function AddProduct({ onClose, onRefresh }){
         e.preventDefault();
         setIsLoading(true);
         try{
-            const response = await fetch("http://192.168.254.142:5000/api/add-product",{
+            const response = await fetch(`${BASE_URL}/add-product`,{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

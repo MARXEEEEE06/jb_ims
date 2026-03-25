@@ -30,6 +30,6 @@ app.use('/api/removeproduct', removeProductRoute);
 app.use('/api/gettopsupply', getTopSupplyRoute);
 app.use('/api/stock', stockChangeRoute);
 
-app.listen(5000, '192.168.254.142', () => {
+app.listen(5000, '0.0.0.0', () => {
   console.log('Server running on port 5000');
 });

@@ -1,7 +1,8 @@
 import React, { useState, setShow } from 'react';
 import { useNavigate } from 'react-router-dom';
-import "./Login.css";
+import BASE_URL from '../../hooks/server/config';
 import { eyeShowToggle, eyeHideToggle } from "../../assets/ui/Icons";
+import "./Login.css";
 
 function Login(){
     const [username, setUserName] = useState('');
@@ -14,7 +15,7 @@ function Login(){
         e.preventDefault();
         setIsLoading(true);
         try{
-            const response = await fetch("http://192.168.254.142:5000/api/login",{
+            const response = await fetch(`${BASE_URL}/login`,{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -58,14 +59,18 @@ function Login(){
                         placeholder='Enter username'
                         required />
                     <label>Password:</label>
-                    <input
-                        className='credential-field'
-                        type={eyeToggle ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder='Enter Password'
-                        required />
-                    <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>{eyeToggle ? (<img src={ eyeShowToggle }/>) : (<img src={ eyeHideToggle }/>)}</a>
+                    <div className="password-wrapper">
+                        <input
+                            className='credential-field'
+                            type={eyeToggle ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder='Enter Password'
+                            required />
+                        <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>
+                            {eyeToggle ? <img src={eyeShowToggle}/> : <img src={eyeHideToggle}/>}
+                        </a>
+                    </div>
                 </div>
                 <button disabled={isloading}>
                     {isloading ? "Logging in..." : "Login"}

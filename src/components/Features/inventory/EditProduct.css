@@ -1,0 +1,19 @@
+.modal-buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    gap: 10px;
+}
+
+.cancel-btn,
+.remove-btn{
+    border-radius: 50px;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+}
+
+.remove-btn{
+    background-color: #ff0000;
+    color: #ffffff;
+}

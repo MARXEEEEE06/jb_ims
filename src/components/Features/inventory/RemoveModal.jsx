@@ -1,11 +1,13 @@
 import React from "react";
+import BASE_URL from "../../../hooks/server/config";
+import "./EditProduct.css";
 
 function RemoveProduct({ item, onClose, onRemoved }) {
 
     const handleRemove = async () => {
         try {
             const response = await fetch(
-                `http://192.168.254.142:5000/api/removeproduct/${item.product_id}`,
+                `${BASE_URL}/removeproduct/${item.product_id}`,
                 {
                     method: "DELETE",
                 }
@@ -36,8 +38,8 @@ function RemoveProduct({ item, onClose, onRemoved }) {
             </div>
 
             <div className="modal-buttons">
-                <button onClick={handleRemove}>Remove</button>
-                <button onClick={onClose}>Cancel</button>
+                <button className="remove-btn" onClick={handleRemove}>Remove</button>
+                <button className="cancel-btn" onClick={onClose}>Cancel</button>
             </div>
         </div>
     );

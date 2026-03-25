@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BASE_URL from "../../../hooks/server/config";
 import "./AddUser.css"
 
 function AddUser({ onClose, onRefresh }) {
@@ -14,7 +15,7 @@ function AddUser({ onClose, onRefresh }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://192.168.254.142:5000/api/adduser", {
+      const response = await fetch(`${BASE_URL}/adduser`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,10 +61,10 @@ function AddUser({ onClose, onRefresh }) {
           <input required className="add-user-input" type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter email" />
 
           <label className="required" htmlFor="contact">Contact Number</label>
-          <input required className="add-user-input" type="text" id="contact" value={contactNum} onChange={(e) => setContactNum(e.target.value)} placeholder="Enter contact number" />
+          <input required className="add-user-input" type="number" id="contact" value={contactNum} onChange={(e) => setContactNum(e.target.value)} placeholder="Enter contact number" />
 
           <label className="required" htmlFor="role">Role</label>
-          <select id="role" value={roleId} onChange={(e) => setRoleId(e.target.value)}>
+          <select id="role" className="add-user-input role-dropdown" value={roleId} onChange={(e) => setRoleId(e.target.value)}>
             <option value="1">Manager</option>
             <option value="2">Staff</option>
           </select>
