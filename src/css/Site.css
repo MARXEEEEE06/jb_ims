@@ -52,6 +52,7 @@ h1{
 .header{ grid-area: header; }
 .sidebar{ grid-area: sidebar; }
 .overview{ grid-area: content; }
+.container{ grid-area: content; }
 
 .input-search{
   border-radius: 50px;

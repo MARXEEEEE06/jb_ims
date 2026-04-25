@@ -1,56 +1,62 @@
 const express = require('express');
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const mysql = require('mysql2');
 const router = express.Router();
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
-// Database connection details
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'marx',
-  password: '12345678',
-  database: 'ims_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
-db.connect((err) => {
-  if (err) {
-    throw err;
-  }
+db.connect(err => {
+  if (err) throw err;
   console.log('Inventory connected to MySQL Database');
 });
 
-function getStatus(stock) {
-  if (stock === 0) return 'OUT OF STOCK';
-  if (stock < 10) return 'CRITICAL';
-  if (stock < 20) return 'LOW';
+function getStatus(quantity) {
+  if (quantity === 0) return 'OUT OF STOCK';
+  if (quantity < 10) return 'CRITICAL';
+  if (quantity < 20) return 'LOW';
   return 'IN-STOCK';
 }
 
+// POST /api/inventory
 router.post('/', (req, res) => {
-  const sql = `SELECT * FROM prod_dtls`;
+  const sql = `
+    SELECT 
+      v.variant_id,
+      v.sku,
+      v.variant,
+      v.price,
+      v.quantity,
+      p.product_id,
+      p.product_name,
+      p.brand,
+      c.category_type,
+      u.unit_type
+    FROM VARIANTS v
+    JOIN PRODUCTS p ON v.product_id = p.product_id
+    LEFT JOIN CATEGORY c ON p.category_id = c.category_id
+    LEFT JOIN UNIT u ON v.unit_id = u.unit_id
+  `;
 
   db.query(sql, (err, results) => {
     if (err) {
-      console.error('SQL Error: ', err);
+      console.error('SQL Error:', err);
       return res.status(500).json({ error: 'Server error' });
     }
 
-    console.log('Query Results:', results);
-
-    if (results.length > 0) {
-      const items = results.map(item => ({
-        ...item,
-        status: getStatus(item.stock_quantity)
-      }));
-
-      res.json(items);
-    } else {
-      res.status(404).json({ error: 'Item not found.' });
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'No items found.' });
     }
+
+    const items = results.map(item => ({
+      ...item,
+      status: getStatus(item.quantity)
+    }));
+
+    res.json(items);
   });
 });
 

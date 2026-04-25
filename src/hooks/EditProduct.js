@@ -1,86 +1,115 @@
 const express = require('express');
-const mysql = require('mysql');
-
+const mysql = require('mysql2');
 const router = express.Router();
 
-// Database connection
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'marx',
-  password: '12345678',
-  database: 'ims_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect(err => {
   if (err) throw err;
-  console.log('EditProducts connected to MySQL Database');
+  console.log('EditProduct connected to MySQL Database');
 });
 
-// SKU generator
-function generateSKU(prod_name, brand, variety, supplier) {
-  const p = prod_name.substring(0,3).toUpperCase();
-  const b = brand.substring(0,3).toUpperCase();
-  const v = variety.substring(0,2).toUpperCase();
-  const s = supplier.substring(0,3).toUpperCase();
-  return `${p}${b}${v}-${s}`;
+function generateSKU(product_name, brand, variant) {
+  const p = product_name.substring(0, 3).toUpperCase();
+  const b = brand.substring(0, 3).toUpperCase();
+  const v = variant.substring(0, 2).toUpperCase();
+  return `${p}${b}${v}-${Date.now().toString().slice(-4)}`;
 }
 
+// POST /api/edit-product
 router.post('/', (req, res) => {
-    const {
-        product_id,
-        prod_name = 'Null',
-        price = 0,
-        stock_quantity = 0,
-        brand = 'Null',
-        variety = 'Null',
-        supplier = 'Null',
-        category = 'Null',
-        unit_type = 'Null',
-    } = req.body;
+  const {
+    variant_id,
+    product_id,
+    product_name,
+    brand,
+    category_type,
+    variant,
+    price,
+    quantity,
+    unit_type,
+  } = req.body;
 
-    if (!prod_name || !brand || !variety || !supplier || !price) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
+  if (!variant_id || !product_id || !product_name || !brand || !category_type || !variant || !price || !unit_type) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
 
-    const sku = generateSKU(prod_name, brand, variety, supplier);
+  // Step 1: Get or insert category
+  db.query(
+    `SELECT category_id FROM CATEGORY WHERE category_type = ?`,
+    [category_type],
+    (err, catResults) => {
+      if (err) return res.status(500).json({ error: 'Server error' });
 
-    const sql = `
-      UPDATE prod_dtls
-      SET 
-        prod_name = ?,
-        price = ?,
-        stock_quantity = ?,
-        SKU = ?,
-        brand = ?,
-        variety = ?,
-        supplier = ?,
-        category = ?,
-        unit_type = ?
-      WHERE product_id = ?
-    `;
+      const updateProduct = (category_id) => {
+        // Step 2: Update PRODUCTS
+        db.query(
+          `UPDATE PRODUCTS SET product_name = ?, brand = ?, category_id = ? WHERE product_id = ?`,
+          [product_name, brand, category_id, product_id],
+          (err) => {
+            if (err) return res.status(500).json({ error: 'Server error' });
 
-    db.query(
-      sql,
-      [
-        prod_name || 'Null',
-        Number(price) || 0,
-        Number(stock_quantity) || 0,
-        sku || 'Null',
-        brand || 'Null',
-        variety || 'Null',
-        supplier || 'Null',
-        category || 'Null',
-        unit_type || 'Null',
-        product_id // <-- this is new
-      ],
-      (err, results) => {
-        if (err) {
-          console.error('SQL Error: ', err);
-          return res.status(500).json({ error: 'Server error' });
-        }
-        res.json({ message: 'Product edited', SKU: sku, id: results.insertId });
+            // Step 3: Get or insert unit
+            db.query(
+              `SELECT unit_id FROM UNIT WHERE unit_type = ?`,
+              [unit_type],
+              (err, unitResults) => {
+                if (err) return res.status(500).json({ error: 'Server error' });
+
+                const updateVariant = (unit_id) => {
+                  const sku = generateSKU(product_name, brand, variant);
+
+                  // Step 4: Update VARIANTS
+                  db.query(
+                    `UPDATE VARIANTS SET unit_id = ?, sku = ?, quantity = ?, price = ?, variant = ? WHERE variant_id = ?`,
+                    [unit_id, sku, Number(quantity), Number(price), variant, variant_id],
+                    (err) => {
+                      if (err) {
+                        console.error('SQL Error:', err);
+                        return res.status(500).json({ error: 'Server error' });
+                      }
+                      res.json({ message: 'Product updated', sku });
+                    }
+                  );
+                };
+
+                if (unitResults.length > 0) {
+                  updateVariant(unitResults[0].unit_id);
+                } else {
+                  db.query(
+                    `INSERT INTO UNIT (unit_type) VALUES (?)`,
+                    [unit_type],
+                    (err, unitResult) => {
+                      if (err) return res.status(500).json({ error: 'Server error' });
+                      updateVariant(unitResult.insertId);
+                    }
+                  );
+                }
+              }
+            );
+          }
+        );
+      };
+
+      if (catResults.length > 0) {
+        updateProduct(catResults[0].category_id);
+      } else {
+        db.query(
+          `INSERT INTO CATEGORY (category_type) VALUES (?)`,
+          [category_type],
+          (err, catResult) => {
+            if (err) return res.status(500).json({ error: 'Server error' });
+            updateProduct(catResult.insertId);
+          }
+        );
       }
-    );
+    }
+  );
 });
 
 module.exports = router;

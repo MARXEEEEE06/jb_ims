@@ -17,15 +17,15 @@ function Inventory() {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // 1️⃣ Start from raw items
+    // Start from raw items
     const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
-    // 2️⃣ Apply brand filter on keywordFiltered
+    // Apply brand filter on keywordFiltered
     const { filtered: brandFiltered, brand, setBrand, brands } = useBrandFilter(keywordFiltered, items);
-    // 3️⃣ Apply supplier filter on brandFiltered
+    // Apply supplier filter on brandFiltered
     const { filtered: supplierFiltered, supplier, setSupplier, suppliers } = useSupplierFilter(brandFiltered, items);
-    // 4️⃣ Apply status filter on supplierFiltered
+    // Apply status filter on supplierFiltered
     const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'status');
-    // 5️⃣ Apply sorting on statusFiltered
+    // Apply sorting on statusFiltered
     const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
     useEffect(() => {

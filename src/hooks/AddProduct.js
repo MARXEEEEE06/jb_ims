@@ -1,81 +1,115 @@
 const express = require('express');
-const mysql = require('mysql');
-
+const mysql = require('mysql2');
 const router = express.Router();
 
-// Database connection
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'marx',
-  password: '12345678',
-  database: 'ims_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect(err => {
   if (err) throw err;
-  console.log('AddProducts connected to MySQL Database');
+  console.log('AddProduct connected to MySQL Database');
 });
 
-// SKU generator
-function generateSKU(prod_name, brand, variety, supplier) {
-  const p = prod_name.substring(0,3).toUpperCase();
-  const b = brand.substring(0,3).toUpperCase();
-  const v = variety.substring(0,2).toUpperCase();
-  const s = supplier.substring(0,3).toUpperCase();
-  return `${p}${b}${v}-${s}`;
+function generateSKU(product_name, brand, variant) {
+  const p = product_name.substring(0, 3).toUpperCase();
+  const b = brand.substring(0, 3).toUpperCase();
+  const v = variant.substring(0, 2).toUpperCase();
+  return `${p}${b}${v}-${Date.now().toString().slice(-4)}`;
 }
 
-// Insert product route
+// POST /api/add-product
 router.post('/', (req, res) => {
   const {
-    prod_name = 'Null',
-    price = 0,
-    stock_quantity = 0,
-    brand = 'Null',
-    variety = 'Null',
-    supplier = 'Null',
-    category = 'Null',
-    unit_type = 'Null',
+    product_name,
+    brand,
+    category_type,
+    variant,
+    price,
+    quantity = 0,
+    unit_type,
   } = req.body;
 
-  if (!prod_name || !brand || !variety || !supplier || !price) {
+  if (!product_name || !brand || !category_type || !variant || !price || !unit_type) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const sku = generateSKU(prod_name, brand, variety, supplier);
+  // Step 1: Get or insert category
+  db.query(
+    `SELECT category_id FROM CATEGORY WHERE category_type = ?`,
+    [category_type],
+    (err, catResults) => {
+      if (err) return res.status(500).json({ error: 'Server error' });
 
-  const sql = `
-  INSERT INTO prod_dtls (
-    prod_name,
-    price,
-    stock_quantity,
-    SKU,
-    brand,
-    variety,
-    supplier,
-    category,
-    unit_type
-  )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+      const insertProduct = (category_id) => {
+        // Step 2: Insert into PRODUCTS
+        db.query(
+          `INSERT INTO PRODUCTS (product_name, brand, category_id) VALUES (?, ?, ?)`,
+          [product_name, brand, category_id],
+          (err, prodResult) => {
+            if (err) return res.status(500).json({ error: 'Server error' });
 
-  db.query(sql, [
-    prod_name || 'Null',
-    Number(price) || 0,
-    Number(stock_quantity) || 0,
-    sku || 'Null',
-    brand || 'Null',
-    variety || 'Null',
-    supplier || 'Null',
-    category || 'Null',
-    unit_type || 'Null'
-  ], (err, results) => {
-    if (err) {
-      console.error('SQL Error:', err);
-      return res.status(500).json({ error: 'Server error' });
+            const product_id = prodResult.insertId;
+
+            // Step 3: Get or insert unit
+            db.query(
+              `SELECT unit_id FROM UNIT WHERE unit_type = ?`,
+              [unit_type],
+              (err, unitResults) => {
+                if (err) return res.status(500).json({ error: 'Server error' });
+
+                const insertVariant = (unit_id) => {
+                  const sku = generateSKU(product_name, brand, variant);
+
+                  // Step 4: Insert into VARIANTS
+                  db.query(
+                    `INSERT INTO VARIANTS (product_id, unit_id, sku, quantity, price, variant) VALUES (?, ?, ?, ?, ?, ?)`,
+                    [product_id, unit_id, sku, Number(quantity), Number(price), variant],
+                    (err, varResult) => {
+                      if (err) {
+                        console.error('SQL Error:', err);
+                        return res.status(500).json({ error: 'Server error' });
+                      }
+                      res.json({ message: 'Product added', sku, variant_id: varResult.insertId });
+                    }
+                  );
+                };
+
+                if (unitResults.length > 0) {
+                  insertVariant(unitResults[0].unit_id);
+                } else {
+                  db.query(
+                    `INSERT INTO UNIT (unit_type) VALUES (?)`,
+                    [unit_type],
+                    (err, unitResult) => {
+                      if (err) return res.status(500).json({ error: 'Server error' });
+                      insertVariant(unitResult.insertId);
+                    }
+                  );
+                }
+              }
+            );
+          }
+        );
+      };
+
+      if (catResults.length > 0) {
+        insertProduct(catResults[0].category_id);
+      } else {
+        db.query(
+          `INSERT INTO CATEGORY (category_type) VALUES (?)`,
+          [category_type],
+          (err, catResult) => {
+            if (err) return res.status(500).json({ error: 'Server error' });
+            insertProduct(catResult.insertId);
+          }
+        );
+      }
     }
-    res.json({ message: 'Product added', SKU: sku, id: results.insertId });
-  });
+  );
 });
 
 module.exports = router;

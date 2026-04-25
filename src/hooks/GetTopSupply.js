@@ -1,14 +1,14 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 const router = express.Router();
 
 // Database connection
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'marx',
-  password: '12345678',
-  database: 'ims_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect(err => {

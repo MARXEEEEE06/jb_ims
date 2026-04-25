@@ -39,7 +39,7 @@ function Login(){
                 alert(data.error);
             }
         }catch(error){
-            alert("Server Error")
+            alert("Frontend Server Error")
         }
         setIsLoading(false);
     };

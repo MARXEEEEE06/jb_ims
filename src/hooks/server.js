@@ -1,4 +1,5 @@
 // server.js
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -17,6 +18,8 @@ const addUserRoute = require('./AddUser')
 const removeProductRoute = require('./RemoveProduct')
 const getTopSupplyRoute = require('./GetTopSupply')
 const stockChangeRoute = require('./StockChange')
+const ordersRoute = require('./Orders')
+const suppliersRoute = require('./Suppliers')
 
 app.use('/api/login', loginRoute);
 app.use('/api/getprodcount', getProdCountRoute);
@@ -29,6 +32,8 @@ app.use('/api/adduser', addUserRoute);
 app.use('/api/removeproduct', removeProductRoute);
 app.use('/api/gettopsupply', getTopSupplyRoute);
 app.use('/api/stock', stockChangeRoute);
+app.use('/api/orders', ordersRoute);
+app.use('/api/suppliers', suppliersRoute);
 
 app.listen(5000, '0.0.0.0', () => {
   console.log('Server running on port 5000');

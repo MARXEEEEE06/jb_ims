@@ -8,7 +8,7 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
         "/inventory": "Inventory",
         "/products": "Products",
         "/brands": "Brands",
-        "/supplier": "Supplier",
+        "/suppliers": "Supplier",
         "/stocks": "Stock Management",
         "/reports": "Reports/Logs",
         "/settings": "Settings",
@@ -19,7 +19,7 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
 
     const pathname = window.location.pathname;
     const headerTitle = headerTitles[pathname] || "Page";
-    const hideSearchOn = ["/dashboard", "/settings"];
+    const hideSearchOn = ["/dashboard", "/settings", "/suppliers"];
     const showSearch = !hideSearchOn.includes(pathname);
 
     return (

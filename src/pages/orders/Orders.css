@@ -1,0 +1,118 @@
+.orders-container {
+    grid-area: content;
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.orders-products {
+    flex: 2;
+    overflow-y: auto;
+}
+
+.orders-summary {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #e6edf0;
+    border-radius: 15px;
+    padding: 15px;
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.cart-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 10px;
+    padding: 6px 10px;
+    gap: 8px;
+}
+
+.qty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty-control button {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: #1f2933;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.order-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-top: 1px solid #ccc;
+    padding-top: 8px;
+}
+
+.order-totals div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.grand-total {
+    font-family: garet-heavy;
+    font-size: 18px;
+}
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.change-display {
+    font-family: garet-heavy;
+    color: green;
+}
+
+.submit-order-btn {
+    margin-top: auto;
+    padding: 12px;
+    background: #1f2933;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 400ms;
+}
+
+.submit-order-btn:hover {
+    font-size: 18px;
+    font-family: garet-heavy;
+}

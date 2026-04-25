@@ -21,7 +21,7 @@ function useAuth() {
                 setUser(null);
             }
         }
-        setLoading(false); // ✅ was missing
+        setLoading(false);
     }, []);
 
     const logout = () => {
@@ -29,7 +29,7 @@ function useAuth() {
         setUser(null);
     };
 
-    return { user, logout, loading }; // ✅ was missing loading
+    return { user, logout, loading };
 }
 
 export default useAuth;
