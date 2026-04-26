@@ -3,10 +3,10 @@ import BASE_URL from "../../../hooks/server/config";
 import "./AddProduct.css";
 
 function AddProduct({ onClose, onRefresh }){
-    const [prod_name, setProduct] = useState(''); 
+    const [product_name, setProduct] = useState(''); 
     const [price, setPrice] = useState(''); 
     const [brand, setBrand] = useState(''); 
-    const [variety, setVariety] = useState(''); 
+    const [variant, setvariant] = useState(''); 
     const [supplier, setSupplier] = useState(''); 
     const [category, setCategory] = useState(''); 
     const [unit, setUnit] = useState(''); 
@@ -22,14 +22,13 @@ function AddProduct({ onClose, onRefresh }){
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    prod_name,
-                    price: Number(price) || 0,
+                    product_name,
                     brand,
-                    variety,
-                    supplier,
                     category,
+                    variant,
+                    price: Number(price) || 0,
                     unit_type: unit,  // must be provided
-                    stock_quantity: 0 // optional, backend default
+                    quantity: 0 // optional, backend default
                 })
             });
             const data = await response.json();
@@ -43,7 +42,7 @@ function AddProduct({ onClose, onRefresh }){
                 alert(data.error);
             }
         }catch(error){
-            alert("Server Error")
+            alert("JSX Server Error")
         }
         setIsLoading(false);
     };
@@ -69,7 +68,7 @@ function AddProduct({ onClose, onRefresh }){
                     <input required type="number" id="price" class="input-product-detail" onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" />
                     
                     <label className="required" for="variant">Variant</label>
-                    <input required type="text" id="product" class="input-product-detail" onChange={(e) => setVariety(e.target.value)} placeholder="e.g: 1x2, 2x2, 1/4, 3/4" />
+                    <input required type="text" id="product" class="input-product-detail" onChange={(e) => setvariant(e.target.value)} placeholder="e.g: 1x2, 2x2, 1/4, 3/4" />
                     
                     <label className="required" for="category">Category</label>
                     <input required type="text" id="category" class="input-product-detail" onChange={(e) => setCategory(e.target.value)} placeholder="e.g: Cement, Sand, Tubular" />

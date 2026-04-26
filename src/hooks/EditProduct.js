@@ -73,7 +73,27 @@ router.post('/', (req, res) => {
                         console.error('SQL Error:', err);
                         return res.status(500).json({ error: 'Server error' });
                       }
-                      res.json({ message: 'Product updated', sku });
+
+                      // Fetch updated full product to return
+                      db.query(
+                        `SELECT p.product_id, p.product_name, p.brand,
+                                c.category_type, c.category_id,
+                                v.variant_id, v.sku, v.variant, v.price, v.quantity,
+                                u.unit_type, u.unit_id,
+                                si.name AS supplier
+                        FROM PRODUCTS p
+                        LEFT JOIN CATEGORY c ON p.category_id = c.category_id
+                        LEFT JOIN VARIANTS v ON v.product_id = p.product_id
+                        LEFT JOIN UNIT u ON v.unit_id = u.unit_id
+                        LEFT JOIN supplier_items sim ON p.product_id = sim.product_id
+                        LEFT JOIN supplier_info si ON sim.sup_info_id = si.sup_info_id
+                        WHERE v.variant_id = ?`,
+                        [variant_id],
+                        (err, rows) => {
+                          if (err) return res.status(500).json({ error: 'Server error' });
+                          res.json({ message: 'Product updated', sku, product: rows[0] });
+                        }
+                      );
                     }
                   );
                 };

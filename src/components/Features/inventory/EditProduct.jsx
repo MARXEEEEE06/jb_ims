@@ -3,12 +3,12 @@ import BASE_URL from "../../../hooks/server/config";
 import "./EditProduct.css";
 
 function EditProduct({ item, onClose, onRefresh }){
-    const [prod_name, setProduct] = useState(item?.prod_name || '');
+    const [product_name, setProduct] = useState(item?.product_name || '');
     const [brand, setBrand] = useState(item?.brand || '');
     const [supplier, setSupplier] = useState(item?.supplier || '');
     const [price, setPrice] = useState(item?.price || 0);
-    const [variety, setVariety] = useState(item?.variety || '');
-    const [category, setCategory] = useState(item?.category || '');
+    const [variant, setvariant] = useState(item?.variant || '');
+    const [category, setCategory] = useState(item?.category_type || '');
     const [unit, setUnit] = useState(item?.unit_type || '');
     const [isloading, setIsLoading] = useState(false);
 
@@ -23,15 +23,16 @@ function EditProduct({ item, onClose, onRefresh }){
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    variant_id: item.variant_id,  // ❌ also missing entirely
                     product_id: item.product_id,
-                    prod_name,
+                    product_name,
                     price: Number(price) || 0,
                     brand,
-                    variety,
+                    variant,
                     supplier,
-                    category,
-                    unit_type: unit,  // must be provided
-                    stock_quantity: item.stock_quantity // optional, backend default
+                    category_type: category,      // ✅
+                    unit_type: unit,
+                    quantity: item.quantity
                 })
             });
             const data = await response.json();
@@ -52,7 +53,7 @@ function EditProduct({ item, onClose, onRefresh }){
 
     useEffect(() => {
         if (item) {
-        setProduct(item.prod_name);
+        setProduct(item.product_name);
         }
     }, [item]);
     
@@ -65,7 +66,7 @@ function EditProduct({ item, onClose, onRefresh }){
             <div className="edit-product-form">
                 <form>
                     <label className="required" for="product">Product</label>
-                    <input required type="text" id="product" class="input-product-detail" value={prod_name} onChange={(e) => setProduct(e.target.value)} placeholder="e.g: Cement, Plywood" />
+                    <input required type="text" id="product" class="input-product-detail" value={product_name} onChange={(e) => setProduct(e.target.value)} placeholder="e.g: Cement, Plywood" />
                     
                     <label className="required" for="brand">Brand</label>
                     <input required type="text" id="brand" class="input-product-detail" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="e.g: Davis, Republic Portland" />
@@ -77,7 +78,7 @@ function EditProduct({ item, onClose, onRefresh }){
                     <input required type="number" id="price" class="input-product-detail" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" />
                     
                     <label className="required" for="variant">Variant</label>
-                    <input required type="text" id="product" class="input-product-detail" value={variety} onChange={(e) => setVariety(e.target.value)} placeholder="e.g: 1x2, 2x2, 1/4, 3/4" />
+                    <input required type="text" id="product" class="input-product-detail" value={variant} onChange={(e) => setvariant(e.target.value)} placeholder="e.g: 1x2, 2x2, 1/4, 3/4" />
                     
                     <label className="required" for="category">Category</label>
                     <input required type="text" id="category" class="input-product-detail" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g: Cement, Sand, Tubular" />

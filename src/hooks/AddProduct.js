@@ -26,23 +26,28 @@ router.post('/', (req, res) => {
   const {
     product_name,
     brand,
-    category_type,
+    category,
     variant,
     price,
-    quantity = 0,
     unit_type,
+    quantity = 0,
   } = req.body;
 
-  if (!product_name || !brand || !category_type || !variant || !price || !unit_type) {
+  if (!product_name || 
+    !brand || 
+    !category || 
+    !variant || 
+    !price || 
+    !unit_type) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   // Step 1: Get or insert category
   db.query(
     `SELECT category_id FROM CATEGORY WHERE category_type = ?`,
-    [category_type],
+    [category],
     (err, catResults) => {
-      if (err) return res.status(500).json({ error: 'Server error' });
+      if (err) return res.status(500).json({ error: 'Backend Server error' });
 
       const insertProduct = (category_id) => {
         // Step 2: Insert into PRODUCTS
@@ -50,7 +55,7 @@ router.post('/', (req, res) => {
           `INSERT INTO PRODUCTS (product_name, brand, category_id) VALUES (?, ?, ?)`,
           [product_name, brand, category_id],
           (err, prodResult) => {
-            if (err) return res.status(500).json({ error: 'Server error' });
+            if (err) return res.status(500).json({ error: 'Insert Server error' });
 
             const product_id = prodResult.insertId;
 
@@ -59,7 +64,7 @@ router.post('/', (req, res) => {
               `SELECT unit_id FROM UNIT WHERE unit_type = ?`,
               [unit_type],
               (err, unitResults) => {
-                if (err) return res.status(500).json({ error: 'Server error' });
+                if (err) return res.status(500).json({ error: 'Unit Server error' });
 
                 const insertVariant = (unit_id) => {
                   const sku = generateSKU(product_name, brand, variant);
@@ -71,7 +76,7 @@ router.post('/', (req, res) => {
                     (err, varResult) => {
                       if (err) {
                         console.error('SQL Error:', err);
-                        return res.status(500).json({ error: 'Server error' });
+                        return res.status(500).json({ error: 'Variant Server error' });
                       }
                       res.json({ message: 'Product added', sku, variant_id: varResult.insertId });
                     }
@@ -85,7 +90,7 @@ router.post('/', (req, res) => {
                     `INSERT INTO UNIT (unit_type) VALUES (?)`,
                     [unit_type],
                     (err, unitResult) => {
-                      if (err) return res.status(500).json({ error: 'Server error' });
+                      if (err) return res.status(500).json({ error: 'Unit Insert Server error' });
                       insertVariant(unitResult.insertId);
                     }
                   );
@@ -101,9 +106,9 @@ router.post('/', (req, res) => {
       } else {
         db.query(
           `INSERT INTO CATEGORY (category_type) VALUES (?)`,
-          [category_type],
+          [category],
           (err, catResult) => {
-            if (err) return res.status(500).json({ error: 'Server error' });
+            if (err) return res.status(500).json({ error: 'Category Insert Server error' });
             insertProduct(catResult.insertId);
           }
         );

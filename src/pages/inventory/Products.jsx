@@ -125,16 +125,16 @@ function Products(){
                                     style={{
                                     backgroundColor: isSelected ? '#ddd' : ''
                                 }}>
-                                    <td>{item.SKU}</td>
-                                    <td>{item.prod_name}</td>
+                                    <td>{item.sku}</td>
+                                    <td>{item.product_name}</td>
                                     <td>{item.brand}</td>
-                                    <td>{item.variety}</td>
-                                    <td>{item.supplier}</td>
+                                    <td>{item.variant}</td>
+                                    <td>N/A</td>  {/* supplier isn't in your query, handle it or add it */}
                                     <td>{item.price}</td>
                                     <td>{item.unit_type}</td>
-                                    <td>{item.category}</td>
+                                    <td>{item.category_type}</td>
                                     <td>
-                                        <div className={`status-container ${getStatusClass(item.stock_quantity)}`}>
+                                        <div className={`status-container ${getStatusClass(item.quantity)}`}>
                                             {item.status}
                                         </div>
                                     </td>

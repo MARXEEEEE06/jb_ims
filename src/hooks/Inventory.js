@@ -34,11 +34,14 @@ router.post('/', (req, res) => {
       p.product_name,
       p.brand,
       c.category_type,
-      u.unit_type
+      u.unit_type,
+      si.name AS supplier
     FROM VARIANTS v
     JOIN PRODUCTS p ON v.product_id = p.product_id
     LEFT JOIN CATEGORY c ON p.category_id = c.category_id
     LEFT JOIN UNIT u ON v.unit_id = u.unit_id
+    LEFT JOIN supplier_items sim ON p.product_id = sim.product_id
+    LEFT JOIN supplier_info si ON sim.sup_info_id = si.sup_info_id
   `;
 
   db.query(sql, (err, results) => {
