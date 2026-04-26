@@ -8,7 +8,7 @@ import Suppliers from "./pages/supplier/Supplier";
 import StockManagement from "./pages/inventory/StockManagement";
 import Reports from "./pages/reports/Reports";
 import Settings from "./pages/settings/Settings";
-import AccountManagement from "./components/features/settings/AccountManagement";
+import AccountManagement from "./components/features/settings/AccountManagement.jsx";
 import Security from "./components/features/settings/Security";
 import AccountDetails from "./components/features/settings/AccountDetails";
 
