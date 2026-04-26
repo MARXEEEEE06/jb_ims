@@ -54,7 +54,7 @@ function Supplier() {
                 <HeaderOveriew />
                 <Sidebar />
                 <div className="container suppliers-container">
-                    <div className="suppliers-table">
+                    <div className="item-table">
                         <table>
                             <thead>
                                 <tr>

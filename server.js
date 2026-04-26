@@ -9,13 +9,15 @@ app.use(cors());
 app.use(express.json());
 
 const loginRoute = require('./src/hooks/Login');
-const getProdCountRoute = require('./src/hooks/GetProdCount');
 const authRoute = require('./src/hooks/Auth');
+const getUsersRoute = require('./src/hooks/GetUsers');
+const addUserRoute = require('./src/hooks/AddUser');
+const changePasswordRoute = require('./src/hooks/ChangePassword.js');
+
+const getProdCountRoute = require('./src/hooks/GetProdCount');
 const inventoryRoute = require('./src/hooks/Inventory');
 const addProductRoute = require('./src/hooks/AddProduct');
 const editProductRoute = require('./src/hooks/EditProduct');
-const getUsersRoute = require('./src/hooks/GetUsers');
-const addUserRoute = require('./src/hooks/AddUser');
 const removeProductRoute = require('./src/hooks/RemoveProduct');
 const getTopSupplyRoute = require('./src/hooks/GetTopSupply');
 const stockChangeRoute = require('./src/hooks/StockChange');
@@ -34,6 +36,7 @@ app.use('/api/login', loginRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/getusers', getUsersRoute);
 app.use('/api/adduser', addUserRoute);
+app.use('/api/changepassword', changePasswordRoute);
 
 app.use('/api/gettopsupply', getTopSupplyRoute);
 app.use('/api/stock', stockChangeRoute);

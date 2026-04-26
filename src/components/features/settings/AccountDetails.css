@@ -1,0 +1,10 @@
+/* Add to Settings.css */
+.account-details-form {
+    padding: 20px;
+}
+
+.account-details-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-family: garet-book;
+}
