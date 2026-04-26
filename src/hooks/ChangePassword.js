@@ -21,7 +21,7 @@ router.post("/", verifyToken, (req, res) => {
   }
 
   if (newPassword !== confirmPassword) {
-    logActivity(userId, "PASSWORD_CHANGE_FAILED", "user", userId, {
+    logActivity(userId, "Password Change Failed", "user", userId, {
       reason: "Passwords do not match"
     });
 
@@ -36,7 +36,7 @@ router.post("/", verifyToken, (req, res) => {
   if (!strongPassword.test(newPassword)) {
     return res.status(400).json({
       error:
-        "Password must be at least 8 characters and contain number + symbol."
+        "Password must be at least 8 characters and contain at least 1 number and 1 symbol (e.g. %$#^!)."
     });
   }
 
@@ -53,7 +53,7 @@ router.post("/", verifyToken, (req, res) => {
     }
 
     if (results.length === 0) {
-      logActivity(userId, "PASSWORD_CHANGE_FAILED", "user", userId, {
+      logActivity(userId, "Password Change Failed", "user", userId, {
         reason: "Wrong current password"
       });
 
@@ -75,7 +75,7 @@ router.post("/", verifyToken, (req, res) => {
         });
       }
 
-      logActivity(userId, "PASSWORD_CHANGED", "user", userId, {
+      logActivity(userId, "Password Changed", "user", userId, {
         changedBy: userId
       });
 

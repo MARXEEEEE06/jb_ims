@@ -11,6 +11,7 @@ import Settings from "./pages/settings/Settings.jsx";
 import AccountManagement from "./components/features/settings/AccountManagement.jsx";
 import Security from "./components/features/settings/Security.jsx";
 import AccountDetails from "./components/features/settings/AccountDetails.jsx";
+import RequireAccess from "./components/auth/RequireAccess.jsx";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -20,17 +21,17 @@ function app(){
       <Routes>
 
         <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard/>} />
-        <Route path="/inventory" element={<Inventory/>} />
-        <Route path="/products" element={<Products/>} />
-        <Route path="/order" element={<Order />} />
-        <Route path="/brands" element={<Brands/>} />
-        <Route path="/suppliers" element={<Suppliers/>} />
-        <Route path="/stocks" element={<StockManagement/>} />
-        <Route path="/reports" element={<Reports/>} />
+        <Route path="/dashboard" element={<RequireAccess><Dashboard/></RequireAccess>} />
+        <Route path="/inventory" element={<RequireAccess><Inventory/></RequireAccess>} />
+        <Route path="/products" element={<RequireAccess><Products/></RequireAccess>} />
+        <Route path="/order" element={<RequireAccess><Order /></RequireAccess>} />
+        <Route path="/brands" element={<RequireAccess><Brands/></RequireAccess>} />
+        <Route path="/suppliers" element={<RequireAccess><Suppliers/></RequireAccess>} />
+        <Route path="/stocks" element={<RequireAccess><StockManagement/></RequireAccess>} />
+        <Route path="/reports" element={<RequireAccess><Reports/></RequireAccess>} />
         <Route path="/logout" element={<Login />} />
-        <Route path="/settings" element={<Settings/>} />
-        <Route path="/account-management" element={<AccountManagement/>} />
+        <Route path="/settings" element={<RequireAccess><Settings/></RequireAccess>} />
+        <Route path="/account-management" element={<RequireAccess><AccountManagement/></RequireAccess>} />
       </Routes>
     </Router>
   )

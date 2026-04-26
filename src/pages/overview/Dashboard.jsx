@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Histogram from "../../components/charts/Histogram.jsx";
 import BarChart from "../../components/charts/BarChart.jsx";
-import { supplyDemandData } from "../../hooks/data/data.js";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
 import useAuth from "../../hooks/UserAuth.js";
@@ -31,7 +30,7 @@ function Dashboard() {
         alert("You must be logged in to access this page.");
         navigate("/");
     }
-}, [user, loading]);
+}, [user, loading, navigate]);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -70,10 +69,10 @@ function Dashboard() {
                     <p>{stats.low_stock}</p>
                 </div>
                 <div className="charts charts-histogram">
-                    <Histogram data={supplyDemandData}/>
+                    <Histogram />
                 </div>
                 <div className="charts charts-bar1">
-                    <BarChart data={supplyDemandData} />
+                    <BarChart />
                 </div>
             </div>
         </div>

@@ -28,6 +28,41 @@
   font-weight: bold;
 }
 
+.password-hints {
+  margin: 8px 0 12px;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.password-hints-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.password-hints-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.password-hints-list li {
+  margin: 2px 0;
+}
+
+.hint-ok {
+  color: #1b7f3a;
+}
+
+.hint-bad {
+  color: #b00020;
+}
+
+.change-pass-btn:disabled,
+.confirm-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 
 .security-form label {
     display: block;
@@ -52,5 +87,11 @@
 }
 
 .eye-toggle{
-    
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
 }

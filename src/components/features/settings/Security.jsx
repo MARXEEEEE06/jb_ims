@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../../../hooks/server/config";
+import BASE_URL from "../../../hooks/server/config";
 import "./Security.css";
 import { eyeHideToggle, eyeShowToggle } from "../../../assets/ui/Icons";
 
@@ -13,29 +13,77 @@ function Security() {
 
     const [message, setMessage] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const passwordChecks = {
+        minLength: form.newPassword.length >= 8,
+        hasNumber: /[0-9]/.test(form.newPassword),
+        hasSymbol: /[!@#$%^&*(),.?":{}|<>]/.test(form.newPassword),
+    };
 
     const handleChange = (e) => {
+    setMessage("");
     setForm({
     ...form,
     [e.target.name]: e.target.value
     });
     };
 
+    const validateForm = () => {
+        const currentPassword = form.currentPassword.trim();
+        const newPassword = form.newPassword.trim();
+        const confirmPassword = form.confirmPassword.trim();
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return "All fields are required.";
+        }
+
+        if (newPassword !== confirmPassword) {
+            return "New passwords do not match.";
+        }
+
+        if (!(passwordChecks.minLength && passwordChecks.hasNumber && passwordChecks.hasSymbol)) {
+            return "Password must be at least 8 characters and contain 1 number + 1 symbol (e.g. %$#^!).";
+        }
+
+        if (!localStorage.getItem("token")) {
+            return "You are not logged in. Please login again.";
+        }
+
+        return "";
+    };
+
     const submitPassword = async () => {
     try {
+    const validationError = validateForm();
+    if (validationError) {
+        setMessage(validationError);
+        setShowModal(false);
+        return;
+    }
+
+    setIsSubmitting(true);
     const token = localStorage.getItem("token");
 
-    const res = await api.post(
-        "/changepassword",
-        form,
-        {
+    const res = await fetch(`${BASE_URL}/changepassword`, {
+        method: "POST",
         headers: {
-            Authorization: `Bearer ${token}`
-        }
-        }
-    );
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            currentPassword: form.currentPassword,
+            newPassword: form.newPassword,
+            confirmPassword: form.confirmPassword,
+        }),
+    });
 
-    setMessage(res.data.message);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        throw new Error(data?.error || "Failed to change password.");
+    }
+
+    setMessage(data?.message || "Password changed successfully.");
     setForm({
         currentPassword: "",
         newPassword: "",
@@ -43,10 +91,9 @@ function Security() {
     });
 
     } catch (err) {
-    setMessage(
-        err.response?.data?.error ||
-        "Failed to change password."
-    );
+    setMessage(err?.message || "Failed to change password.");
+    } finally {
+    setIsSubmitting(false);
     }
 
     setShowModal(false);
@@ -81,16 +128,39 @@ function Security() {
         onChange={handleChange}
         required
     />
+    
+    <div className="password-hints" aria-live="polite">
+        <div className="password-hints-title">Password must include:</div>
+        <ul className="password-hints-list">
+            <li className={passwordChecks.minLength ? "hint-ok" : "hint-bad"}>At least 8 characters</li>
+            <li className={passwordChecks.hasNumber ? "hint-ok" : "hint-bad"}>At least 1 number (0-9)</li>
+            <li className={passwordChecks.hasSymbol ? "hint-ok" : "hint-bad"}>At least 1 symbol (e.g. %$#^!)</li>
+        </ul>
+    </div>
 
     <button
         className="change-pass-btn"
-        onClick={() => setShowModal(true)}
+        disabled={isSubmitting}
+        onClick={() => {
+            const validationError = validateForm();
+            if (validationError) {
+                setMessage(validationError);
+                return;
+            }
+            setShowModal(true);
+        }}
     >
-        Change Password
+        {isSubmitting ? "Saving..." : "Change Password"}
     </button>
-    <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>
-        {eyeToggle ? <img src={eyeShowToggle}/> : <img src={eyeHideToggle}/>}
-    </a>
+    <button
+        type="button"
+        className="eye-toggle"
+        onClick={() => setShow(!eyeToggle)}
+        aria-label={eyeToggle ? "Hide passwords" : "Show passwords"}
+        disabled={isSubmitting}
+    >
+        {eyeToggle ? <img src={eyeShowToggle} alt="" /> : <img src={eyeHideToggle} alt="" />}
+    </button>
 
     {message && <p className="security-msg">{message}</p>}
 
@@ -103,13 +173,15 @@ function Security() {
             <button
             className="confirm-btn"
             onClick={submitPassword}
+            disabled={isSubmitting}
             >
-            Yes
+            {isSubmitting ? "Saving..." : "Yes"}
             </button>
 
             <button
             className="cancel-btn"
             onClick={() => setShowModal(false)}
+            disabled={isSubmitting}
             >
             Cancel
             </button>

@@ -113,11 +113,14 @@
 .badge-login    { background-color: #d0e8ff; color: #0c447c; }
 .badge-logout   { background-color: #e8e8e8; color: #444; }
 .badge-failed   { background-color: #ffd0d0; color: #791f1f; }
+.badge-security { background-color: #dff6ff; color: #0b3a5c; }
+.badge-security-failed { background-color: #ffe1e1; color: #7a1a1a; }
 .badge-stock    { background-color: #d5f0d5; color: #27500a; }
 .badge-product  { background-color: #fff0d0; color: #633806; }
 .badge-brand    { background-color: #e8e0ff; color: #3c3489; }
 .badge-supplier { background-color: #d0f5ec; color: #085041; }
 .badge-user     { background-color: #ffe0ef; color: #72243e; }
+.badge-user-update { background-color: #e1f0ff; color: #173a67; }
 .badge-order    { background-color: #fde8d8; color: #712b13; }
 
 /* ── Details / View button ── */

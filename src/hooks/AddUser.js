@@ -2,8 +2,17 @@ const express = require('express');
 const router = express.Router();
 const db = require('./db');
 const logActivity = require('./logger');
+const verifyToken = require('./Auth');
 
-router.post('/', (req, res) => {
+function requireAdmin(req, res, next) {
+  const role = String(req.user?.role ?? '').toLowerCase();
+  if (role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+}
+
+router.post('/', verifyToken, requireAdmin, (req, res) => {
   const {
     username,
     password,

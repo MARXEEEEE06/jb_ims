@@ -31,6 +31,7 @@ const editBrandRoute = require('./src/hooks/EditBrand');
 const removeBrandRoute = require('./src/hooks/RemoveBrand');
 
 const reportsRoute = require('./src/hooks/Reports');
+const supplyDemandRoute = require('./src/hooks/SupplyDemand');
 
 app.use('/api/login', loginRoute);
 app.use('/api/auth', authRoute);
@@ -41,6 +42,7 @@ app.use('/api/changepassword', changePasswordRoute);
 app.use('/api/gettopsupply', getTopSupplyRoute);
 app.use('/api/stock', stockChangeRoute);
 app.use('/api/orders', ordersRoute);
+app.use('/api/supply-demand', supplyDemandRoute);
 
 app.use('/api/inventory', inventoryRoute);
 app.use('/api/add-product', addProductRoute);

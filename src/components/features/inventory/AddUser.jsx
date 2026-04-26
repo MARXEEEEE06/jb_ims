@@ -15,9 +15,13 @@ function AddUser({ onClose, onRefresh }) {
     setIsLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/adduser`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           username,
           password,

@@ -11,18 +11,40 @@
     justify-content: space-between;
 }
 
-tbody{
-    text-align: center;
-}
-
 .add-mem-btn{
     font-family: garet-book;
     background-color: #17224d;
     color: #ffffff;
     border-radius: 50px;
+    border: none;
+    padding: 10px 18px;
 }
 
 .add-mem-btn:hover{
     background-color: #0c122b;
     cursor: pointer;
+}
+
+.member-list table{
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+}
+
+.member-list th,
+.member-list td{
+    padding: 10px 12px;
+    border-bottom: 1px solid #e6edf0;
+    text-align: center;
+}
+
+.acc-manage-msg{
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px){
+    .acc-manage-content{
+        margin: 0 10px;
+    }
 }

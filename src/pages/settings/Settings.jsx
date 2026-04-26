@@ -18,6 +18,7 @@ function Settings() {
     role = decoded.role;
   }
   console.log("Role in Settings:", role); // add this
+  const isAdmin = role && String(role).toLowerCase() === "admin";
 
   const renderContent = () => {
     switch (activeTab) {
@@ -47,7 +48,7 @@ function Settings() {
             onClick={() => setActiveTab("security")}>
             Security
             </button>
-            {role === "admin" && (
+            {isAdmin && (
               <button
                 className="settings-btn acc-manage"
                 onClick={() => setActiveTab("account-management")}

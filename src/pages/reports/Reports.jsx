@@ -8,6 +8,8 @@ const ACTION_LABELS = {
     LOGIN: 'Login',
     LOGOUT: 'Logout',
     FAILED_LOGIN: 'Failed Login',
+    PASSWORD_CHANGED: 'Password Changed',
+    PASSWORD_CHANGE_FAILED: 'Password Change Failed',
     STOCK_UPDATE: 'Stock Update',
     PRODUCT_CREATED: 'Product Created',
     PRODUCT_UPDATE: 'Product Update',
@@ -18,6 +20,7 @@ const ACTION_LABELS = {
     SUPPLIER_ADDED: 'Supplier Added',
     SUPPLIER_UPDATE: 'Supplier Update',
     USER_ADDED: 'User Added',
+    USER_UPDATED: 'User Updated',
     ORDER_CREATED: 'Order / Receipt',
 };
 
@@ -25,6 +28,8 @@ const ACTION_CLASS = {
     LOGIN: 'badge-login',
     LOGOUT: 'badge-logout',
     FAILED_LOGIN: 'badge-failed',
+    PASSWORD_CHANGED: 'badge-security',
+    PASSWORD_CHANGE_FAILED: 'badge-security-failed',
     STOCK_UPDATE: 'badge-stock',
     PRODUCT_CREATED: 'badge-product',
     PRODUCT_UPDATE: 'badge-product',
@@ -35,6 +40,7 @@ const ACTION_CLASS = {
     SUPPLIER_ADDED: 'badge-supplier',
     SUPPLIER_UPDATE: 'badge-supplier',
     USER_ADDED: 'badge-user',
+    USER_UPDATED: 'badge-user-update',
     ORDER_CREATED: 'badge-order',
 };
 
