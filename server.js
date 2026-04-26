@@ -8,30 +8,30 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const loginRoute = require('./src/hooks/Login');
-const authRoute = require('./src/hooks/Auth');
-const getUsersRoute = require('./src/hooks/GetUsers');
-const addUserRoute = require('./src/hooks/AddUser');
+const loginRoute = require('./src/hooks/Login.js');
+const authRoute = require('./src/hooks/Auth.js');
+const getUsersRoute = require('./src/hooks/GetUsers.js');
+const addUserRoute = require('./src/hooks/AddUser.js');
 const changePasswordRoute = require('./src/hooks/ChangePassword.js');
 
-const getProdCountRoute = require('./src/hooks/GetProdCount');
-const inventoryRoute = require('./src/hooks/Inventory');
-const addProductRoute = require('./src/hooks/AddProduct');
-const editProductRoute = require('./src/hooks/EditProduct');
-const removeProductRoute = require('./src/hooks/RemoveProduct');
-const getTopSupplyRoute = require('./src/hooks/GetTopSupply');
-const stockChangeRoute = require('./src/hooks/StockChange');
-const ordersRoute = require('./src/hooks/Orders');
-const suppliersRoute = require('./src/hooks/Suppliers');
-const getSuppliersRoute = require('./src/hooks/GetSuppliers');
+const getProdCountRoute = require('./src/hooks/GetProdCount.js');
+const inventoryRoute = require('./src/hooks/Inventory.js');
+const addProductRoute = require('./src/hooks/AddProduct.js');
+const editProductRoute = require('./src/hooks/EditProduct.js');
+const removeProductRoute = require('./src/hooks/RemoveProduct.js');
+const getTopSupplyRoute = require('./src/hooks/GetTopSupply.js');
+const stockChangeRoute = require('./src/hooks/StockChange.js');
+const ordersRoute = require('./src/hooks/Orders.js');
+const suppliersRoute = require('./src/hooks/Suppliers.js');
+const getSuppliersRoute = require('./src/hooks/GetSuppliers.js');
 
-const getBrandsRoute = require('./src/hooks/GetBrands');
-const addBrandRoute = require('./src/hooks/AddBrand');
-const editBrandRoute = require('./src/hooks/EditBrand');
-const removeBrandRoute = require('./src/hooks/RemoveBrand');
+const getBrandsRoute = require('./src/hooks/GetBrands.js');
+const addBrandRoute = require('./src/hooks/AddBrand.js');
+const editBrandRoute = require('./src/hooks/EditBrand.js');
+const removeBrandRoute = require('./src/hooks/RemoveBrand.js');
 
-const reportsRoute = require('./src/hooks/Reports');
-const supplyDemandRoute = require('./src/hooks/SupplyDemand');
+const reportsRoute = require('./src/hooks/Reports.js');
+const supplyDemandRoute = require('./src/hooks/SupplyDemand.js');
 
 app.use('/api/login', loginRoute);
 app.use('/api/auth', authRoute);
