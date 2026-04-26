@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./db');
-const logActivity = require('./logger');
 
 function generateSKU(product_name, brand_name, variant) {
   const p = product_name.substring(0, 3).toUpperCase();
@@ -13,7 +12,7 @@ function generateSKU(product_name, brand_name, variant) {
 router.post('/', (req, res) => {
   const {
     product_name,
-    brand_id,
+    brand_id,       // ← now an ID from dropdown
     category,
     variant,
     price,
@@ -22,12 +21,11 @@ router.post('/', (req, res) => {
     supplier,
   } = req.body;
 
-  const userId = req.user?.user_id ?? null;
-
   if (!product_name || !brand_id || !category || !variant || !price || !unit_type || !supplier) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
+  // Fetch brand_name for SKU generation
   db.query(`SELECT brand_name FROM BRAND WHERE brand_id = ?`, [brand_id], (err, brandResults) => {
     if (err) return res.status(500).json({ error: 'Brand Server error' });
     if (brandResults.length === 0) return res.status(400).json({ error: 'Brand not found' });
@@ -67,18 +65,6 @@ router.post('/', (req, res) => {
                           [sup_info_id, product_id],
                           (err) => {
                             if (err) return res.status(500).json({ error: 'Supplier link error' });
-
-                            logActivity(userId, 'PRODUCT_CREATED', 'product', product_id, {
-                              product_name,
-                              brand: brand_name,
-                              category,
-                              variant,
-                              sku,
-                              price: Number(price),
-                              quantity: Number(quantity),
-                              supplier,
-                            });
-
                             res.json({ message: 'Product added', sku, variant_id: varResult.insertId });
                           }
                         );

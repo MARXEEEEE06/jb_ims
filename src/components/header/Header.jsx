@@ -20,7 +20,10 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
 
     const pathname = window.location.pathname;
     const headerTitle = headerTitles[pathname] || "Page";
-    const hideSearchOn = ["/dashboard", "/settings", "/suppliers"];
+    const hideSearchOn = ["/dashboard", 
+        "/settings", 
+        "/suppliers",
+        "/stocks",];
     const showSearch = !hideSearchOn.includes(pathname);
 
     return (

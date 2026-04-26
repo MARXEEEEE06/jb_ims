@@ -1,4 +1,3 @@
-// server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -29,18 +28,23 @@ const addBrandRoute = require('./src/hooks/AddBrand');
 const editBrandRoute = require('./src/hooks/EditBrand');
 const removeBrandRoute = require('./src/hooks/RemoveBrand');
 
+const reportsRoute = require('./src/hooks/Reports');
+
 app.use('/api/login', loginRoute);
-app.use('/api/getprodcount', getProdCountRoute);
 app.use('/api/auth', authRoute);
-app.use('/api/inventory', inventoryRoute);
-app.use('/api/add-product', addProductRoute);
-app.use('/api/edit-product', editProductRoute);
 app.use('/api/getusers', getUsersRoute);
 app.use('/api/adduser', addUserRoute);
-app.use('/api/removeproduct', removeProductRoute);
+
 app.use('/api/gettopsupply', getTopSupplyRoute);
 app.use('/api/stock', stockChangeRoute);
 app.use('/api/orders', ordersRoute);
+
+app.use('/api/inventory', inventoryRoute);
+app.use('/api/add-product', addProductRoute);
+app.use('/api/edit-product', editProductRoute);
+app.use('/api/removeproduct', removeProductRoute);
+app.use('/api/getprodcount', getProdCountRoute);
+
 app.use('/api/suppliers', suppliersRoute);
 app.use('/api/getsuppliers', getSuppliersRoute);
 
@@ -49,7 +53,8 @@ app.use('/api/addBrand', addBrandRoute);
 app.use('/api/editBrand', editBrandRoute);
 app.use('/api/removeBrand', removeBrandRoute);
 
-// Add this AFTER all your app.use('/api/...') routes
+app.use('/api/reports', reportsRoute);
+
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('*path', (req, res) => {

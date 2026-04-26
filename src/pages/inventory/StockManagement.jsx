@@ -73,20 +73,20 @@ function StockManagement(){
                     {items.map((item) => {
                         return (
                         <tr key={item.product_id}>
-                            <td>{item.prod_name}</td>
-                            <td>{item.variety}</td>
+                            <td>{item.product_name}</td>
+                            <td>{item.variant}</td>
                             <td>
                                 <button 
                                 className="stock-minus-btn"
                                 onClick={() => handleStockChange(item.product_id, -1)}>-</button>
-                                {item.stock_quantity}
+                                {item.quantity}
                                 <button
                                 className="stock-add-btn"
                                 onClick={() => handleStockChange(item.product_id, +1)}>+</button>
                             </td>
                             <td>{item.unit_type}</td>
                             <td>
-                                <div className={`status-container ${getStatusClass(item.stock_quantity)}`}>
+                                <div className={`status-container ${getStatusClass(item.quantity)}`}>
                                     {item.status}
                                 </div>
                             </td>
