@@ -30,7 +30,7 @@ const addBrandRoute = require('./src/hooks/AddBrand.js');
 const editBrandRoute = require('./src/hooks/EditBrand.js');
 const removeBrandRoute = require('./src/hooks/RemoveBrand.js');
 
-const reportsRoute = require('./src/hooks/Reports.js');
+const reportsRoute = require('./src/hooks/reports.js');
 const supplyDemandRoute = require('./src/hooks/SupplyDemand.js');
 
 app.use('/api/login', loginRoute);
