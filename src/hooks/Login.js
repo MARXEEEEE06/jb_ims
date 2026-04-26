@@ -1,13 +1,12 @@
 const express = require('express');
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const router = express.Router();
 const jwt  = require('jsonwebtoken');
-const { JWT_SECRET, JWT_EXPIRES_IN } = require('./config')
 
-// const app = express();
-// app.use(cors());
-// app.use(bodyParser.json());
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 const db = require('./db');
 
 router.post('/', (req, res) => {
@@ -41,7 +40,7 @@ router.post('/', (req, res) => {
         role: user.role_type,
       };
 
-      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
       console.log('User Found:', user);
       console.log('Role:', user.role);

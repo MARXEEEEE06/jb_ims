@@ -21,8 +21,8 @@ function SupplyChart() {
         const response = await fetch(`${BASE_URL}/gettopsupply`);
         const result = await response.json();
         setData(result.map(item => ({
-          product: item.prod_name,
-          supply: item.stock_quantity,
+          product: item.product_name,
+          supply: item.quantity,
         })));
       } catch (err) {
         console.error(err);

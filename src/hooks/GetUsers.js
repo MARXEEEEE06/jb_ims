@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const db = require('./db');
 
 // GET all users
 router.get("/", (req, res) => {
