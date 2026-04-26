@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(cors());
@@ -55,6 +56,6 @@ app.get('*path', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.listen(5000, '0.0.0.0', () => {
-  console.log('Server running on port 5000');
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });
