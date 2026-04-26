@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOverview from "../../components/header/Header.jsx";
 import "./Inventory.css";
+import { COLUMNS } from '../../hooks/data/tableColumns.js';
 
 import BASE_URL from '../../hooks/server/config.js';
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
@@ -16,6 +17,9 @@ import { useSort } from '../../hooks/filters/useSort';
 function Inventory() {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'supplier', 'quantity', 'status'];
+    const columns = COLUMNS.filter(col => visibleKeys.includes(col.key));
 
     // Start from raw items
     const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
@@ -60,7 +64,7 @@ function Inventory() {
         <div className="main-container">
             <HeaderOverview
                 items={items}
-                field="prod_name"
+                field="product_name"
                 keyword={keyword}
                 setKeyword={setKeyword}
             />
@@ -96,8 +100,8 @@ function Inventory() {
                     </select>
                     <select value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
                         <option value="">Sort by...</option>
-                        <option value="prod_name">Alphabetical</option>
-                        <option value="stock_quantity">Stock</option>
+                        <option value="product_name">Alphabetical</option>
+                        <option value="quantity">Stock</option>
                         <option value="status">Status</option>
                     </select>
                     <select value={order} onChange={(e) => setOrder(e.target.value)}>
@@ -111,26 +115,30 @@ function Inventory() {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>SKU</th>
-                                    <th>PRODUCT</th>
-                                    <th>BRAND</th>
-                                    <th>VARIETY</th>
-                                    <th>SUPPLIER</th>
-                                    <th>STOCK</th>
-                                    <th>STATUS</th>
+                                    {/* <th className='sku'>sku</th>
+                                    <th className='product-name'>PRODUCT</th>
+                                    <th className='brand'>BRAND</th>
+                                    <th className='variant'>VARIETY</th>
+                                    <th className='status'>SUPPLIER</th>
+                                    <th className='status'>STOCK</th>
+                                    <th className='status'>STATUS</th> */ }
+
+                                    {columns.map(col => (
+                                        <th key={col.key} className={col.key}>{col.label}</th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {finalFiltered.map((item, idx) => (
                                     <tr key={idx}>
-                                        <td>{item.SKU}</td>
-                                        <td>{item.prod_name}</td>
+                                        <td>{item.sku}</td>
+                                        <td>{item.product_name}</td>
                                         <td>{item.brand}</td>
-                                        <td>{item.variety}</td>
+                                        <td>{item.variant}</td>
                                         <td>{item.supplier}</td>
-                                        <td>{item.stock_quantity}</td>
+                                        <td>{item.quantity}</td>
                                         <td>
-                                            <div className={`status-container ${getStatusClass(item.stock_quantity)}`}>
+                                            <div className={`status-container ${getStatusClass(item.quantity)}`}>
                                                 {item.status}
                                             </div>
                                         </td>

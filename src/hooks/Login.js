@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
       const payload = {
         user_id: user.user_id,
         username: user.username,
-        role: user.role_type  // ← was user.role
+        role: user.role_type,
       };
 
       const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });

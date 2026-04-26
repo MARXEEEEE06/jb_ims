@@ -13,7 +13,8 @@ import {
     stock_manage,
     reports,
     settings,
-    logout_icon
+    logout_icon,
+    order
 } from "../../assets/ui/Icons";
 
 function Sidebar() {
@@ -62,9 +63,8 @@ function Sidebar() {
                 <span className="nav-item nav-item-products">
                     <a href='/products'><img src={box} alt="Products"/>Products</a>
                 </span>
-                <span className="nav-item nav-item-orders">
-                    <a href='/orders'>Orders</a>
-                    {/* <img src={orders} alt="Orders"/> */}
+                <span className="nav-item nav-item-order">
+                    <a href='/order'><img src={order} alt="Order"/>Order</a>
                 </span>
                 <span className="nav-item nav-item-brands">
                     <a href='/brands'><img src={brand} alt="Brands"/>Brands</a>

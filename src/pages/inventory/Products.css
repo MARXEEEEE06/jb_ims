@@ -17,7 +17,13 @@
     color: #ffffff;
     width: fit-content;
     padding: 10px;
-    gap: 10px;
+    gap: 20%;
+    
+    /* Keep buttons in screen */
+    /* position: fixed; */
+    /* bottom: 20px; Distance from bottom */
+    /* right: 20px;  Distance from right */
+    /* z-index: 1000; Ensures it stays on top of other elements */
 }
 
 .product-actions-button img{
@@ -26,6 +32,10 @@
 
 .addProd-btn{
     background-color: #4a7ff7;
+    position: fixed;
+    bottom: 20px; /*Distance from bottom*/
+    right: 20%;  /*Distance from right */
+    z-index: 1000; /*Ensures it stays on top of other elements */
 }
 .addProd-btn:hover{
     background-color: #3e6ad1;
@@ -33,6 +43,10 @@
 }
 
 .editProd-btn{
+    position: fixed;
+    bottom: 20px; /*Distance from bottom*/
+    right: 10%;
+    z-index: 1000; /*Ensures it stays on top of other elements */
     background-color: #f7984a;
 }
 .editProd-btn:hover{
@@ -41,6 +55,10 @@
 }
 
 .removeProd-btn{
+    position: fixed;
+    bottom: 20px; /*Distance from bottom*/
+    right: 0;
+    z-index: 1000; /*Ensures it stays on top of other elements */
     background-color: #f00540;
 }
 .removeProd-btn:hover{

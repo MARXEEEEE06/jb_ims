@@ -18,55 +18,62 @@ db.connect(err => {
 router.delete('/:variantId', (req, res) => {
   const { variantId } = req.params;
 
-  if (!variantId) {
-    return res.status(400).json({ error: 'Variant ID is required' });
-  }
+  if (!variantId) return res.status(400).json({ error: 'Variant ID is required' });
 
-  // Step 1: Get product_id before deleting variant
-  db.query(
-    `SELECT product_id FROM VARIANTS WHERE variant_id = ?`,
-    [variantId],
-    (err, results) => {
+  // Step 1: Get product_id
+  db.query(`SELECT product_id FROM VARIANTS WHERE variant_id = ?`, [variantId], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Server error' });
+    if (results.length === 0) return res.status(404).json({ error: 'Variant not found' });
+
+    const product_id = results[0].product_id;
+
+    // Step 2: Delete the variant
+    db.query(`DELETE FROM VARIANTS WHERE variant_id = ?`, [variantId], (err) => {
       if (err) return res.status(500).json({ error: 'Server error' });
-      if (results.length === 0) return res.status(404).json({ error: 'Variant not found' });
 
-      const product_id = results[0].product_id;
+      // Step 3: Check remaining variants
+      db.query(`SELECT COUNT(*) AS count FROM VARIANTS WHERE product_id = ?`, [product_id], (err, countResult) => {
+        if (err) return res.status(500).json({ error: 'Server error' });
 
-      // Step 2: Delete the variant
-      db.query(
-        `DELETE FROM VARIANTS WHERE variant_id = ?`,
-        [variantId],
-        (err) => {
-          if (err) return res.status(500).json({ error: 'Server error' });
+        const remaining = countResult[0].count;
 
-          // Step 3: Check if product has any remaining variants
-          db.query(
-            `SELECT COUNT(*) AS count FROM VARIANTS WHERE product_id = ?`,
-            [product_id],
-            (err, countResult) => {
+        if (remaining === 0) {
+          // Step 4: Get category_id before deleting product
+          db.query(`SELECT category_id FROM PRODUCTS WHERE product_id = ?`, [product_id], (err, prodResult) => {
+            if (err) return res.status(500).json({ error: 'Server error' });
+
+            const category_id = prodResult[0]?.category_id;
+
+            // Step 5: Delete supplier_items links ✅
+            db.query(`DELETE FROM supplier_items WHERE product_id = ?`, [product_id], (err) => {
               if (err) return res.status(500).json({ error: 'Server error' });
 
-              const remaining = countResult[0].count;
+              // Step 6: Delete the product
+              db.query(`DELETE FROM PRODUCTS WHERE product_id = ?`, [product_id], (err) => {
+                if (err) return res.status(500).json({ error: 'Server error' });
 
-              // Step 4: If no variants left, delete the product too
-              if (remaining === 0) {
-                db.query(
-                  `DELETE FROM PRODUCTS WHERE product_id = ?`,
-                  [product_id],
-                  (err) => {
-                    if (err) return res.status(500).json({ error: 'Server error' });
-                    res.json({ message: 'Variant and orphaned product removed', variantId });
+                // Step 7: Check if category is orphaned ✅
+                db.query(`SELECT COUNT(*) AS count FROM PRODUCTS WHERE category_id = ?`, [category_id], (err, catCount) => {
+                  if (err) return res.status(500).json({ error: 'Server error' });
+
+                  if (catCount[0].count === 0) {
+                    db.query(`DELETE FROM CATEGORY WHERE category_id = ?`, [category_id], (err) => {
+                      if (err) return res.status(500).json({ error: 'Server error' });
+                      res.json({ message: 'Variant, product, supplier link, and orphaned category removed', variantId });
+                    });
+                  } else {
+                    res.json({ message: 'Variant, product, and supplier link removed', variantId });
                   }
-                );
-              } else {
-                res.json({ message: 'Variant removed', variantId });
-              }
-            }
-          );
+                });
+              });
+            });
+          });
+        } else {
+          res.json({ message: 'Variant removed', variantId });
         }
-      );
-    }
-  );
+      });
+    });
+  });
 });
 
 module.exports = router;

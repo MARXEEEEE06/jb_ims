@@ -7,6 +7,7 @@ import low_stock from "./status/status-low.png";
 import critical_stock from "./status/status-critical.png";
 import home from "./home.png";
 import products_box from "./box/box (1).png";
+import order from "./supplier1.png";
 import brand from "./brand.png";
 import stock_manage from "./update/stock-update.png";
 import reports from "./reports.png";
@@ -30,6 +31,7 @@ export {
     home,
     clipboard,
     products_box,
+    order,
     brand,
     stock_manage,
     reports,

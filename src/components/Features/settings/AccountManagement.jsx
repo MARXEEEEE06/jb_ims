@@ -31,7 +31,7 @@ function AccountManagement() {
     }, []);
 
     return (
-        <div className="acc-manage-container">
+        <div className="container acc-manage-container">
         <h1>Account Management</h1>
         <div className="acc-manage-content">
             <div className="content-header">
@@ -56,11 +56,11 @@ function AccountManagement() {
                 </thead>
                 <tbody>
                     {users.map((user) => (
-                    <tr key={user.user_info_id}>
+                    <tr key={user.login_id}>
                         <td>{user.username}</td>
                         <td>{user.email}</td>
                         <td>{user.contact_num}</td>
-                        <td>{user.role_id === 1 ? "Manager" : "Staff"}</td>
+                        <td>{user.role_type.charAt(0).toUpperCase() + user.role_type.slice(1)}</td>
                     </tr>
                     ))}
                 </tbody>

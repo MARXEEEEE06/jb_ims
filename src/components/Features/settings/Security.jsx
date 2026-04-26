@@ -1,6 +1,6 @@
 function Security(){
     return(
-        <div className="security-container">
+        <div className="container security-container">
             This page is under development.
         </div>
     );

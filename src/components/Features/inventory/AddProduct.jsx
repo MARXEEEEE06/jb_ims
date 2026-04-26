@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BASE_URL from "../../../hooks/server/config";
 import "./AddProduct.css";
 
@@ -12,6 +12,11 @@ function AddProduct({ onClose, onRefresh }){
     const [unit, setUnit] = useState(''); 
     const [isloading, setIsLoading] = useState(false);
 
+    const [brands, setBrands] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
+    const [brand_id, setBrandId] = useState('');
+    const [supplier_id, setSupplierId] = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -23,12 +28,13 @@ function AddProduct({ onClose, onRefresh }){
                 },
                 body: JSON.stringify({
                     product_name,
-                    brand,
+                    brand_id,
                     category,
                     variant,
                     price: Number(price) || 0,
-                    unit_type: unit,  // must be provided
-                    quantity: 0 // optional, backend default
+                    unit_type: unit,
+                    quantity: 0,
+                    supplier: suppliers.find(s => s.sup_info_id === Number(supplier_id))?.name || '',
                 })
             });
             const data = await response.json();
@@ -46,6 +52,11 @@ function AddProduct({ onClose, onRefresh }){
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        fetch(`${BASE_URL}/getbrands`).then(r => r.json()).then(setBrands);
+        fetch(`${BASE_URL}/getsuppliers`).then(r => r.json()).then(setSuppliers);
+    }, []);
     
     return(
         <div className="modal-add-product">
@@ -55,27 +66,37 @@ function AddProduct({ onClose, onRefresh }){
             </div>
             <div className="add-product-form">
                 <form>
-                    <label className="required" for="product">Product</label>
-                    <input required type="text" id="product" class="input-product-detail" onChange={(e) => setProduct(e.target.value)} placeholder="e.g: Cement, Plywood" />
-                    
-                    <label className="required" for="brand">Brand</label>
-                    <input required type="text" id="brand" class="input-product-detail" onChange={(e) => setBrand(e.target.value)} placeholder="e.g: Davis, Republic Portland" />
-                    
-                    <label className="required" for="supplier">Supplier</label>
-                    <input required type="text" id="supplier" class="input-product-detail" onChange={(e) => setSupplier(e.target.value)} placeholder="Enter supplier's company name" />
-                    
-                    <label className="required" for="price">Price</label>
-                    <input required type="number" id="price" class="input-product-detail" onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" />
-                    
-                    <label className="required" for="variant">Variant</label>
-                    <input required type="text" id="product" class="input-product-detail" onChange={(e) => setvariant(e.target.value)} placeholder="e.g: 1x2, 2x2, 1/4, 3/4" />
-                    
-                    <label className="required" for="category">Category</label>
-                    <input required type="text" id="category" class="input-product-detail" onChange={(e) => setCategory(e.target.value)} placeholder="e.g: Cement, Sand, Tubular" />
-                    
-                    <label className="required" for="Unit">Unit Type</label>
-                    <input required type="text" id="Unit" class="input-product-detail" onChange={(e) => setUnit(e.target.value)} placeholder="e.g: Kg, Yard, Pieces" />
-                    
+                    <label className="required" htmlFor="product">Product</label>
+                    <input required type="text" id="product" className="input-product-detail" onChange={(e) => setProduct(e.target.value)} placeholder="e.g: Cement, Plywood" />
+
+                    <label className="required" htmlFor="brand">Brand</label>
+                    <select required id="brand" className="input-product-detail" onChange={(e) => setBrandId(e.target.value)} value={brand_id}>
+                        <option value="">Select a brand</option>
+                        {brands.map(b => (
+                            <option key={b.brand_id} value={b.brand_id}>{b.brand_name}</option>
+                        ))}
+                    </select>
+
+                    <label className="required" htmlFor="supplier">Supplier</label>
+                    <select required id="supplier" className="input-product-detail" onChange={(e) => setSupplierId(e.target.value)} value={supplier_id}>
+                        <option value="">Select a supplier</option>
+                        {suppliers.map(s => (
+                            <option key={s.sup_info_id} value={s.sup_info_id}>{s.name}</option>
+                        ))}
+                    </select>
+
+                    <label className="required" htmlFor="price">Price</label>
+                    <input required type="number" id="price" className="input-product-detail" onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" />
+
+                    <label className="required" htmlFor="variant">Variant</label>
+                    <input required type="text" id="variant" className="input-product-detail" onChange={(e) => setvariant(e.target.value)} placeholder="e.g: 1x2, 2x2, 1/4, 3/4" />
+
+                    <label className="required" htmlFor="category">Category</label>
+                    <input required type="text" id="category" className="input-product-detail" onChange={(e) => setCategory(e.target.value)} placeholder="e.g: Cement, Sand, Tubular" />
+
+                    <label className="required" htmlFor="Unit">Unit Type</label>
+                    <input required type="text" id="Unit" className="input-product-detail" onChange={(e) => setUnit(e.target.value)} placeholder="e.g: Kg, Yard, Pieces" />
+
                     <div className="form-button">
                         <button className="add-btn" onClick={handleSubmit}>Add</button>
                         <button className="cancel-btn" onClick={onClose}>Cancel</button>

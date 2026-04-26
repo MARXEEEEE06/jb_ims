@@ -1,6 +1,5 @@
 const express = require('express');
 const mysql = require('mysql2');
-
 const router = express.Router();
 
 const db = mysql.createConnection({
@@ -12,32 +11,31 @@ const db = mysql.createConnection({
 
 db.connect(err => {
   if (err) throw err;
-  console.log('Supplier routes connected to MySQL Database');
+  console.log('Suppliers connected to MySQL Database');
 });
 
-// GET all suppliers with total_products count
+// GET /api/suppliers — all suppliers with product count
 router.get('/', (req, res) => {
   const sql = `
-    SELECT 
-      si.supplier_info_id AS supplier_id,
-      si.Name AS supplier_name,
-      si.contact_num AS contact_no,
+    SELECT
+      si.sup_info_id,
+      si.name,
+      si.contact_num,
       si.email,
       si.address,
       si.status,
-      COUNT(sit.supplier_items_id) AS total_products
+      COUNT(sit.sup_items_id) AS total_products
     FROM supplier_info si
-    LEFT JOIN supplier_items sit ON si.supplier_info_id = sit.supplier_info_id
-    GROUP BY si.supplier_info_id
+    LEFT JOIN supplier_items sit ON si.sup_info_id = sit.sup_info_id
+    GROUP BY si.sup_info_id
   `;
 
   db.query(sql, (err, results) => {
     if (err) {
       console.error('SQL Error:', err);
-      return res.status(500).json({ error: 'API Server error' });
+      return res.status(500).json({ error: 'Server error' });
     }
 
-    // Capitalize status for frontend consistency
     const mapped = results.map(row => ({
       ...row,
       status: row.status === 'active' ? 'Active' : 'Inactive'
@@ -47,62 +45,55 @@ router.get('/', (req, res) => {
   });
 });
 
-// POST add new supplier
+// POST /api/suppliers — add new supplier
 router.post('/', (req, res) => {
-  const {
-    supplier_name,
-    contact_no,
-    email,
-    address,
-  } = req.body;
+  const { name, contact_num, email, address } = req.body;
 
-  if (!supplier_name || !contact_no || !email || !address) {
+  if (!name || !contact_num || !email || !address) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const sql = `
-    INSERT INTO supplier_info (Name, contact_num, email, address, status)
-    VALUES (?, ?, ?, ?, 'active')
-  `;
-
-  db.query(sql, [supplier_name, contact_no, email, address], (err, results) => {
-    if (err) {
-      console.error('SQL Error:', err);
-      // Handle unique constraint violations
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ error: 'Contact number or email already exists' });
+  db.query(
+    `INSERT INTO supplier_info (name, contact_num, email, address, status) VALUES (?, ?, ?, ?, 'active')`,
+    [name, contact_num, email, address],
+    (err, results) => {
+      if (err) {
+        console.error('SQL Error:', err);
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(400).json({ error: 'Contact number or email already exists' });
+        }
+        return res.status(500).json({ error: 'Server error' });
       }
-      return res.status(500).json({ error: 'Server error' });
+      res.json({ message: 'Supplier added', sup_info_id: results.insertId });
     }
-    res.json({ message: 'Supplier added', id: results.insertId });
-  });
+  );
 });
 
-// POST edit supplier status (toggle)
-router.post('/:supplier_id', (req, res) => {
-  const { supplier_id } = req.params;
+// POST /api/suppliers/status/:sup_info_id — toggle status
+router.post('/status/:sup_info_id', (req, res) => {
+  const { sup_info_id } = req.params;
   const { status } = req.body; // expects 'Active' or 'Inactive' from frontend
 
   if (!status) {
     return res.status(400).json({ error: 'Missing status' });
   }
 
-  const dbStatus = status.toLowerCase(); // convert to 'active' or 'inactive' for ENUM
+  const dbStatus = status.toLowerCase(); // 'active' or 'inactive'
 
-  const sql = `
-    UPDATE supplier_info SET status = ? WHERE supplier_info_id = ?
-  `;
-
-  db.query(sql, [dbStatus, supplier_id], (err, results) => {
-    if (err) {
-      console.error('SQL Error:', err);
-      return res.status(500).json({ error: 'Server error' });
+  db.query(
+    `UPDATE supplier_info SET status = ? WHERE sup_info_id = ?`,
+    [dbStatus, sup_info_id],
+    (err, results) => {
+      if (err) {
+        console.error('SQL Error:', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'Supplier not found' });
+      }
+      res.json({ message: `Status updated to ${status}` });
     }
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ error: 'Supplier not found' });
-    }
-    res.json({ message: `Supplier status updated to ${status}` });
-  });
+  );
 });
 
 module.exports = router;

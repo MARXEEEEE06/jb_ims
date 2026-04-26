@@ -7,6 +7,7 @@ import RemoveProduct from '../../components/features/inventory/RemoveModal.jsx';
 import BASE_URL from "../../hooks/server/config"
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
 import "./Products.css";
+import { COLUMNS } from '../../hooks/data/tableColumns.js';
 import { 
     plus,
     pencil,
@@ -14,198 +15,203 @@ import {
 } from "../../assets/ui/Icons.js";
 
 function Products(){
-    const [sku, setSKU] = useState(''); 
-    const [product, setProduct] = useState(''); 
-    const [brand, setBrand] = useState(''); 
-    const [variety, setVariety] = useState(''); 
-    const [supplier, setSupplier] = useState(''); 
-    const [stock, setStock] = useState(''); 
-    const [prod_status, setStatus] = useState('');
-    const [items, setItems] = useState([]);
+const [sku, setSKU] = useState(''); 
+const [product, setProduct] = useState(''); 
+const [brand, setBrand] = useState(''); 
+const [variety, setVariety] = useState(''); 
+const [supplier, setSupplier] = useState(''); 
+const [stock, setStock] = useState(''); 
+const [prod_status, setStatus] = useState('');
+const [items, setItems] = useState([]);
 
-    const [showAdd, setShowAdd] = useState(false);
-    const [showEdit, setShowEdit] = useState(false);
-    const [showRemove, setShowRemove] = useState(false);
-    
-    const [selectedItem, setSelectedItem] = useState(null);
+const [showAdd, setShowAdd] = useState(false);
+const [showEdit, setShowEdit] = useState(false);
+const [showRemove, setShowRemove] = useState(false);
 
-    const handleEdit = (item) => {
-        setSelectedItem(item);
-    };
+const [selectedItem, setSelectedItem] = useState(null);
 
-    const handleRemoveProduct = async (productId) => {
-        if (!window.confirm("Are you sure you want to remove this product?")) return;
+const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'supplier', 'price', 'type', 'category', 'status'];
+const columns = COLUMNS.filter(col => visibleKeys.includes(col.key));
 
-        try {
-            const response = await fetch(`${BASE_URL}}/removeproduct/${productId}`, {
-            method: "DELETE",
-            });
+const handleEdit = (item) => {
+    setSelectedItem(item);
+};
 
-            const data = await response.json();
-            if (response.ok) {
-            alert("Product removed successfully");
-            setItems(prev => prev.filter(item => item.product_id !== productId)); // remove from UI
-            } else {
-            alert(data.error || "Failed to remove product");
-            }
-        } catch (error) {
-            alert("Server error");
+const handleRemoveProduct = async (productId) => {
+    if (!window.confirm("Are you sure you want to remove this product?")) return;
+
+    try {
+        const response = await fetch(`${BASE_URL}}/removeproduct/${productId}`, {
+        method: "DELETE",
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+        alert("Product removed successfully");
+        setItems(prev => prev.filter(item => item.product_id !== productId)); // remove from UI
+        } else {
+        alert(data.error || "Failed to remove product");
         }
-    };
-
-    const fetchInventory = async () => {
-        try {
-            const response = await fetch(`${BASE_URL}/inventory`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({}),
-            });
-            const data = await response.json();
-            if (response.ok) {
-                const newItems = Array.isArray(data) ? data : [data];
-                setItems(newItems);
-
-                // ✅ sync selectedItem with the updated data
-                setSelectedItem(prev =>
-                    prev ? newItems.find(i => i.product_id === prev.product_id) ?? null : null
-                );
-            } else {
-                alert(data.error);
-            }
-        } catch (error) {
-            alert("Server Error");
-        }
-    };
-
-    useEffect(() => {
-        fetchInventory(); // still runs on mount
-    }, []);
-
-    function getStatus(stock) {
-        if (stock === 0) return 'OUT OF STOCK';
-        if (stock < 10) return 'CRITICAL';
-        if (stock < 20) return 'LOW';
-        return 'IN-STOCK';
+    } catch (error) {
+        alert("Server error");
     }
+};
 
-    getStatusClass();
+const fetchInventory = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/inventory`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+        });
+        const data = await response.json();
+        if (response.ok) {
+            const newItems = Array.isArray(data) ? data : [data];
+            setItems(newItems);
 
-    return(
-        <>
-            <div className="main-container">
-                <HeaderOveriew />
-                <Sidebar />
-                <div className="container products-container">
-                    <div className="products-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>SKU</th>
-                                    <th>PRODUCT</th>
-                                    <th>BRAND</th>
-                                    <th>VARIETY</th>
-                                    <th>SUPPLIER</th>
-                                    <th>PRICE</th>
-                                    <th>TYPE</th>
-                                    <th>CATEGORY</th>
-                                    <th>STATUS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="products-tbody">
-                            {items.map((item) => {
-                                const isSelected = selectedItem?.product_id === item.product_id;
+            // ✅ sync selectedItem with the updated data
+            setSelectedItem(prev =>
+                prev ? newItems.find(i => i.product_id === prev.product_id) ?? null : null
+            );
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        alert("Server Error");
+    }
+};
 
-                                return (
-                                <tr
-                                    key={item.product_id}
-                                    onClick={() =>
-                                    setSelectedItem(prev =>
-                                        prev?.product_id === item.product_id ? null : item
-                                    )}
-                                    style={{
-                                    backgroundColor: isSelected ? '#ddd' : ''
-                                }}>
-                                    <td>{item.sku}</td>
-                                    <td>{item.product_name}</td>
-                                    <td>{item.brand}</td>
-                                    <td>{item.variant}</td>
-                                    <td>N/A</td>  {/* supplier isn't in your query, handle it or add it */}
-                                    <td>{item.price}</td>
-                                    <td>{item.unit_type}</td>
-                                    <td>{item.category_type}</td>
-                                    <td>
-                                        <div className={`status-container ${getStatusClass(item.quantity)}`}>
-                                            {item.status}
-                                        </div>
-                                    </td>
-                                </tr>
-                                );
-                            })}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="product-actions-button">
-                        <button className="addProd-btn" onClick={() => setShowAdd(true)}><img src={plus}/> Add Product</button>
-                        <button
-                            className="editProd-btn"
-                            onClick={() => {
-                                if (!selectedItem) {
-                                alert("Select a product first");
-                                return;
-                                }
-                                setShowEdit(true);
-                        }}>
-                            <img src={pencil}/> Edit Product
-                        </button>
-                        <button 
-                            className="removeProd-btn" 
-                                onClick={() => {
-                                if (!selectedItem) {
-                                alert("Select a product first");
-                                return;
-                                }
-                                setShowRemove(true);
-                            }}>
-                            <img src={trashbin}/> 
-                            Remove Product</button>
-                    </div>
-                    {showAdd && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <AddProduct 
-                                onClose={() => setShowAdd(false)} 
-                                onRefresh={fetchInventory} />
-                            </div>
-                        </div>
-                    )}
-                    {showEdit && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <EditProduct 
-                                    item={selectedItem}
-                                    onClose={() => setShowEdit(false)}
-                                    onRefresh={fetchInventory} />
-                            </div>
-                        </div>
-                    )}
-                    {showRemove && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <RemoveProduct 
-                                    item={selectedItem}
-                                    onClose={() => setShowRemove(false)}
-                                    onRemoved={(id) => {
-                                        setItems(prev => prev.filter(item => item.product_id !== id));
-                                        setSelectedItem(null); // 🔴 CLEAR selection
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
-    );
+useEffect(() => {
+    fetchInventory(); // still runs on mount
+}, []);
+
+function getStatus(stock) {
+    if (stock === 0) return 'OUT OF STOCK';
+    if (stock < 10) return 'CRITICAL';
+    if (stock < 20) return 'LOW';
+    return 'IN-STOCK';
 }
+
+getStatusClass();
+
+return(
+    <>
+        <div className="main-container">
+            <HeaderOveriew />
+            <Sidebar />
+            <div className="container products-container">
+                <div className="products-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                {/* <th>SKU</th>
+                                <th>PRODUCT</th>
+                                <th>BRAND</th>
+                                <th>VARIETY</th>
+                                <th>SUPPLIER</th>
+                                <th>PRICE</th>
+                                <th>TYPE</th>
+                                <th>CATEGORY</th>
+                                <th>STATUS</th> */}
+                                {columns.map(col => (
+                                    <th key={col.key} className={col.key}>{col.label}</th>
+                                ))}
+                                </tr>
+                        </thead>
+                        <tbody className="products-tbody">
+                        {items.map((item) => {
+                            const isSelected = selectedItem?.product_id === item.product_id;
+
+                            return (
+                            <tr
+                                key={item.product_id}
+                                onClick={() =>
+                                setSelectedItem(prev =>
+                                    prev?.product_id === item.product_id ? null : item
+                                )}
+                                style={{
+                                backgroundColor: isSelected ? '#ddd' : ''
+                            }}>
+                                <td>{item.sku}</td>
+                                <td>{item.product_name}</td>
+                                <td>{item.brand}</td>
+                                <td>{item.variant}</td>
+                                <td>N/A</td>  {/* supplier isn't in your query, handle it or add it */}
+                                <td>{item.price}</td>
+                                <td>{item.unit_type}</td>
+                                <td>{item.category_type}</td>
+                                <td>
+                                    <div className={`status-container ${getStatusClass(item.quantity)}`}>
+                                        {item.status}
+                                    </div>
+                                </td>
+                            </tr>
+                            );
+                        })}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="product-actions-button">
+                    <button className="addProd-btn" onClick={() => setShowAdd(true)}><img src={plus}/> Add Product</button>
+                    <button
+                        className="editProd-btn"
+                        onClick={() => {
+                            if (!selectedItem) {
+                            alert("Select a product first");
+                            return;
+                            }
+                            setShowEdit(true);
+                    }}>
+                        <img src={pencil}/> Edit Product
+                    </button>
+                    <button 
+                        className="removeProd-btn" 
+                            onClick={() => {
+                            if (!selectedItem) {
+                            alert("Select a product first");
+                            return;
+                            }
+                            setShowRemove(true);
+                        }}>
+                        <img src={trashbin}/> 
+                        Remove Product</button>
+                </div>
+                {showAdd && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <AddProduct 
+                            onClose={() => setShowAdd(false)} 
+                            onRefresh={fetchInventory} />
+                        </div>
+                    </div>
+                )}
+                {showEdit && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <EditProduct 
+                                item={selectedItem}
+                                onClose={() => setShowEdit(false)}
+                                onRefresh={fetchInventory} />
+                        </div>
+                    </div>
+                )}
+                {showRemove && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <RemoveProduct 
+                                item={selectedItem}
+                                onClose={() => setShowRemove(false)}
+                                onRemoved={(id) => {
+                                    setItems(prev => prev.filter(item => item.product_id !== id));
+                                    setSelectedItem(null); // 🔴 CLEAR selection
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    </>
+);}
 
 export default Products;

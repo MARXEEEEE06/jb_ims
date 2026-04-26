@@ -1,6 +1,6 @@
 function AccountDetails(){
     return(
-        <div className="account-details-container">
+        <div className="container account-details-container">
             This page is under development.
         </div>
     );

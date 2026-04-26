@@ -17,77 +17,94 @@ db.connect(err => {
 // POST /api/orders — create receipt + transaction items
 router.post('/', (req, res) => {
   const {
+    login_id,
     customer_name,
-    contact_num,
-    address,
+    customer_address,
+    customer_contact,
     payment_method,
-    items, // [{ variant_id, unit_price, quantity }]
+    amount_tendered,
+    items, // [{ product_id, quantity, price }]
   } = req.body;
 
-  if (!items || items.length === 0) {
+  if (!items || items.length === 0)
     return res.status(400).json({ error: 'No items in order' });
-  }
 
-  if (!customer_name || !contact_num || !address || !payment_method) {
+  if (!customer_name || !payment_method || !amount_tendered)
     return res.status(400).json({ error: 'Missing required fields' });
-  }
 
   const now = new Date();
-  const date = now.toISOString().split('T')[0];           // YYYY-MM-DD
-  const time = now.toTimeString().split(' ')[0];           // HH:MM:SS
+  const date = now.toISOString().split('T')[0];
+  const time = now.toTimeString().split(' ')[0];
 
   // Step 1: Insert RECEIPT
   db.query(
-    `INSERT INTO RECEIPT (customer_name, contact_num, address, date, time, payment_method)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [customer_name, contact_num, address, date, time, payment_method],
+    `INSERT INTO RECEIPT (customer_name, contact_num, address, date, time, payment_method, amount_tendered)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [customer_name, customer_contact, customer_address, date, time, payment_method, amount_tendered],
     (err, receiptResult) => {
       if (err) {
-        console.error('SQL Error:', err);
+        console.error('Receipt insert error:', err);
         return res.status(500).json({ error: 'Failed to create receipt' });
       }
 
       const receipt_id = receiptResult.insertId;
 
-      // Step 2: Insert TRANSACTION rows (one per item)
-      const transactionValues = items.map(i => [
-        receipt_id,
-        i.variant_id,
-        Number(i.unit_price),
-        Number(i.quantity)
-      ]);
-
-      db.query(
-        `INSERT INTO TRANSACTION (receipt_id, variant_id, unit_price, quantity) VALUES ?`,
-        [transactionValues],
-        (err) => {
-          if (err) {
-            console.error('SQL Error:', err);
-            return res.status(500).json({ error: 'Failed to insert transaction items' });
+      // Step 2: Get variant_id from product_id for each item
+      const variantLookups = items.map(i => new Promise((resolve, reject) => {
+        db.query(
+          `SELECT variant_id FROM VARIANTS WHERE product_id = ? LIMIT 1`,
+          [i.product_id],
+          (err, rows) => {
+            if (err || rows.length === 0) return reject(`No variant for product_id ${i.product_id}`);
+            resolve({ variant_id: rows[0].variant_id, unit_price: i.price, quantity: i.quantity });
           }
+        );
+      }));
 
-          // Step 3: Deduct stock from VARIANTS (non-blocking)
-          items.forEach(i => {
-            db.query(
-              `UPDATE VARIANTS SET quantity = GREATEST(0, quantity - ?) WHERE variant_id = ?`,
-              [i.quantity, i.variant_id],
-              (err) => { if (err) console.error('Stock deduct error:', err); }
-            );
-          });
+      Promise.all(variantLookups)
+        .then(resolvedItems => {
+          // Step 3: Insert TRANSACTION rows
+          const transactionValues = resolvedItems.map(i => [
+            receipt_id, i.variant_id, Number(i.unit_price), Number(i.quantity)
+          ]);
 
-          res.json({
-            message: 'Order created',
-            receipt_id,
-            customer_name,
-            contact_num,
-            address,
-            payment_method,
-            date,
-            time,
-            items,
-          });
-        }
-      );
+          db.query(
+            `INSERT INTO TRANSACTION (receipt_id, variant_id, unit_price, quantity) VALUES ?`,
+            [transactionValues],
+            (err) => {
+              if (err) {
+                console.error('Transaction insert error:', err);
+                return res.status(500).json({ error: 'Failed to insert transaction items' });
+              }
+
+              // Step 4: Deduct stock
+              resolvedItems.forEach(i => {
+                db.query(
+                  `UPDATE VARIANTS SET quantity = GREATEST(0, quantity - ?) WHERE variant_id = ?`,
+                  [i.quantity, i.variant_id],
+                  (err) => { if (err) console.error('Stock deduct error:', err); }
+                );
+              });
+
+              res.json({
+                message: 'Order created',
+                receipt_id,
+                customer_name,
+                customer_address,
+                customer_contact,
+                payment_method,
+                amount_tendered,
+                date,
+                time,
+                items,
+              });
+            }
+          );
+        })
+        .catch(err => {
+          console.error('Variant lookup error:', err);
+          res.status(500).json({ error: 'Variant lookup failed' });
+        });
     }
   );
 });

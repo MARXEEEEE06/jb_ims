@@ -2,7 +2,7 @@ import Login from "./pages/authentication/Login";
 import Dashboard from "./pages/overview/Dashboard";
 import Inventory from "./pages/inventory/Inventory";
 import Products from "./pages/inventory/Products";
-import Orders from './pages/orders/Orders.jsx';
+import Order from './pages/orders/Order.jsx';
 import Brands from "./pages/brands/Brands";
 import Suppliers from "./pages/supplier/Supplier";
 import StockManagement from "./pages/inventory/StockManagement";
@@ -23,7 +23,7 @@ function app(){
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/inventory" element={<Inventory/>} />
         <Route path="/products" element={<Products/>} />
-        <Route path="/orders" element={<Orders />} />
+        <Route path="/order" element={<Order />} />
         <Route path="/brands" element={<Brands/>} />
         <Route path="/suppliers" element={<Suppliers/>} />
         <Route path="/stocks" element={<StockManagement/>} />

@@ -7,7 +7,7 @@ function EditSupplierStatus({ item, onClose, onConfirmed }) {
 
     const handleConfirm = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/edit-supplier-status/${item.supplier_id}`, {
+            const response = await fetch(`${BASE_URL}/suppliers/status/${item.sup_info_id}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: newStatus })
@@ -15,7 +15,7 @@ function EditSupplierStatus({ item, onClose, onConfirmed }) {
             const data = await response.json();
             if (response.ok) {
                 alert(`Supplier marked as ${newStatus}`);
-                if (onConfirmed) onConfirmed(item.supplier_id, newStatus);
+                if (onConfirmed) onConfirmed(item.sup_info_id, newStatus);
                 onClose();
             } else {
                 alert(data.error);
@@ -29,7 +29,7 @@ function EditSupplierStatus({ item, onClose, onConfirmed }) {
         <div className="modal-edit-product">
             <div className="modal-content">
                 <h1>Confirm Status Change</h1>
-                <p>Set "{item?.supplier_name}" to <strong>{newStatus}</strong>?</p>
+                <p>Set "{item?.name}" to <strong>{newStatus}</strong>?</p>
             </div>
             <div className="modal-buttons">
                 <button className="add-btn" onClick={handleConfirm}>Confirm</button>

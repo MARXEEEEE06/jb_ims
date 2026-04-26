@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-export function useKeywordFilter(items, fields = ['prod_name', 'SKU', 'category', 'brand', 'supplier', 'variety']) {
+export function useKeywordFilter(items, fields = ['product_name', 'sku', 'category', 'brand', 'supplier', 'variant']) {
     const [keyword, setKeyword] = useState("");
 
     const filtered = useMemo(() => {

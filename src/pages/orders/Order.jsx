@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
-import ReceiptModal from "../../components/features/orders/ReceiptModal.jsx";
-import useAuth from "../../hooks/UserAuth";
+import ReceiptModal from "../../components/features/order/ReceiptModal.jsx";
+import useAuth from "../../hooks/UserAuth.js";
 import BASE_URL from "../../hooks/server/config.js";
 import "../../css/Site.css";
-import "./Orders.css";
+import "./Order.css";
 
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
-import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
-import { useBrandFilter } from '../../hooks/filters/useBrandFilter';
-import { useSupplierFilter } from '../../hooks/filters/useSupplierFilter';
-import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
-import { useSort } from '../../hooks/filters/useSort';
+import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter.js';
+import { useBrandFilter } from '../../hooks/filters/useBrandFilter.js';
+import { useSupplierFilter } from '../../hooks/filters/useSupplierFilter.js';
+import { useStatusFilter } from '../../hooks/filters/useStatusFilter.js';
+import { useSort } from '../../hooks/filters/useSort.js';
 
-function Orders() {
+function Order() {
     const { user } = useAuth();
     const [items, setItems] = useState([]);         // ✅ single source of truth
     const [cart, setCart] = useState([]);
@@ -31,7 +31,6 @@ function Orders() {
     const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'status');
     const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
-    // ✅ Single fetch, sets items only
     useEffect(() => {
         const fetchInventory = async () => {
             try {
@@ -107,21 +106,31 @@ function Orders() {
             });
             const data = await res.json();
             if (res.ok) {
+                const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                const tax = Math.round(subtotal * 0.10);
+                const grandTotal = subtotal + tax;
+                const tendered = Number(payment.tendered);
+
                 setReceipt({
                     ...data,
+                    receipt_number: data.receipt_id,
+                    issued_at: new Date().toISOString(),
+                    subtotal,
+                    tax_amount: tax,
+                    total_price: grandTotal,
+                    amount_tendered: tendered,
+                    change_amount: tendered - grandTotal,
+                    customer_address: customer.address,
+                    customer_contact: customer.contact,
                     items: cart.map(i => ({
                         product_id: i.product_id,
-                        prod_name: i.prod_name,
+                        prod_name: i.product_name,  // ✅ modal uses prod_name
                         quantity: i.quantity,
                         price: i.price
                     })),
-                    customer_address: customer.address,
-                    customer_contact: customer.contact
                 });
                 setShowReceipt(true);
-                setCart([]);
-                setCustomer({ name: '', address: '', contact: '' });
-                setPayment({ method: 'cash', tendered: '' });
+                // ... reset state
             } else {
                 alert(data.error);
             }
@@ -133,7 +142,7 @@ function Orders() {
         <div className="main-container">
             <HeaderOveriew
                 items={items}
-                field="prod_name"
+                field="product_name"
                 keyword={keyword}
                 setKeyword={setKeyword}
             />
@@ -163,8 +172,8 @@ function Orders() {
                         </select>
                         <select value={sortKey} onChange={e => setSortKey(e.target.value)}>
                             <option value="">Sort by...</option>
-                            <option value="prod_name">Alphabetical</option>
-                            <option value="stock_quantity">Stock</option>
+                            <option value="product_name">Alphabetical</option>
+                            <option value="quantity">Stock</option>
                             <option value="status">Status</option>
                         </select>
                         <select value={order} onChange={e => setOrder(e.target.value)}>
@@ -187,14 +196,14 @@ function Orders() {
                             </thead>
                             <tbody>
                                 {/* ✅ use finalFiltered instead of products */}
-                                {finalFiltered.filter(p => p.stock_quantity > 0).map(p => (
+                                {finalFiltered.filter(p => p.quantity > 0).map(p => (
                                     <tr key={p.product_id}>
-                                        <td>{p.prod_name}</td>
+                                        <td>{p.product_name}</td>
                                         <td>{p.brand}</td>
                                         <td>₱{p.price}</td>
-                                        <td>{p.stock_quantity}</td>
+                                        <td>{p.quantity}</td>
                                         <td>
-                                            <div className={`status-container ${getStatusClass(p.stock_quantity)}`}>
+                                            <div className={`status-container ${getStatusClass(p.quantity)}`}>
                                                 {p.status}
                                             </div>
                                         </td>
@@ -230,7 +239,7 @@ function Orders() {
                             <p className="empty-cart">No items added yet.</p>
                         ) : cart.map(i => (
                             <div className="cart-row" key={i.product_id}>
-                                <span>{i.prod_name}</span>
+                                <span>{i.product_name}</span>
                                 <div className="qty-control">
                                     <button onClick={() => updateQty(i.product_id, i.quantity - 1)}>-</button>
                                     <span>{i.quantity}</span>
@@ -283,4 +292,4 @@ function Orders() {
     );
 }
 
-export default Orders;
+export default Order;

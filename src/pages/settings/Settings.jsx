@@ -14,8 +14,10 @@ function Settings() {
 
   if (token) {
     const decoded = jwtDecode(token);
+    console.log("Decoded token:", decoded);
     role = decoded.role;
   }
+  console.log("Role in Settings:", role); // add this
 
   const renderContent = () => {
     switch (activeTab) {
@@ -34,7 +36,6 @@ function Settings() {
     <div className="main-container">
       <HeaderOveriew />
       <Sidebar />
-      <div>
         <div className="container settings-container">
             <button
             className="settings-btn acc-det"
@@ -46,7 +47,7 @@ function Settings() {
             onClick={() => setActiveTab("security")}>
             Security
             </button>
-            {role === "Admin" && (
+            {role === "admin" && (
               <button
                 className="settings-btn acc-manage"
                 onClick={() => setActiveTab("account-management")}
@@ -54,9 +55,8 @@ function Settings() {
                 Account Management
               </button>
             )}
+          <div className="settings-content">{renderContent()}</div>
         </div>
-        <div className="settings-content">{renderContent()}</div>
-      </div>
     </div>
   );
 }

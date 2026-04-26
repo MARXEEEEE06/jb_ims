@@ -24,24 +24,25 @@ function getStatus(quantity) {
 // POST /api/inventory
 router.post('/', (req, res) => {
   const sql = `
-    SELECT 
-      v.variant_id,
-      v.sku,
-      v.variant,
-      v.price,
-      v.quantity,
-      p.product_id,
-      p.product_name,
-      p.brand,
-      c.category_type,
-      u.unit_type,
-      si.name AS supplier
+  SELECT 
+    v.variant_id,
+    v.sku,
+    v.variant,
+    v.price,
+    v.quantity,
+    p.product_id,
+    p.product_name,
+    b.brand_name AS brand,
+    c.category_type,
+    u.unit_type,
+    si.name AS supplier
     FROM VARIANTS v
     JOIN PRODUCTS p ON v.product_id = p.product_id
+    LEFT JOIN BRAND b ON p.brand_id = b.brand_id
     LEFT JOIN CATEGORY c ON p.category_id = c.category_id
     LEFT JOIN UNIT u ON v.unit_id = u.unit_id
     LEFT JOIN supplier_items sim ON p.product_id = sim.product_id
-    LEFT JOIN supplier_info si ON sim.sup_info_id = si.sup_info_id
+    LEFT JOIN supplier_info si ON sim.sup_info_id = si.sup_info_id AND si.status = 'active'
   `;
 
   db.query(sql, (err, results) => {

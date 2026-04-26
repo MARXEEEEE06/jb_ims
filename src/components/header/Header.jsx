@@ -7,6 +7,7 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
         "/dashboard": "Dashboard",
         "/inventory": "Inventory",
         "/products": "Products",
+        "/orders": "Order",
         "/brands": "Brands",
         "/suppliers": "Supplier",
         "/stocks": "Stock Management",

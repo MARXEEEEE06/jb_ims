@@ -44,15 +44,14 @@ router.post("/", (req, res) => {
       return res.status(500).json({ error: "Server error inserting user info" });
     }
 
-    const user_info_id = result.insertId;
+    const user_id = result.insertId; // ← was user_info_id
 
-    // Then insert into login_credentials
     const loginSql = `
-      INSERT INTO login_credentials (user_info_id, username, password)
+      INSERT INTO login_credentials (user_id, username, password)
       VALUES (?, ?, ?)
     `;
 
-    db.query(loginSql, [user_info_id, username, password], (err, loginResult) => {
+    db.query(loginSql, [user_id, username, password], (err, loginResult) => {
       if (err) {
         console.error("SQL Error (login_credentials):", err);
         return res.status(500).json({ error: "Server error inserting login credentials" });
@@ -60,7 +59,7 @@ router.post("/", (req, res) => {
 
       res.json({
         message: "User added successfully",
-        user_id: user_info_id,
+        user_id: user_id,
         login_id: loginResult.insertId,
       });
     });

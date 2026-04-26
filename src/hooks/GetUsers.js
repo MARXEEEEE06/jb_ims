@@ -22,13 +22,15 @@ db.connect((err) => {
 router.get("/", (req, res) => {
   const sql = `
     SELECT 
+      lc.login_id,
       lc.username,
+      ui.user_id,
       ui.email,
       ui.contact_num,
-      ui.role_id,
-      ui.user_info_id
+      r.role_type
     FROM login_credentials lc
-    JOIN user_info ui ON lc.user_info_id = ui.user_info_id
+    JOIN user_info ui ON lc.user_id = ui.user_id
+    JOIN role r ON ui.role_id = r.role_id
   `;
 
   db.query(sql, (err, results) => {

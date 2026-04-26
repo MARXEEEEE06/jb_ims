@@ -4,7 +4,6 @@ import HeaderOveriew from "../../components/header/Header.jsx";
 import AddSupplier from "../../components/features/suppliers/AddSupplier.jsx";
 import EditSupplierStatus from "../../components/features/suppliers/EditSupplierStatus.jsx";
 import BASE_URL from "../../hooks/server/config";
-import getStatusClass from '../../hooks/inventory/GetStatus.js';
 import "./Supplier.css";
 import {
     plus,
@@ -29,13 +28,13 @@ function Supplier() {
                 const newItems = Array.isArray(data) ? data : [data];
                 setItems(newItems);
                 setSelectedItem(prev =>
-                    prev ? newItems.find(i => i.supplier_id === prev.supplier_id) ?? null : null
+                    prev ? newItems.find(i => i.sup_info_id === prev.sup_info_id) ?? null : null
                 );
             } else {
                 alert(data.error);
             }
         } catch (error) {
-            alert("JSX Server Error");
+            alert("Server Error");
         }
     };
 
@@ -69,19 +68,19 @@ function Supplier() {
                             </thead>
                             <tbody className="suppliers-tbody">
                                 {items.map((item) => {
-                                    const isSelected = selectedItem?.supplier_id === item.supplier_id;
+                                    const isSelected = selectedItem?.sup_info_id === item.sup_info_id;
                                     return (
                                         <tr
-                                            key={item.supplier_id}
+                                            key={item.sup_info_id}
                                             onClick={() =>
                                                 setSelectedItem(prev =>
-                                                    prev?.supplier_id === item.supplier_id ? null : item
+                                                    prev?.sup_info_id === item.sup_info_id ? null : item
                                                 )
                                             }
                                             style={{ backgroundColor: isSelected ? '#ddd' : '' }}
                                         >
-                                            <td>{item.supplier_name}</td>
-                                            <td>{item.contact_no}</td>
+                                            <td>{item.name}</td>
+                                            <td>{item.contact_num}</td>
                                             <td>{item.email}</td>
                                             <td>{item.address}</td>
                                             <td>{item.total_products}</td>
@@ -141,7 +140,7 @@ function Supplier() {
                                     onConfirmed={(id, newStatus) => {
                                         setItems(prev =>
                                             prev.map(i =>
-                                                i.supplier_id === id ? { ...i, status: newStatus } : i
+                                                i.sup_info_id === id ? { ...i, status: newStatus } : i
                                             )
                                         );
                                         setSelectedItem(null);

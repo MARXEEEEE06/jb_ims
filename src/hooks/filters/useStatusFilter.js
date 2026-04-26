@@ -5,7 +5,7 @@ export function useStatusFilter(items) {
   const filtered = useMemo(() => {
     if (!status) return items;
     return items.filter(item => {
-      const qty = Number(item.stock_quantity);
+      const qty = Number(item.quantity);
       if (status === 'in-stock')      return qty >= 20;
       if (status === 'low')           return qty >= 10 && qty < 20;
       if (status === 'critical')      return qty > 0 && qty < 10;
