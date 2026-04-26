@@ -51,7 +51,7 @@ app.use('/api/removeBrand', removeBrandRoute);
 // Add this AFTER all your app.use('/api/...') routes
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('*', (req, res) => {
+app.get('*path', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
