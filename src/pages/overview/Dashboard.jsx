@@ -5,7 +5,7 @@ import BarChart from "../../components/charts/BarChart.jsx";
 import { supplyDemandData } from "../../hooks/data/data.js";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
-import useAuth from "../../../UserAuth.js";
+import useAuth from "../../hooks/UserAuth.js";
 import BASE_URL from "../../hooks/server/config.js";
 import "./Dashboard.css";
 import "../../css/Site.css";
