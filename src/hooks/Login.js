@@ -1,13 +1,13 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const cors = require('cors');
 const router = express.Router();
 const jwt  = require('jsonwebtoken');
 const { JWT_SECRET, JWT_EXPIRES_IN } = require('./config')
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+// const app = express();
+// app.use(cors());
+// app.use(bodyParser.json());
 const db = require('./db');
 
 router.post('/', (req, res) => {
