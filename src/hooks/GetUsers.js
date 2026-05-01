@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const db = require('./db');
+const db = require('./DB');
 const verifyToken = require("./Auth");
-const logActivity = require("./logger");
+const logActivity = require("./Logger");
 
 function requireAdmin(req, res, next) {
   const role = String(req.user?.role ?? "").toLowerCase();

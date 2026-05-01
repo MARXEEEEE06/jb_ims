@@ -1,8 +1,8 @@
 // addbrand.js
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
-const logActivity = require('./logger');
+const db = require('./DB');
+const logActivity = require('./Logger');
 
 router.post('/', (req, res) => {
   const { brand_name, description = '' } = req.body;

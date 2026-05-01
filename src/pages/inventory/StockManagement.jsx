@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import BASE_URL from "../../hooks/server/config";
 import getStatusClass from "../../hooks/inventory/GetStatus";
+import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
 import HeaderOveriew from "../../components/header/Header";
 import Sidebar from "../../components/sidebar/Sidebar";
 import "./StockManagement.css";
@@ -16,7 +17,7 @@ function StockManagement() {
         try {
             const response = await fetch(`${BASE_URL}/inventory`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: getAuthHeaders({ "Content-Type": "application/json" }),
                 body: JSON.stringify({}),
             });
             const data = await response.json();
@@ -48,6 +49,7 @@ function StockManagement() {
     };
 
     const handleStockChange = async (variantId, delta) => {
+        console.log('handleStockChange called', variantId, delta); // add this
         if (!delta || Number.isNaN(Number(delta))) {
             setError("Please enter a valid adjustment.");
             return;
@@ -57,12 +59,10 @@ function StockManagement() {
             setIsSaving(true);
             setError("");
 
-            const token = localStorage.getItem("token");
             const response = await fetch(`${BASE_URL}/stock/${variantId}`, {
                 method: "PATCH",
                 headers: {
-                    "Content-Type": "application/json",
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    ...getAuthHeaders({ "Content-Type": "application/json" }),
                 },
                 body: JSON.stringify({ adjustment: Number(delta) }),
             });
@@ -191,4 +191,3 @@ function StockManagement() {
 }
 
 export default StockManagement;
-

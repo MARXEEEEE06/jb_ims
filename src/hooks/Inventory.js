@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const db = require('./DB');
 
 function getStatus(quantity) {
   if (quantity === 0) return 'OUT OF STOCK';

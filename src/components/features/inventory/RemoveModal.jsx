@@ -1,19 +1,24 @@
 import React from "react";
 import BASE_URL from "../../../hooks/server/config";
+import getAuthHeaders from "../../../hooks/server/getAuthHeaders.js";
 import "./EditProduct.css";
 
 function RemoveProduct({ item, onClose, onRemoved }) {
 
     const handleRemove = async () => {
         try {
-            const response = await fetch(
-                `${BASE_URL}/removeproduct/${item.product_id}`,
-                {
-                    method: "DELETE",
-                }
-            );
+            const variantId = item?.variant_id;
+            if (!variantId) {
+                alert("Missing variant id for this item.");
+                return;
+            }
 
-            const data = await response.json();
+            const response = await fetch(`${BASE_URL}/removeproduct/${variantId}`, {
+                method: "DELETE",
+                headers: getAuthHeaders(),
+            });
+
+            const data = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 alert("Product removed successfully");
@@ -23,7 +28,7 @@ function RemoveProduct({ item, onClose, onRemoved }) {
 
                 onClose(); // close modal
             } else {
-                alert(data.error);
+                alert(data.error || "Failed to remove product.");
             }
         } catch (error) {
             alert("Server Error");
@@ -34,7 +39,7 @@ function RemoveProduct({ item, onClose, onRemoved }) {
         <div className="modal-edit-product">
             <div className="modal-content">
                 <h1>Confirm Removal</h1>
-                <p>Are you sure you want to remove "{item?.prod_name}"?</p>
+                <p>Are you sure you want to remove "{item?.product_name}"?</p>
             </div>
 
             <div className="modal-buttons">

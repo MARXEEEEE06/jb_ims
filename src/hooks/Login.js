@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const db = require('./db');
-const logActivity = require('./logger');
+const db = require('./DB');
+const logActivity = require('./Logger');
 
 const app = express();
 app.use(cors());

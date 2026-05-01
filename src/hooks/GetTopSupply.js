@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const db = require('./DB');
 
 // GET top 10 products by stock
 router.get('/', (req, res) => {

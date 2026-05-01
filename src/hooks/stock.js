@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
-const logActivity = require('./logger');
+const db = require('./DB');
+const logActivity = require('./Logger');
 
 router.patch('/:variantId', (req, res) => {
   const { variantId } = req.params;

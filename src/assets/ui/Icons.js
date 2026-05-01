@@ -19,6 +19,8 @@ import pencil from "../../assets/ui/update/pencil1.png"
 import trashbin from "../../assets/ui/update/bin1.png"
 import eyeShowToggle from "../../assets/ui/eyeShowToggle.png"
 import eyeHideToggle from "../../assets/ui/eyeHideToggle.png"
+import diskette from "./diskette.png"
+import printer from "./printer.png"
 
 export {
     favicon,
@@ -41,5 +43,7 @@ export {
     pencil,
     trashbin,
     eyeShowToggle,
-    eyeHideToggle
+    eyeHideToggle,
+    diskette,
+    printer
 };

@@ -6,6 +6,7 @@ import EditProduct from "../../components/features/inventory/EditProduct.jsx";
 import RemoveProduct from '../../components/features/inventory/RemoveModal.jsx';
 import BASE_URL from "../../hooks/server/config"
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
+import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
 import "./Products.css";
 import { COLUMNS } from '../../hooks/data/tableColumns.js';
 import { 
@@ -30,7 +31,8 @@ const [showRemove, setShowRemove] = useState(false);
 
 const [selectedItem, setSelectedItem] = useState(null);
 
-const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'supplier', 'price', 'type', 'category', 'status'];
+// const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'supplier', 'price', 'type', 'category', 'status'];
+const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'price', 'type', 'category', 'status'];
 const columns = COLUMNS.filter(col => visibleKeys.includes(col.key));
 
 const handleEdit = (item) => {
@@ -61,7 +63,7 @@ const fetchInventory = async () => {
     try {
         const response = await fetch(`${BASE_URL}/inventory`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: getAuthHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify({}),
         });
         const data = await response.json();
@@ -134,9 +136,9 @@ return(
                             }}>
                                 <td>{item.sku}</td>
                                 <td>{item.product_name}</td>
-                                <td>{item.brand}</td>
+                                <td>{item.brand ?? 'N/A'}</td>
                                 <td>{item.variant}</td>
-                                <td>N/A</td>  {/* supplier isn't in your query, handle it or add it */}
+                                {/* <td>N/A</td>  supplier isn't in your query, handle it or add it */}
                                 <td>{item.price}</td>
                                 <td>{item.unit_type}</td>
                                 <td>{item.category_type}</td>

@@ -6,6 +6,7 @@ import { COLUMNS } from '../../hooks/data/tableColumns.js';
 
 import BASE_URL from '../../hooks/server/config.js';
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
+import getAuthHeaders from '../../hooks/server/getAuthHeaders.js';
 
 // Import filter hooks
 import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
@@ -38,7 +39,7 @@ function Inventory() {
                 setIsLoading(true);
                 const response = await fetch(`${BASE_URL}/inventory`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getAuthHeaders({ "Content-Type": "application/json" }),
                     body: JSON.stringify({}),
                 });
                 const data = await response.json();
@@ -57,6 +58,12 @@ function Inventory() {
 
         fetchInventory();
     }, []);
+    
+    useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sortParam = params.get('sort');
+    if (sortParam) setSortKey(sortParam);
+    }, [setSortKey]);
 
     getStatusClass();
 
@@ -133,7 +140,7 @@ function Inventory() {
                                     <tr key={idx}>
                                         <td>{item.sku}</td>
                                         <td>{item.product_name}</td>
-                                        <td>{item.brand}</td>
+                                        <td>{item.brand ?? 'N/A'}</td>
                                         <td>{item.variant}</td>
                                         <td>{item.supplier}</td>
                                         <td>{item.quantity}</td>

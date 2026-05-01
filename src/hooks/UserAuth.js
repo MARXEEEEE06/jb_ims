@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import BASE_URL from "./server/config.js";
 
 function useAuth() {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // ✅ was missing
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -24,8 +25,14 @@ function useAuth() {
         setLoading(false);
     }, []);
 
-    const logout = () => {
-        localStorage.removeItem("token");
+    const logout = async () => {
+        try {
+            await fetch(`${BASE_URL}/logout`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            });
+        } catch (_) {}
+        localStorage.removeItem('token');
         setUser(null);
     };
 

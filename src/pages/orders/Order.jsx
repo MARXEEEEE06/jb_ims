@@ -4,6 +4,7 @@ import HeaderOveriew from "../../components/header/Header.jsx";
 import ReceiptModal from "../../components/features/order/ReceiptModal.jsx";
 import useAuth from "../../hooks/UserAuth.js";
 import BASE_URL from "../../hooks/server/config.js";
+import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
 import "../../css/Site.css";
 import "./Order.css";
 
@@ -37,7 +38,7 @@ function Order() {
                 setIsLoading(true);
                 const response = await fetch(`${BASE_URL}/inventory`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({}),
                 });
                 const data = await response.json();
@@ -89,7 +90,7 @@ function Order() {
         try {
             const res = await fetch(`${BASE_URL}/orders`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({
                     login_id: user?.user_id,
                     customer_name: customer.name,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BASE_URL from "../../../hooks/server/config";
+import getAuthHeaders from "../../../hooks/server/getAuthHeaders.js";
 import "./AddProduct.css";
 
 function AddProduct({ onClose, onRefresh }){
@@ -23,9 +24,7 @@ function AddProduct({ onClose, onRefresh }){
         try{
             const response = await fetch(`${BASE_URL}/add-product`,{
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: getAuthHeaders({ "Content-Type": "application/json" }),
                 body: JSON.stringify({
                     product_name,
                     brand_id,

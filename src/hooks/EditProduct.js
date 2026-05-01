@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const db = require('./DB');
+const logActivity = require('./Logger');
 
 function generateSKU(product_name, brand_name, variant) {
   const p = product_name.substring(0, 3).toUpperCase();
@@ -21,6 +22,8 @@ router.post('/', (req, res) => {
     quantity,
     unit_type,
   } = req.body;
+
+    const userId = req.user?.user_id ?? null; // add this
 
   if (!variant_id || !product_id || !product_name || !brand_id || !category_type || !variant || !price || !unit_type) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -53,6 +56,14 @@ router.post('/', (req, res) => {
                   [unit_id, sku, Number(quantity), Number(price), variant, variant_id],
                   (err) => {
                     if (err) return res.status(500).json({ error: 'Server error' });
+
+                    logActivity(userId, 'PRODUCT_UPDATED', 'variant', Number(variant_id), {                      product_name,
+                      brand: brand_name,
+                      category: category_type,
+                      variant,
+                      price: Number(price),
+                      quantity: Number(quantity),
+                    });
 
                     db.query(
                       `SELECT p.product_id, p.product_name, b.brand_name AS brand, b.brand_id,

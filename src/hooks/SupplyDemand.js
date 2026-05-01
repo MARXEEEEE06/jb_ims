@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const db = require('./DB');
 
 function formatDateOnly(d) {
   const year = d.getFullYear();
@@ -18,8 +18,9 @@ function getMonthRange(monthParam) {
   }
 
   const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  // Default to previous month since current month may have no data yet
+  const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const end = new Date(now.getFullYear(), now.getMonth(), 1);
   return { start, end };
 }
 

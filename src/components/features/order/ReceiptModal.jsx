@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import jsPDF from 'jspdf';
 import './ReceiptModal.css';
+import { diskette, printer } from '../../../assets/ui/Icons.js';
 
 function ReceiptModal({ receipt, onClose }) {
     const receiptRef = useRef();
@@ -128,9 +129,9 @@ function ReceiptModal({ receipt, onClose }) {
         <div className="receipt-overlay">
             <div className="receipt-modal">
                 <div className="receipt-actions">
-                    <button onClick={handlePrint}>🖨 Print</button>
-                    <button onClick={handleSavePDF}>💾 Save as PDF</button>
-                    <button onClick={onClose}>✕ Close</button>
+                    <button className="print" onClick={handlePrint}><img className="icon" src={printer}/> Print</button>
+                    <button className="save" onClick={handleSavePDF}><img className="icon" src={diskette}/> Save as PDF</button>
+                    <button className="receipt-close" onClick={onClose}>✕ Close</button>
                 </div>
 
                 <div className="receipt-content" ref={receiptRef}>

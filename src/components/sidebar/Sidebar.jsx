@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/UserAuth";
+import useAuth from "../../hooks/UserAuth.js";
 import "../../css/Site.css";
 import "./Sidebar.css";
+import BASE_URL from "../../hooks/server/config.js";
 import {
     home,
     clipboard,
@@ -17,9 +18,14 @@ import {
 } from "../../assets/ui/Icons";
 
 function Sidebar() {
-    const { user, loading } = useAuth();
+    const { user, logout, loading } = useAuth();
     const navigate = useNavigate();
     const [username, setUsername] = useState("User");
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
+    };
 
     useEffect(() => {
         if (!loading && !user) navigate("/");
@@ -79,10 +85,9 @@ function Sidebar() {
 
                 <a
                     className="sidebar-footer-item nav-item sidebar-item-logout"
-                    onClick={() => localStorage.removeItem("token")}
-                    href="/"
+                    onClick={handleLogout}
                 >
-                    <img src={logout_icon} alt="Logout" />Logout
+                <img src={logout_icon} alt="Logout" />Logout
                 </a>
             </div>
         </div>

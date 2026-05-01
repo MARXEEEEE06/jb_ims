@@ -7,7 +7,7 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
         "/dashboard": "Dashboard",
         "/inventory": "Inventory",
         "/products": "Products",
-        "/orders": "Order",
+        "/order": "Order",
         "/brands": "Brands",
         "/suppliers": "Supplier",
         "/stocks": "Stock Management",
@@ -20,16 +20,17 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
 
     const pathname = window.location.pathname;
     const headerTitle = headerTitles[pathname] || "Page";
-    const hideSearchOn = ["/dashboard", 
-        "/settings", 
+    const showSearchOn = ["/inventory", 
+        "/products", 
         "/suppliers",
+        "/order",
         "/stocks",];
-    const showSearch = !hideSearchOn.includes(pathname);
+    const hideSearch = showSearchOn.includes(pathname);
 
     return (
         <div className="header">
             <p className="header-title">{headerTitle}</p>
-            {showSearch && (
+            {hideSearch && (
                 <input
                     className="input-search"
                     type="text"

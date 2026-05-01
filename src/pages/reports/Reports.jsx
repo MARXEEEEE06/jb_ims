@@ -156,8 +156,15 @@ function Reports() {
         setSortOrder('desc');
     };
 
+    // const formatDateTime = (val) => {
+    //     if (!val) return '—';
+    //     return val.replace('T', ' ').substring(0, 16);
+    // };
+
     const formatDateTime = (val) => {
         if (!val) return '—';
+        // Append Z to prevent JS from treating it as UTC
+        // OR just slice the string directly without parsing
         return val.replace('T', ' ').substring(0, 16);
     };
 

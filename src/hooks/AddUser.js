@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
-const logActivity = require('./logger');
+const db = require('./DB');
+const logActivity = require('./Logger');
 const verifyToken = require('./Auth');
 
 function requireAdmin(req, res, next) {

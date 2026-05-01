@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const db = require("./db");
+const db = require("./DB");
 const verifyToken = require("./Auth");
-const logActivity = require("./logger");
+const logActivity = require("./Logger");
 
 router.post("/", verifyToken, (req, res) => {
   const userId = req.user.user_id;

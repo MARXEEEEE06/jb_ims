@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
-const logActivity = require('./logger');
+const db = require('./DB');
+const logActivity = require('./Logger');
 
 // PATCH /api/stock/:variantId
 router.patch('/:variantId', (req, res) => {
+    console.log('PATCH /stock hit', req.params.variantId, req.body);
+
   const { variantId } = req.params;
   const { adjustment } = req.body;
   const userId = req.user?.user_id ?? null;

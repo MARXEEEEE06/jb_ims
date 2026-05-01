@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BASE_URL from "../../../hooks/server/config";
+import getAuthHeaders from "../../../hooks/server/getAuthHeaders.js";
 import "./EditProduct.css";
 
 function EditProduct({ item, onClose, onRefresh }){
@@ -22,11 +23,15 @@ function EditProduct({ item, onClose, onRefresh }){
         setIsLoading(true);
 
         try{
+            if (!item?.variant_id || !item?.product_id) {
+                alert("Missing product identifiers.");
+                setIsLoading(false);
+                return;
+            }
+
             const response = await fetch(`${BASE_URL}/edit-product`,{
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: getAuthHeaders({ "Content-Type": "application/json" }),
                 body: JSON.stringify({
                     variant_id: item.variant_id,
                     product_id: item.product_id,
@@ -40,7 +45,7 @@ function EditProduct({ item, onClose, onRefresh }){
                     price: Number(price) || 0,
                 })
             });
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if(response.ok){
                 onRefresh();   // ✅ re-fetches the list
@@ -48,7 +53,7 @@ function EditProduct({ item, onClose, onRefresh }){
                 alert("Item updated successfully!");
             }
             else{
-                alert(data.error);
+                alert(data.error || "Failed to update product.");
             }
         }catch(error){
             alert("Server Error")

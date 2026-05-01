@@ -32,42 +32,45 @@ function Dashboard() {
     }
 }, [user, loading, navigate]);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-        try {
-            const res = await fetch(`${BASE_URL}/getprodcount`);
-            const data = await res.json();
-            setStats(data);
-        } catch (error) {
-            console.error("Failed to fetch stats", error);
-        }
-        };
+useEffect(() => {
+    const fetchStats = async () => {
+    try {
+        const res = await fetch(`${BASE_URL}/getprodcount`);
+        const data = await res.json();
+        setStats(data);
+    } catch (error) {
+        console.error("Failed to fetch stats", error);
+    }
+    };
 
-        fetchStats();
-    }, []);
+    fetchStats();
+}, []);
 
-    if (loading) return null; // ✅ render nothing while checking
+if (loading) return null; // ✅ render nothing while checking
 
-    return(
-        <div className="main-container">
-            <HeaderOveriew />
-            <Sidebar />
-            <div className="container dashboard-container">
-                <div className="card card-data data-card-products">
+return(
+    <div className="main-container">
+        <HeaderOveriew />
+        <Sidebar />
+        <div className="container dashboard-container">
+            <div className="card-container">
+                <a className="card card-data data-card-products" href="/inventory">
                     <img src={products_box} alt={products_box}/>
-                    <h1>Total Products</h1>
+                    <h1>Total <br/>Products</h1>
                     <p>{stats.total_products}</p>
-                </div>
-                <div className="card card-data card-data-suppliers">
+                </a>
+                <a className="card card-data card-data-suppliers" href="/suppliers">
                     <img src={supplier2} alt={supplier2}/>
-                    <h1>Total Suppliers</h1>
+                    <h1>Total <br/>Suppliers</h1>
                     <p>{stats.total_suppliers}</p>
-                </div>
-                <div className="card card-data card-data-stock">
+                </a>
+                <a className="card card-data card-data-stock" href="/inventory?sort=status">                    
                     <img src={low_stock} alt={low_stock}/>
-                    <h1>Stock Alerts</h1>
+                    <h1>Stock <br/>Alerts</h1>
                     <p>{stats.low_stock}</p>
-                </div>
+                </a>
+            </div>
+            <div className="graph-container">
                 <div className="charts charts-histogram">
                     <Histogram />
                 </div>
@@ -76,7 +79,8 @@ function Dashboard() {
                 </div>
             </div>
         </div>
-    );
+    </div>
+);
 }
 
 export default Dashboard;

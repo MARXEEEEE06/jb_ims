@@ -20,28 +20,28 @@ function Histogram() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchSupplyDemand = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  const fetchSupplyDemand = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${BASE_URL}/supply-demand/monthly`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        });
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${BASE_URL}/supply-demand/monthly?month=2026-04`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
 
-        const payload = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(payload?.error || "Failed to fetch supply/demand.");
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(payload?.error || "Failed to fetch supply/demand.");
 
-        setRows(Array.isArray(payload?.data) ? payload.data : []);
-        setRange(payload?.range || null);
-      } catch (e) {
-        setError(e?.message || "Failed to fetch supply/demand.");
-        setRows([]);
-        setRange(null);
-      } finally {
-        setLoading(false);
-      }
+      setRows(Array.isArray(payload?.data) ? payload.data : []);
+      setRange(payload?.range || null);
+    } catch (e) {
+      setError(e?.message || "Failed to fetch supply/demand.");
+      setRows([]);
+      setRange(null);
+    } finally {
+      setLoading(false);
+    }
     };
 
     fetchSupplyDemand();
@@ -87,7 +87,7 @@ function Histogram() {
 
   if (loading) return <div style={{ padding: 12 }}>Loading supply/demand…</div>;
   if (error) return <div style={{ padding: 12, color: "#b00020" }}>{error}</div>;
-  if (!rows.length) return <div style={{ padding: 12 }}>No supply/demand data for this month.</div>;
+  if (!rows.length) return <div style={{  padding: 12 }}>No supply/demand data for this month.</div>;
 
   return <Bar data={chartData} options={options} />;
 }

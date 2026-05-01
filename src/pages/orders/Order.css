@@ -3,12 +3,12 @@
     display: flex;
     gap: 20px;
     padding: 10px;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
 .orders-products {
     flex: 2;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
 .orders-summary {
