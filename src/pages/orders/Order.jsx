@@ -200,7 +200,7 @@ function Order() {
                                 {finalFiltered.filter(p => p.quantity > 0).map(p => (
                                     <tr key={p.product_id}>
                                         <td>{p.product_name}</td>
-                                        <td>{p.brand}</td>
+                                        <td>{p.brand ?? 'N/A'}</td>
                                         <td>₱{p.price}</td>
                                         <td>{p.quantity}</td>
                                         <td>
@@ -257,7 +257,9 @@ function Order() {
                         <div className="grand-total"><span>Grand Total</span><span>₱{grandTotal}</span></div>
                     </div>
                     <div className="payment-info">
+                        <p className='payment-label'>Payment method:</p>
                         <select
+                        className='payment-method'
                             value={payment.method}
                             onChange={e => setPayment(p => ({ ...p, method: e.target.value }))}>
                             <option value="cash">Cash</option>

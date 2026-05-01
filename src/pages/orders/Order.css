@@ -32,17 +32,18 @@
     flex-direction: column;
     gap: 8px;
     max-height: 200px;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
 .cart-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
     background: #fff;
     border-radius: 10px;
     padding: 6px 10px;
     gap: 8px;
+    font-size: 10px;
 }
 
 .qty-control {
@@ -89,6 +90,18 @@
     font-size: 18px;
 }
 
+
+.payment-label{
+    margin: 0;
+}
+
+.payment-method{
+    padding: 5px;
+    border: none;
+    border-radius: 25px;
+    &:hover{cursor: pointer; background-color: #c6d5db;}
+}
+
 .payment-info {
     display: flex;
     flex-direction: column;
@@ -115,4 +128,11 @@
 .submit-order-btn:hover {
     font-size: 18px;
     font-family: garet-heavy;
+}
+
+button{
+    border: none;
+    border-radius: 50px;
+    padding: 5px;
+    &:hover{cursor: pointer; background-color: #cccccc;}
 }

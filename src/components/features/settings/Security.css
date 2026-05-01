@@ -1,97 +1,193 @@
-.change-pass-btn,
-.confirm-btn,
-.cancel-btn{
-  border: none;
-  padding: 10px 20px;
-  border-radius: 50px;
-  cursor: pointer;
-  margin-right: 10px;
+@import "../../../css/Site.css";
+
+.security-container {
+    padding: 20px;
 }
 
-.change-pass-btn{
-  background: #17224d;
-  color: white;
+.security-container h1 {
+    margin-bottom: 0;
 }
 
-.confirm-btn{
-  background: #3498db;
-  color: white;
+.security-container h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-.cancel-btn{
-  background: #e74c3c;
-  color: white;
+.security-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-family: garet-book, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
 }
 
-.security-msg{
-  margin-top: 15px;
-  font-weight: bold;
+/* ── Own password section ── */
+.security-own {
+    border: 1px solid #e6edf0;
+    border-radius: 16px;
+    padding: 14px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
 }
 
+.security-own label {
+    display: block;
+    margin-bottom: 2px;
+    font-family: garet-book, sans-serif;
+    font-size: 13px;
+}
+
+.security-own input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccd6dd;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+}
+
+/* ── Divider ── */
+.security-divider {
+    margin: 24px 0;
+    border: none;
+    border-top: 1px solid #e6edf0;
+}
+
+/* ── Admin section: same grid as account-details ── */
+.security-admin-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 18px;
+    margin-top: 14px;
+}
+
+.member-row {
+    cursor: pointer;
+}
+
+.member-row:hover {
+    background-color: #f2f6f8;
+}
+
+.member-row.selected {
+    background-color: #eaf1ff;
+}
+
+/* ── Admin form panel — mirrors .member-editor ── */
+.admin-pass-form {
+    border: 1px solid #e6edf0;
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-pass-form h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.admin-pass-form label {
+    display: block;
+    margin-bottom: 2px;
+    font-family: garet-book, sans-serif;
+    font-size: 13px;
+}
+
+.admin-pass-form input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccd6dd;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+}
+
+.admin-pass-form .input-error {
+    border-color: red;
+}
+
+.admin-pass-form .error-msg {
+    color: red;
+    font-size: 0.75rem;
+    margin-top: -4px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.admin-pass-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* ── Buttons ── */
+.security-container .confirm-btn,
+.security-container .cancel-btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.security-container .confirm-btn {
+    background: #3498db;
+    color: white;
+}
+
+.security-container .cancel-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.security-container .confirm-btn:disabled,
+.security-container .cancel-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.security-msg {
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+/* ── Password hints ── */
 .password-hints {
-  margin: 8px 0 12px;
-  font-size: 0.9rem;
-  color: #2c3e50;
+    margin: 4px 0 8px;
 }
 
 .password-hints-title {
-  font-weight: 600;
-  margin-bottom: 6px;
+    font-size: 13px;
+    margin-bottom: 4px;
 }
 
 .password-hints-list {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.password-hints-list li {
-  margin: 2px 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .hint-ok {
-  color: #1b7f3a;
+    color: green;
 }
 
 .hint-bad {
-  color: #b00020;
+    color: #aaa;
 }
 
-.change-pass-btn:disabled,
-.confirm-btn:disabled,
-.cancel-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-
-.security-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-family: garet-book;
-}
-
-.update-btn {
-    background-color: #1a237e; /* Dark blue from screenshot */
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 30px;
-    cursor: pointer;
-    font-family: garet-heavy;
-    margin-top: 10px;
-    transition: 0.3s;
-}
-
-.update-btn:hover {
-    background-color: #283593;
-}
-
-.eye-toggle{
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin-left: 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
+@media (max-width: 900px) {
+    .security-admin-grid {
+        grid-template-columns: 1fr;
+    }
 }

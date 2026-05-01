@@ -18,8 +18,7 @@ function getMonthRange(monthParam) {
   }
 
   const now = new Date();
-  // Default to previous month since current month may have no data yet
-  const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);  // previous month
   const end = new Date(now.getFullYear(), now.getMonth(), 1);
   return { start, end };
 }

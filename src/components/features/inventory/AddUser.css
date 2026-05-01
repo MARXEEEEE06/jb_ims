@@ -6,3 +6,9 @@
     width: 30%;
     height: 100%;
 }
+
+.add-eye-toggle img{
+    position: relative;
+    right: 200%;
+    z-index: 1;
+}

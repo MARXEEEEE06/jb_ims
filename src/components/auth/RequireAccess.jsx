@@ -4,8 +4,8 @@ import useAuth from "../../hooks/UserAuth";
 import Sidebar from "../sidebar/Sidebar";
 
 const STAFF_ALLOWED_PATHS = new Set([
+  "/dashboard",
   "/inventory",
-  "/order",
   "/stocks",
 ]);
 

@@ -26,7 +26,7 @@ function Histogram() {
       setError("");
 
       const token = localStorage.getItem("token");
-      const res = await fetch(`${BASE_URL}/supply-demand/monthly?month=2026-04`, {
+      const res = await fetch(`${BASE_URL}/supply-demand/monthly`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
 

@@ -9,7 +9,7 @@
     overflow-x: auto;
 }
 
-.suppliers-table table {
+/* .suppliers-table table {
     width: 100%;
     border-collapse: collapse;
 }
@@ -29,16 +29,30 @@
 
 .suppliers-tbody tr:hover {
     background-color: #f9f9f9;
+}*/
+
+.suppliers-tbody tr:hover {
+    /* padding: 10px 12px; */
+    /* font-size: 14px; */
+    cursor: pointer;
+    background-color: #cccccc;
 }
 
-.suppliers-tbody td {
-    padding: 10px 12px;
-    font-size: 14px;
-}
-
-.supplier-actions-button {
-    display: flex;
-    gap: 10px;
+.supplier-actions-button button{
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row;
+    margin: 10px;
+    border-radius: 50px;
+    border: none;
+    color: #ffffff;
+    width: 15%;
+    padding: 10px;
+    gap: 20%;
+    & img{
+        width: 30px;
+        height: 30px;
+    }
 }
 
 .status-clickable {

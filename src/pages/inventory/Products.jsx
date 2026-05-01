@@ -7,23 +7,44 @@ import RemoveProduct from '../../components/features/inventory/RemoveModal.jsx';
 import BASE_URL from "../../hooks/server/config"
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
 import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
-import "./Products.css";
 import { COLUMNS } from '../../hooks/data/tableColumns.js';
+
+import "./Products.css";
+import "./Inventory.jsx"
+
 import { 
     plus,
     pencil,
     trashbin
 } from "../../assets/ui/Icons.js";
 
+// Import filter hooks
+import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
+import { useBrandFilter } from '../../hooks/filters/useBrandFilter';
+import { useSupplierFilter } from '../../hooks/filters/useSupplierFilter';
+import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
+import { useSort } from '../../hooks/filters/useSort';
+
 function Products(){
 const [sku, setSKU] = useState(''); 
 const [product, setProduct] = useState(''); 
-const [brand, setBrand] = useState(''); 
+// const [brand, setBrand] = useState(''); 
 const [variety, setVariety] = useState(''); 
-const [supplier, setSupplier] = useState(''); 
+// const [supplier, setSupplier] = useState(''); 
 const [stock, setStock] = useState(''); 
-const [prod_status, setStatus] = useState('');
+// const [prod_status, setStatus] = useState('');
 const [items, setItems] = useState([]);
+
+// Start from raw items
+const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
+// Apply brand filter on keywordFiltered
+const { filtered: brandFiltered, brand, setBrand, brands } = useBrandFilter(keywordFiltered, items);
+// Apply supplier filter on brandFiltered
+const { filtered: supplierFiltered, supplier, setSupplier, suppliers } = useSupplierFilter(brandFiltered, items);
+// Apply status filter on supplierFiltered
+const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'status');
+// Apply sorting on statusFiltered
+const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
 const [showAdd, setShowAdd] = useState(false);
 const [showEdit, setShowEdit] = useState(false);
@@ -43,7 +64,7 @@ const handleRemoveProduct = async (productId) => {
     if (!window.confirm("Are you sure you want to remove this product?")) return;
 
     try {
-        const response = await fetch(`${BASE_URL}}/removeproduct/${productId}`, {
+        const response = await fetch(`${BASE_URL}/removeproduct/${productId}`, {
         method: "DELETE",
         });
 
@@ -99,59 +120,51 @@ getStatusClass();
 return(
     <>
         <div className="main-container">
-            <HeaderOveriew />
+            <HeaderOveriew
+                items={items}
+                field="product_name"
+                keyword={keyword}
+                setKeyword={setKeyword}
+            />
             <Sidebar />
             <div className="container products-container">
-                <div className="products-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                {/* <th>SKU</th>
-                                <th>PRODUCT</th>
-                                <th>BRAND</th>
-                                <th>VARIETY</th>
-                                <th>SUPPLIER</th>
-                                <th>PRICE</th>
-                                <th>TYPE</th>
-                                <th>CATEGORY</th>
-                                <th>STATUS</th> */}
-                                {columns.map(col => (
-                                    <th key={col.key} className={col.key}>{col.label}</th>
-                                ))}
-                                </tr>
-                        </thead>
-                        <tbody className="products-tbody">
-                        {items.map((item) => {
-                            const isSelected = selectedItem?.product_id === item.product_id;
+                <div className="filters-panel">
+                    {/* <input
+                        type="text"
+                        placeholder="Search product..."
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    /> */}
+                    <select value={brand} onChange={(e) => setBrand(e.target.value)}>
+                        <option value="">All Brands</option>
+                        {brands.map(b => (
+                            <option key={b} value={b}>{b}</option>
+                        ))}
+                    </select>
 
-                            return (
-                            <tr
-                                key={item.product_id}
-                                onClick={() =>
-                                setSelectedItem(prev =>
-                                    prev?.product_id === item.product_id ? null : item
-                                )}
-                                style={{
-                                backgroundColor: isSelected ? '#ddd' : ''
-                            }}>
-                                <td>{item.sku}</td>
-                                <td>{item.product_name}</td>
-                                <td>{item.brand ?? 'N/A'}</td>
-                                <td>{item.variant}</td>
-                                {/* <td>N/A</td>  supplier isn't in your query, handle it or add it */}
-                                <td>{item.price}</td>
-                                <td>{item.unit_type}</td>
-                                <td>{item.category_type}</td>
-                                <td>
-                                    <div className={`status-container ${getStatusClass(item.quantity)}`}>
-                                        {item.status}
-                                    </div>
-                                </td>
-                            </tr>
-                            );
-                        })}
-                        </tbody>
-                    </table>
+                    <select value={supplier} onChange={(e) => setSupplier(e.target.value)}>
+                        <option value="">All Suppliers</option>
+                        {suppliers.map(s => (
+                            <option key={s} value={s}>{s}</option>
+                        ))}
+                    </select>
+                    <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="">All Status</option>
+                        <option value="in-stock">In Stock</option>
+                        <option value="low">Low Stock</option>
+                        <option value="critical">Critical</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                    <select value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+                        <option value="">Sort by...</option>
+                        <option value="product_name">Alphabetical</option>
+                        <option value="quantity">Stock</option>
+                        <option value="status">Status</option>
+                    </select>
+                    <select value={order} onChange={(e) => setOrder(e.target.value)}>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
                 </div>
                 <div className="product-actions-button">
                     <button className="addProd-btn" onClick={() => setShowAdd(true)}><img src={plus}/> Add Product</button>
@@ -177,6 +190,85 @@ return(
                         }}>
                         <img src={trashbin}/> 
                         Remove Product</button>
+                </div>
+                <div className="products-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                {/* <th>SKU</th>
+                                <th>PRODUCT</th>
+                                <th>BRAND</th>
+                                <th>VARIETY</th>
+                                <th>SUPPLIER</th>
+                                <th>PRICE</th>
+                                <th>TYPE</th>
+                                <th>CATEGORY</th>
+                                <th>STATUS</th> */}
+                                {columns.map(col => (
+                                    <th key={col.key} className={col.key}>{col.label}</th>
+                                ))}
+                                </tr>
+                        </thead>
+                        <tbody className="products-tbody">
+                        {/* {items.map((item) => {
+                            const isSelected = selectedItem?.product_id === item.product_id;
+
+                            return (
+                            <tr
+                                key={item.product_id}
+                                onClick={() =>
+                                setSelectedItem(prev =>
+                                    prev?.product_id === item.product_id ? null : item
+                                )}
+                                style={{
+                                backgroundColor: isSelected ? '#ddd' : ''
+                            }}>
+                                <td>{item.sku}</td>
+                                <td>{item.product_name}</td>
+                                <td>{item.brand ?? 'N/A'}</td>
+                                <td>{item.variant}</td>
+                                <td>{item.price}</td>
+                                <td>{item.unit_type}</td>
+                                <td>{item.category_type}</td>
+                                <td>
+                                    <div className={`status-container ${getStatusClass(item.quantity)}`}>
+                                        {item.status}
+                                    </div>
+                                </td>
+                            </tr>
+                            );
+                        })} */}
+                        
+                        {finalFiltered.map((item) => {
+                            const isSelected = selectedItem?.product_id === item.product_id;
+
+                            return (
+                                <tr
+                                    key={item.product_id}
+                                    onClick={() =>
+                                        setSelectedItem(prev =>
+                                            prev?.product_id === item.product_id ? null : item
+                                        )
+                                    }
+                                    style={{ backgroundColor: isSelected ? '#ddd' : '' }}
+                                >
+                                    <td>{item.sku}</td>
+                                    <td>{item.product_name}</td>
+                                    <td>{item.brand ?? 'N/A'}</td>
+                                    <td>{item.variant}</td>
+                                    <td>{item.price}</td>
+                                    <td>{item.unit_type}</td>
+                                    <td>{item.category_type}</td>
+                                    <td>
+                                        <div className={`status-container ${getStatusClass(item.quantity)}`}>
+                                            {item.status}
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </table>
                 </div>
                 {showAdd && (
                     <div className="modal-overlay">

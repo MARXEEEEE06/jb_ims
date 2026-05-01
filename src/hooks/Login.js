@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');  // add this
 const db = require('./DB');
 const logActivity = require('./Logger');
 
@@ -16,44 +17,38 @@ router.post('/', (req, res) => {
   const sql = `
     SELECT 
       lc.username,
+      lc.password,
       ui.user_id,
       ui.role_id,
       r.role_type
     FROM login_credentials lc
     JOIN user_info ui ON lc.user_id = ui.user_id
     JOIN role r ON ui.role_id = r.role_id
-    WHERE lc.username = ? AND lc.password = ?
+    WHERE BINARY lc.username = ?
   `;
 
-  db.query(sql, [username, password], (err, results) => {
-    if (err) {
-      console.error('SQL Error: ', err);
-      return res.status(500).json({ error: 'Backend Server error' });
+
+  db.query(sql, [username], async (err, results) => {
+    if (err) return res.status(500).json({ error: 'Backend Server error' });
+
+    if (results.length === 0) {
+        logActivity(null, 'FAILED_LOGIN', 'user', null, { username, reason: 'Invalid credentials' });
+        return res.status(401).json({ error: 'Username or password invalid. Try again.' });
     }
 
-    console.log('Query Results:', results);
+    const user = results[0];
+    const match = await bcrypt.compare(password, user.password);
 
-    if (results.length > 0) {
-      const user = results[0];
-      const payload = {
-        user_id: user.user_id,
-        username: user.username,
-        role: user.role_type,
-      };
-
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-
-      logActivity(user.user_id, 'LOGIN', 'user', user.user_id, { username: user.username });
-
-      console.log('User Found:', user);
-      console.log('Role:', user.role);
-      res.json({ username: user.username, role: user.role_type, token });
-    } else {
-      // Failed login — no user_id available
-      logActivity(null, 'FAILED_LOGIN', 'user', null, { username, reason: 'Invalid credentials' });
-      res.status(401).json({ error: 'Username or password invalid. Try again.' });
+    if (!match) {
+        logActivity(null, 'FAILED_LOGIN', 'user', null, { username, reason: 'Invalid credentials' });
+        return res.status(401).json({ error: 'Username or password invalid. Try again.' });
     }
-  });
+
+    const payload = { user_id: user.user_id, username: user.username, role: user.role_type };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+    logActivity(user.user_id, 'LOGIN', 'user', user.user_id, { username: user.username });
+    res.json({ username: user.username, role: user.role_type, token });
+});
 });
 
 module.exports = router;

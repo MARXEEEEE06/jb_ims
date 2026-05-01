@@ -4,7 +4,9 @@ import HeaderOveriew from "../../components/header/Header.jsx";
 import AddSupplier from "../../components/features/suppliers/AddSupplier.jsx";
 import EditSupplierStatus from "../../components/features/suppliers/EditSupplierStatus.jsx";
 import BASE_URL from "../../hooks/server/config";
+
 import "./Supplier.css";
+
 import {
     plus,
     pencil
@@ -100,7 +102,7 @@ function Supplier() {
                     </div>
                     <div className="supplier-actions-button">
                         <button className="addProd-btn" onClick={() => setShowAdd(true)}>
-                            <img src={plus} /> Add Supplier
+                            <img src={plus} /> <p>Add Supplier</p>
                         </button>
                         <button
                             className="editProd-btn"
@@ -113,7 +115,7 @@ function Supplier() {
                                 setShowEditStatus(true);
                             }}
                         >
-                            <img src={pencil} /> Edit Status
+                            <img src={pencil} /> <p>Edit Status</p>
                         </button>
                     </div>
 

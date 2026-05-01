@@ -106,9 +106,15 @@ router.post('/', (req, res) => {
 });
 
 // GET /api/orders
+// GET /api/orders
 router.get('/', (req, res) => {
   db.query(
-    `SELECT * FROM RECEIPT ORDER BY date DESC, time DESC`,
+    `SELECT 
+      receipt_id, customer_name, contact_num, address,
+      DATE_FORMAT(date, '%Y-%m-%d') AS date,
+      TIME_FORMAT(time, '%H:%i:%s') AS time,
+      payment_method, amount_tendered
+     FROM RECEIPT ORDER BY date DESC, time DESC`,
     (err, results) => {
       if (err) return res.status(500).json({ error: 'Server error' });
       res.json(results);

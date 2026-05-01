@@ -7,6 +7,12 @@ router.patch('/:variantId', (req, res) => {
   const { variantId } = req.params;
   const { adjustment } = req.body;
   const userId = req.user?.user_id ?? null;
+  const { adjustment, type } = req.body; // add type
+
+  const validTypes = ['RESTOCK', 'SOLD', 'CORRECTION'];
+  if (!validTypes.includes(type)) {
+    return res.status(400).json({ error: 'Invalid adjustment type' });
+  }
 
   if (adjustment === undefined) {
     return res.status(400).json({ error: 'Adjustment value is required' });
@@ -49,13 +55,16 @@ router.patch('/:variantId', (req, res) => {
         const afterQty = Math.max(0, beforeQty + adjustment);
 
         logActivity(userId, 'STOCK_UPDATE', 'variant', Number(variantId), {
+          product_id: Number(product_id),
           sku,
           product_name,
           variant,
-          adjustment,
-          before: beforeQty,
-          after: afterQty,
+          type,              // <-- add this
+          adjustment: Number(adjustment),
+          before: Number(beforeQty),
+          after: Number(afterQty),
         });
+
 
         res.json({ message: 'Stock updated', variantId });
       });

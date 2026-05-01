@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import BASE_URL from "../../../hooks/server/config";
 import useAuth from "../../../hooks/UserAuth";
+
 import "./AccountDetails.css";
 
 function roleTypeToRoleId(roleType) {
@@ -10,7 +11,7 @@ function roleTypeToRoleId(roleType) {
 function AccountDetails() {
   const { user, loading: authLoading } = useAuth();
   const isAdmin = String(user?.role ?? "").toLowerCase() === "admin";
-
+  
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -22,12 +23,14 @@ function AccountDetails() {
     role_id: 2,
   });
   const [original, setOriginal] = useState(null);
-
+  
   const [message, setMessage] = useState("");
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
+  const [errors, setErrors] = useState({});
+  
   const selectedUser = useMemo(() => {
+    setErrors({});
     return users.find((u) => Number(u.user_id) === Number(selectedUserId)) || null;
   }, [users, selectedUserId]);
 
@@ -93,13 +96,39 @@ function AccountDetails() {
     );
   }, [edit, original]);
 
+
   const validate = () => {
-    if (!selectedUserId) return "Please select a member.";
-    if (!String(edit.username).trim()) return "Username is required.";
-    if (edit.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(edit.email))) return "Invalid email.";
-    if (edit.contact_num && !/^\d{7,15}$/.test(String(edit.contact_num))) return "Invalid contact number.";
-    if (![1, 2].includes(Number(edit.role_id))) return "Invalid role.";
-    return "";
+      const newErrors = {};
+
+      const trimmedUsername = String(edit.username).trim();
+      if (!trimmedUsername) {
+          newErrors.username = "Username is required.";
+      } else if (trimmedUsername.length < 3 || trimmedUsername.length > 30) {
+          newErrors.username = "Username must be 3–30 characters.";
+      } else if (!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)) {
+          newErrors.username = "Username can only contain letters, numbers, and underscores.";
+      }
+
+      const trimmedEmail = String(edit.email ?? '').trim();
+      if (!trimmedEmail) {
+          newErrors.email = "Email is required.";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+          newErrors.email = "Enter a valid email address.";
+      }
+
+      const trimmedContact = String(edit.contact_num ?? '').trim();
+      if (!trimmedContact) {
+          newErrors.contact_num = "Contact number is required.";
+      } else if (!/^09\d{9}$/.test(trimmedContact)) {
+          newErrors.contact_num = "Enter a valid PH mobile number (e.g. 09171234567).";
+      }
+
+      if (![1, 2].includes(Number(edit.role_id))) {
+          newErrors.role_id = "Invalid role.";
+      }
+
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
   };
 
   const save = async () => {
@@ -150,7 +179,7 @@ function AccountDetails() {
       <h1>Account Details</h1>
 
       <div className="account-details-grid">
-        <div className="member-list">
+        <div>
           <h2>Members</h2>
           {loading ? (
             <p>Loading...</p>
@@ -193,63 +222,65 @@ function AccountDetails() {
             <p>Select a member to view details.</p>
           ) : (
             <form onSubmit={(e) => e.preventDefault()}>
-              <label className="required" htmlFor="ad-username">Username</label>
-              <input
-                id="ad-username"
-                type="text"
-                value={edit.username}
-                onChange={(e) => setEdit((p) => ({ ...p, username: e.target.value }))}
-                disabled={isSaving}
-              />
+                <label className="required" htmlFor="ad-username">Username</label>
+                <input
+                    id="ad-username"
+                    type="text"
+                    value={edit.username}
+                    onChange={(e) => setEdit((p) => ({ ...p, username: e.target.value }))}
+                    disabled={isSaving}
+                    className={errors.username ? 'input-error' : ''}
+                />
+                {errors.username && <span className="error-msg">{errors.username}</span>}
 
-              <label htmlFor="ad-email">Email</label>
-              <input
-                id="ad-email"
-                type="email"
-                value={edit.email}
-                onChange={(e) => setEdit((p) => ({ ...p, email: e.target.value }))}
-                disabled={isSaving}
-              />
+                <label htmlFor="ad-email">Email</label>
+                <input
+                    id="ad-email"
+                    type="text"
+                    value={edit.email}
+                    onChange={(e) => setEdit((p) => ({ ...p, email: e.target.value }))}
+                    disabled={isSaving}
+                    className={errors.email ? 'input-error' : ''}
+                />
+                {errors.email && <span className="error-msg">{errors.email}</span>}
 
-              <label htmlFor="ad-contact">Contact No</label>
-              <input
-                id="ad-contact"
-                type="text"
-                inputMode="numeric"
-                value={edit.contact_num}
-                onChange={(e) => setEdit((p) => ({ ...p, contact_num: e.target.value }))}
-                disabled={isSaving}
-              />
+                <label htmlFor="ad-contact">Contact No</label>
+                <input
+                    id="ad-contact"
+                    type="text"
+                    inputMode="numeric"
+                    value={edit.contact_num}
+                    onChange={(e) => setEdit((p) => ({ ...p, contact_num: e.target.value }))}
+                    disabled={isSaving}
+                    className={errors.contact_num ? 'input-error' : ''}
+                    maxLength={11}
+                />
+                {errors.contact_num && <span className="error-msg">{errors.contact_num}</span>}
 
-              <label className="required" htmlFor="ad-role">Role</label>
-              <select
-                id="ad-role"
-                name="role"
-                value={String(edit.role_id)}
-                onChange={(e) => setEdit((p) => ({ ...p, role_id: Number(e.target.value) }))}
-                disabled={isSaving}
-              >
-                <option value="1">Admin</option>
-                <option value="2">Staff</option>
-              </select>
-
-              <div className="editor-actions">
-                <button
-                  type="button"
-                  className="update-btn"
-                  disabled={isSaving || !hasChanges}
-                  onClick={() => {
-                    const validationError = validate();
-                    if (validationError) {
-                      setMessage(validationError);
-                      return;
-                    }
-                    setShowSaveConfirm(true);
-                  }}
+                <label className="required" htmlFor="ad-role">Role</label>
+                <select
+                    id="ad-role"
+                    value={String(edit.role_id)}
+                    onChange={(e) => setEdit((p) => ({ ...p, role_id: Number(e.target.value) }))}
+                    disabled={isSaving}
                 >
-                  {isSaving ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
+                    <option value="1">Admin</option>
+                    <option value="2">Staff</option>
+                </select>
+
+                <div className="editor-actions">
+                    <button
+                        type="button"
+                        className="update-btn"
+                        disabled={isSaving || !hasChanges}
+                        onClick={() => {
+                            if (!validate()) return;
+                            setShowSaveConfirm(true);
+                        }}
+                    >
+                        {isSaving ? "Saving..." : "Save Changes"}
+                    </button>
+                </div>
             </form>
           )}
 

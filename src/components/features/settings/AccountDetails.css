@@ -1,3 +1,5 @@
+@import "../../../css/Site.css";
+
 /* Add to Settings.css */
 .account-details-form {
     padding: 20px;
@@ -16,10 +18,10 @@
     margin-top: 14px;
 }
 
-.member-list table{
+/* .member-list table{
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 1rem; /* vertical spacing */
+    border-spacing: 0 1rem;
 }
 
 .member-list th,
@@ -27,7 +29,7 @@
     padding: 10px 12px;
     border-bottom: 1px solid #e6edf0;
     text-align: center;
-}
+} */
 
 .member-row{
     cursor: pointer;
@@ -109,4 +111,16 @@
     .account-details-grid{
         grid-template-columns: 1fr;
     }
+}
+
+.member-editor .input-error {
+    border-color: red;
+}
+
+.member-editor .error-msg {
+    color: red;
+    font-size: 0.75rem;
+    margin-top: -8px;
+    margin-bottom: 6px;
+    display: block;
 }

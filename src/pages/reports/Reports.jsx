@@ -63,6 +63,12 @@ function Reports() {
     const [receiptsLoading, setReceiptsLoading] = useState(false);
     const [receiptKeyword, setReceiptKeyword] = useState('');
     const [receiptSortOrder, setReceiptSortOrder] = useState('desc');
+    // Add these alongside receiptSortOrder
+    const [receiptFilterStart, setReceiptFilterStart] = useState('');
+    const [receiptFilterEnd, setReceiptFilterEnd] = useState('');
+    const [receiptFilterPayment, setReceiptFilterPayment] = useState('');
+    const [receiptSortField, setReceiptSortField] = useState('date');
+    const [receiptFilterCustomer, setReceiptFilterCustomer] = useState('');
 
     // --- Modal state ---
     const [modal, setModal] = useState(null); // { type: 'log'|'receipt', data: {} }
@@ -138,15 +144,26 @@ function Reports() {
     // --- Receipt filtering ---
     const filteredReceipts = receipts
         .filter(r => {
+            if (receiptFilterPayment && r.payment_method !== receiptFilterPayment) return false;
+            if (receiptFilterStart && r.date < receiptFilterStart) return false;
+            if (receiptFilterEnd && r.date > receiptFilterEnd) return false;
             if (!receiptKeyword) return true;
             const hay = `${r.customer_name} ${r.contact_num} ${r.address} ${r.payment_method}`.toLowerCase();
             return hay.includes(receiptKeyword.toLowerCase());
         })
-        .sort((a, b) => receiptSortOrder === 'asc'
-            ? `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)
-            : `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`)
-        );
-
+        .sort((a, b) => {
+            let aKey, bKey;
+            if (receiptSortField === 'customer_name') {
+                aKey = a.customer_name?.toLowerCase() ?? '';
+                bKey = b.customer_name?.toLowerCase() ?? '';
+            } else {
+                aKey = `${a.date} ${a.time}`;
+                bKey = `${b.date} ${b.time}`;
+            }
+            return receiptSortOrder === 'asc'
+                ? aKey.localeCompare(bKey)
+                : bKey.localeCompare(aKey);
+        });
     const resetLogFilters = () => {
         setKeyword('');
         setFilterUser('');
@@ -275,10 +292,42 @@ function Reports() {
                 {activeTab === 'receipts' && (
                     <>
                         <div className="filters-panel filters-row">
+                            <div className="filter-group">
+                                <label>From</label>
+                                <input type="date" value={receiptFilterStart} onChange={e => setReceiptFilterStart(e.target.value)} />
+                            </div>
+                            <div className="filter-group">
+                                <label>To</label>
+                                <input type="date" value={receiptFilterEnd} onChange={e => setReceiptFilterEnd(e.target.value)} />
+                            </div>
+                            <select value={receiptFilterPayment} onChange={e => setReceiptFilterPayment(e.target.value)}>
+                                <option value="">All Payments</option>
+                                <option value="cash">Cash</option>
+                                <option value="gcash">GCash</option>
+                                <option value="cod">COD</option>
+                            </select>
+                            <select value={receiptFilterCustomer} onChange={e => setReceiptFilterCustomer(e.target.value)}>
+                                <option value="">All Customers</option>
+                                {[...new Set(receipts.map(r => r.customer_name).filter(Boolean))].map(c => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
+                            </select>
                             <select value={receiptSortOrder} onChange={e => setReceiptSortOrder(e.target.value)}>
                                 <option value="desc">Latest First</option>
                                 <option value="asc">Oldest First</option>
                             </select>
+                            <select value={receiptSortField} onChange={e => setReceiptSortField(e.target.value)}>
+                                <option value="date">Sort by Date</option>
+                                <option value="customer_name">Sort by Customer</option>
+                            </select>
+                            <button className="reset-btn" onClick={() => {
+                                setReceiptKeyword('');
+                                setReceiptFilterStart('');
+                                setReceiptFilterEnd('');
+                                setReceiptFilterPayment('');
+                                setReceiptFilterCustomer('');
+                                setReceiptSortOrder('desc');
+                            }}>Reset</button>
                         </div>
 
                         <div className="item-table">
