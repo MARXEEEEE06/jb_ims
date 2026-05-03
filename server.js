@@ -14,6 +14,7 @@ const logoutRoute = require('./src/hooks/Logout.js');
 const getUsersRoute = require('./src/hooks/GetUsers.js');
 const addUserRoute = require('./src/hooks/AddUser.js');
 const changePasswordRoute = require('./src/hooks/ChangePassword.js');
+const exportsRouter = require('./src/hooks/Exports');
 
 const getProdCountRoute = require('./src/hooks/GetProdCount.js');
 const inventoryRoute = require('./src/hooks/Inventory.js');
@@ -43,6 +44,7 @@ app.use('/api/logout', verifyToken, logoutRoute);
 app.use('/api/getusers', getUsersRoute);
 app.use('/api/adduser', addUserRoute);
 app.use('/api/changepassword', changePasswordRoute);
+app.use('/api/exports', verifyToken, exportsRouter);
 
 app.use('/api/gettopsupply', getTopSupplyRoute);
 app.use('/api/stock', verifyToken, stockChangeRoute);

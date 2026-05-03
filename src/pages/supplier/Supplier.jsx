@@ -15,7 +15,6 @@ import { useSort } from '../../hooks/filters/useSort';
 
 function Supplier() {
 const [items, setItems] = useState([]);
-const [selectedItem, setSelectedItem] = useState(null);
 const [showAdd, setShowAdd] = useState(false);
 const [confirmModal, setConfirmModal] = useState(null);
 
@@ -37,9 +36,6 @@ const fetchSuppliers = async () => {
         if (response.ok) {
             const newItems = Array.isArray(data) ? data : [data];
             setItems(newItems);
-            setSelectedItem(prev =>
-                prev ? newItems.find(i => i.sup_info_id === prev.sup_info_id) ?? null : null
-            );
         } else {
             alert(data.error);
         }
@@ -59,7 +55,6 @@ const handleStatusToggleClick = (e, item) => {
 
 const handleStatusConfirm = async () => {
     const item = confirmModal.item;
-    const newStatus = item.status === 'active' ? 'inactive' : 'active';
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(`${BASE_URL}/suppliers/status/${item.sup_info_id}`, {
@@ -116,7 +111,7 @@ return (
 
                 <div className="supplier-actions-button">
                     <button className="addProd-btn" onClick={() => setShowAdd(true)}>
-                        <img src={plus} /> <p>Add Supplier</p>
+                        <img src={plus} alt="add supplier button"/> <p>Add Supplier</p>
                     </button>
                 </div>
 
@@ -134,17 +129,9 @@ return (
                         </thead>
                         <tbody className="suppliers-tbody">
                             {finalFiltered.map((item) => {
-                                // const isSelected = selectedItem?.sup_info_id === item.sup_info_id;
                                 return (
                                     <tr
-                                        // className='tr-selectable'
                                         key={item.sup_info_id}
-                                        // onClick={() =>
-                                        //     setSelectedItem(prev =>
-                                        //         prev?.sup_info_id === item.sup_info_id ? null : item
-                                        //     )
-                                        // }
-                                        // style={{ backgroundColor: isSelected ? '#ddd' : '' }}
                                     >
                                         <td>{item.name}</td>
                                         <td>{item.contact_num}</td>

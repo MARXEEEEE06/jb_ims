@@ -193,17 +193,6 @@ function Security() {
                             <h3>{selectedUser ? <>Setting password for: <strong>{selectedUser.username}</strong></> : "Select a member"}</h3>
                             {selectedUser && (
                                 <>
-                                    {/* <label>Your Password (to confirm)</label>
-                                    <input
-                                        type={adminEyeToggle ? "text" : "password"}
-                                        name="adminPassword"
-                                        placeholder="Enter your admin password"
-                                        value={adminForm.adminPassword}
-                                        onChange={handleAdminChange}
-                                        className={adminErrors.adminPassword ? "input-error" : ""}
-                                    />
-                                    {adminErrors.adminPassword && <span className="error-msg">{adminErrors.adminPassword}</span>} */}
-
                                     <label>New Password for {selectedUser.username}</label>
                                     <input
                                         type={adminEyeToggle ? "text" : "password"}

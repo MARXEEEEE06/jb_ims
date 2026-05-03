@@ -1,24 +1,15 @@
 import { useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import "./Settings.css";
+
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
 import AccountDetails from "../../components/features/settings/AccountDetails.jsx";
 import Security from "../../components/features/settings/Security.jsx";
 import AccountManagement from "../../components/features/settings/AccountManagement.jsx";
-import "./Settings.css";
+import ExportsTab from "../../components/features/settings/ExportsTab.jsx";
 
 function Settings() {
   const [activeTab, setActiveTab] = useState("account-details");
-  const token = localStorage.getItem("token");
-  let role = null;
-
-  if (token) {
-    const decoded = jwtDecode(token);
-    console.log("Decoded token:", decoded);
-    role = decoded.role;
-  }
-  console.log("Role in Settings:", role); // add this
-  const isAdmin = role && String(role).toLowerCase() === "admin";
 
   const renderContent = () => {
     switch (activeTab) {
@@ -28,6 +19,8 @@ function Settings() {
         return <Security />;
       case "account-management":
         return <AccountManagement />;
+      case "exports-tab":
+        return <ExportsTab />;
       default:
         return <AccountDetails />;
     }
@@ -48,14 +41,18 @@ function Settings() {
             onClick={() => setActiveTab("security")}>
             Security
             </button>
-            {isAdmin && (
-              <button
-                className="settings-btn acc-manage"
-                onClick={() => setActiveTab("account-management")}
-              >
-                Account Management
-              </button>
-            )}
+            <button
+              className="settings-btn acc-manage"
+              onClick={() => setActiveTab("account-management")}
+            >
+              Account Management
+            </button>
+            <button
+              className="settings-btn exports-tab"
+              onClick={() => setActiveTab("exports-tab")}
+            >
+              Exports
+            </button>
           <div className="settings-content">{renderContent()}</div>
         </div>
     </div>

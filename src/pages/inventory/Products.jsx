@@ -29,7 +29,6 @@ import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
 import { useSort } from '../../hooks/filters/useSort';
 
 function Products(){
-const [sku, setSKU] = useState(''); 
 const [product, setProduct] = useState(''); 
 const [variety, setVariety] = useState(''); 
 const [stock, setStock] = useState(''); 
@@ -48,7 +47,6 @@ const { toast, showToast, clearToast } = useToast();
 
 const [selectedItem, setSelectedItem] = useState(null);
 
-// const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'supplier', 'price', 'type', 'category', 'status'];
 const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'price', 'type', 'category', 'status'];
 const columns = COLUMNS.filter(col => visibleKeys.includes(col.key));
 
