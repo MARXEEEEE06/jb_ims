@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('./DB');
 const verifyToken = require("./Auth");
 const logActivity = require("./Logger");
+const bcrypt = require('bcrypt');
 
 function requireAdmin(req, res, next) {
   const role = String(req.user?.role ?? "").toLowerCase();
@@ -38,7 +39,7 @@ router.get("/", verifyToken, requireAdmin, (req, res) => {
 });
 
 // PUT /api/getusers/:userId - update user details (admin only)
-router.put("/:userId", verifyToken, requireAdmin, (req, res) => {
+router.put("/:userId", verifyToken, requireAdmin, async (req, res) => {
   const actorId = req.user?.user_id ?? null;
   const userId = Number(req.params.userId);
 
@@ -47,19 +48,36 @@ router.put("/:userId", verifyToken, requireAdmin, (req, res) => {
     email = "",
     contact_num = "",
     role_id,
+    adminPassword,  // new
   } = req.body;
 
-  if (!userId || Number.isNaN(userId)) {
+  if (!userId || Number.isNaN(userId))
     return res.status(400).json({ error: "Invalid user id." });
-  }
 
-  if (!username || !String(username).trim()) {
+  if (!adminPassword)
+    return res.status(400).json({ error: "Your password is required." });
+
+  if (!username || !String(username).trim())
     return res.status(400).json({ error: "Username is required." });
-  }
 
   const parsedRoleId = Number(role_id);
-  if (![1, 2].includes(parsedRoleId)) {
+  if (![1, 2].includes(parsedRoleId))
     return res.status(400).json({ error: "Invalid role." });
+
+  // verify admin password before touching anything
+  try {
+    const [adminRows] = await db.promise().query(
+      `SELECT password FROM login_credentials WHERE user_id = ?`, [actorId]
+    );
+    if (!adminRows.length)
+      return res.status(401).json({ error: "Admin not found." });
+
+    const match = await bcrypt.compare(adminPassword, adminRows[0].password);
+    if (!match)
+      return res.status(401).json({ error: "Admin password is incorrect." });
+  } catch (err) {
+    console.error("Password verification error:", err);
+    return res.status(500).json({ error: "Server error." });
   }
 
   db.beginTransaction((txErr) => {

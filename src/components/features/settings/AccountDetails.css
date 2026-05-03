@@ -18,31 +18,6 @@
     margin-top: 14px;
 }
 
-/* .member-list table{
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 1rem;
-}
-
-.member-list th,
-.member-list td{
-    padding: 10px 12px;
-    border-bottom: 1px solid #e6edf0;
-    text-align: center;
-} */
-
-.member-row{
-    cursor: pointer;
-}
-
-.member-row:hover{
-    background-color: #f2f6f8;
-}
-
-.member-row.selected{
-    background-color: #eaf1ff;
-}
-
 .member-editor{
     border: 1px solid #e6edf0;
     border-radius: 16px;
@@ -64,12 +39,16 @@
 }
 
 .editor-actions{
+    display: flex;
+    flex-direction: column;
     margin-top: 10px;
+    gap: 15px;
 }
 
-.account-details-msg{
+.account-details-msg {
     margin-top: 12px;
     font-weight: 600;
+    color: #22c55e;
 }
 
 .account-details-form .confirm-btn,
@@ -123,4 +102,13 @@
     margin-top: -8px;
     margin-bottom: 6px;
     display: block;
+}
+
+/* .update-btn {
+    margin-bottom: 10px;
+} */
+
+.update-btn:hover{
+    background-color: #c6d5db;
+    color: #000;
 }

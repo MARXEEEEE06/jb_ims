@@ -64,12 +64,3 @@
     background-color: #c50233;
     cursor: pointer;
 }
-
-.products-tbody tr:hover{
-  background-color: #c6d5db;
-}
-
-.products-tbody td{
-    height: 3rem;
-    cursor: pointer;
-}

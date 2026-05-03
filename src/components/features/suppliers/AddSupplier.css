@@ -3,11 +3,3 @@
 .input-error {
     border-color: red;
 }
-
-.error-msg {
-    color: red;
-    font-size: 0.75rem;
-    margin-top: -6px;
-    margin-bottom: 4px;
-    display: block;
-}

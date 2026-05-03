@@ -17,6 +17,9 @@ function Security() {
     const [showAdminModal, setShowAdminModal] = useState(false);
     const [adminSubmitting, setAdminSubmitting] = useState(false);
     const [adminErrors, setAdminErrors] = useState({});
+    const [adminPassword, setAdminPassword] = useState("");
+    const [adminPasswordError, setAdminPasswordError] = useState("");
+    const [eyeToggle, setShow] = useState(false);
 
     const adminPasswordChecks = {
         minLength: adminForm.newPassword.length >= 8,
@@ -42,10 +45,12 @@ function Security() {
     }, [isAdmin]);
 
     useEffect(() => {
-        setAdminForm({ adminPassword: "", newPassword: "", confirmPassword: "" });
+        setAdminForm({ newPassword: "", confirmPassword: "" });
         setAdminMessage("");
         setAdminErrors({});
         setShowAdminModal(false);
+        setAdminPassword("");        // add
+        setAdminPasswordError("");   // add
     }, [selectedUser]);
 
     const handleAdminChange = (e) => {
@@ -53,9 +58,25 @@ function Security() {
         setAdminForm({ ...adminForm, [e.target.name]: e.target.value });
     };
 
+    // const validateAdmin = () => {
+    //     const newErrors = {};
+    //     if (!adminForm.adminPassword) newErrors.adminPassword = "Your password is required.";
+    //     if (!adminForm.newPassword) {
+    //         newErrors.newPassword = "New password is required.";
+    //     } else if (!(adminPasswordChecks.minLength && adminPasswordChecks.hasNumber && adminPasswordChecks.hasSymbol)) {
+    //         newErrors.newPassword = "Must be 8+ chars with 1 number and 1 symbol.";
+    //     }
+    //     if (!adminForm.confirmPassword) {
+    //         newErrors.confirmPassword = "Please confirm the new password.";
+    //     } else if (adminForm.newPassword !== adminForm.confirmPassword) {
+    //         newErrors.confirmPassword = "Passwords do not match.";
+    //     }
+    //     setAdminErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
+
     const validateAdmin = () => {
         const newErrors = {};
-        if (!adminForm.adminPassword) newErrors.adminPassword = "Your password is required.";
         if (!adminForm.newPassword) {
             newErrors.newPassword = "New password is required.";
         } else if (!(adminPasswordChecks.minLength && adminPasswordChecks.hasNumber && adminPasswordChecks.hasSymbol)) {
@@ -70,7 +91,38 @@ function Security() {
         return Object.keys(newErrors).length === 0;
     };
 
+    // const submitAdminPassword = async () => {
+    //     try {
+    //         setAdminSubmitting(true);
+    //         const token = localStorage.getItem("token");
+    //         const res = await fetch(`${BASE_URL}/changepassword/admin`, {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    //             body: JSON.stringify({
+    //                 targetUserId: selectedUser.user_id,
+    //                 adminPassword: adminForm.adminPassword,
+    //                 newPassword: adminForm.newPassword,
+    //                 confirmPassword: adminForm.confirmPassword,
+    //             }),
+    //         });
+    //         const data = await res.json().catch(() => ({}));
+    //         if (!res.ok) throw new Error(data?.error || "Failed to change password.");
+    //         setAdminMessage(data?.message || "Password changed successfully.");
+    //         setAdminForm({ adminPassword: "", newPassword: "", confirmPassword: "" });
+    //     } catch (err) {
+    //         setAdminMessage(err?.message || "Failed to change password.");
+    //     } finally {
+    //         setAdminSubmitting(false);
+    //         setShowAdminModal(false);
+    //     }
+    // };
+
     const submitAdminPassword = async () => {
+        if (!adminPassword.trim()) {
+            setAdminPasswordError("Your password is required.");
+            return;
+        }
+        setAdminPasswordError("");
         try {
             setAdminSubmitting(true);
             const token = localStorage.getItem("token");
@@ -79,7 +131,7 @@ function Security() {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
                     targetUserId: selectedUser.user_id,
-                    adminPassword: adminForm.adminPassword,
+                    adminPassword,   // from modal now
                     newPassword: adminForm.newPassword,
                     confirmPassword: adminForm.confirmPassword,
                 }),
@@ -87,7 +139,8 @@ function Security() {
             const data = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(data?.error || "Failed to change password.");
             setAdminMessage(data?.message || "Password changed successfully.");
-            setAdminForm({ adminPassword: "", newPassword: "", confirmPassword: "" });
+            setAdminForm({ newPassword: "", confirmPassword: "" });
+            setAdminPassword("");
         } catch (err) {
             setAdminMessage(err?.message || "Failed to change password.");
         } finally {
@@ -140,7 +193,7 @@ function Security() {
                             <h3>{selectedUser ? <>Setting password for: <strong>{selectedUser.username}</strong></> : "Select a member"}</h3>
                             {selectedUser && (
                                 <>
-                                    <label>Your Password (to confirm)</label>
+                                    {/* <label>Your Password (to confirm)</label>
                                     <input
                                         type={adminEyeToggle ? "text" : "password"}
                                         name="adminPassword"
@@ -149,7 +202,7 @@ function Security() {
                                         onChange={handleAdminChange}
                                         className={adminErrors.adminPassword ? "input-error" : ""}
                                     />
-                                    {adminErrors.adminPassword && <span className="error-msg">{adminErrors.adminPassword}</span>}
+                                    {adminErrors.adminPassword && <span className="error-msg">{adminErrors.adminPassword}</span>} */}
 
                                     <label>New Password for {selectedUser.username}</label>
                                     <input
@@ -208,13 +261,26 @@ function Security() {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h2>Confirm Password Change</h2>
-                        <p>
-                            Change password for <strong>{selectedUser?.username}</strong>?
-                        </p>
+                        <p>Enter your password to change password for <strong>{selectedUser?.username}</strong>.</p>
+                        <input
+                            type={eyeToggle ? "text" : "password"}
+                            placeholder="Your admin password"
+                            value={adminPassword}
+                            onChange={(e) => {
+                                setAdminPassword(e.target.value);
+                                setAdminPasswordError("");
+                            }}
+                            disabled={adminSubmitting}
+                            className={adminPasswordError ? "input-error" : ""}
+                        />
+                        <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>
+                            {eyeToggle ? <img src={eyeShowToggle} /> : <img src={eyeHideToggle} />}
+                        </a>
+                        {adminPasswordError && <span className="error-msg">{adminPasswordError}</span>}
                         <button className="confirm-btn" onClick={submitAdminPassword} disabled={adminSubmitting}>
                             {adminSubmitting ? "Saving..." : "Yes"}
                         </button>
-                        <button className="cancel-btn" onClick={() => setShowAdminModal(false)} disabled={adminSubmitting}>
+                        <button className="cancel-btn" onClick={() => { setShowAdminModal(false); setAdminPassword(""); setAdminPasswordError(""); }} disabled={adminSubmitting}>
                             Cancel
                         </button>
                     </div>

@@ -29,8 +29,8 @@ input,
 .add-user-input{
   height: 10%;
   width: 95%;
-  border: none;
-  border-radius: 50px;
+  border: 1px solid #000;
+  border-radius: 25px;
   padding: 10px;
   margin: 0 0 20px 0;
 }
@@ -39,7 +39,7 @@ h1{
   font-family: garet-heavy;
 }
 
-.main-container{
+/* .main-container{
   display: grid;
   grid-template-areas: 
   "sidebar header"
@@ -47,7 +47,18 @@ h1{
   grid-template-columns: 16% 83%;
   grid-template-rows: 5% 50px;
   gap: 10px;
-  /* padding: 5px; */
+  padding: 5px;
+  height: 100vh;
+} */
+
+.main-container {
+  display: grid;
+  grid-template-areas: 
+      "sidebar header"
+      "sidebar content";
+  grid-template-columns: 16% 83%;
+  grid-template-rows: 50px 1fr;
+  gap: 10px;
   height: 100vh;
 }
 
@@ -138,7 +149,7 @@ h1{
 
 /* Green */
 .status-in {
-  width: fit-content;
+  width: 50%;
   padding: 5px;
   border-radius: 50px;
   background-color: #2ecc71;
@@ -147,7 +158,7 @@ h1{
 
 /* Orange */
 .status-low {
-  width: fit-content;
+  width: 50%;
   padding: 5px;
   border-radius: 50px;
   background-color: #f39c12;
@@ -156,7 +167,7 @@ h1{
 
 /* Red */
 .status-crit {
-  width: fit-content;
+  width: 50%;
   padding: 5px;
   border-radius: 50px;
   background-color: #e74c3c;
@@ -164,7 +175,7 @@ h1{
 }
 
 .status-out {
-  width: fit-content;
+  width: 50%;
   padding: 5px;
   border-radius: 50px;
   background-color: #000000;
@@ -183,7 +194,13 @@ th{
 }
 
 tr{
+  cursor: pointer;
+  align-content: center;
   background-color: #ffffff;
+}
+
+tr:hover{
+  background-color: #c6d5db;
 }
 
 td{
@@ -201,4 +218,34 @@ th:nth-last-child(1),
 td:nth-last-child(1){
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
+}
+
+.error-msg {
+  color: red;
+  font-size: 0.75rem;
+  margin-top: -6px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+button{
+  border: 1px solid #000000;
+  border-radius: 50px;
+  cursor: pointer;
+  padding: 12px;
+  background: #1f2933;
+  color: white;
+
+  transition: 400ms;
+}
+
+.eye-toggle{
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.eye-toggle img{
+  width: 20px;
 }

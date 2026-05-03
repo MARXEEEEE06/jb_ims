@@ -64,18 +64,6 @@
     margin-top: 14px;
 }
 
-.member-row {
-    cursor: pointer;
-}
-
-.member-row:hover {
-    background-color: #f2f6f8;
-}
-
-.member-row.selected {
-    background-color: #eaf1ff;
-}
-
 /* ── Admin form panel — mirrors .member-editor ── */
 .admin-pass-form {
     border: 1px solid #e6edf0;

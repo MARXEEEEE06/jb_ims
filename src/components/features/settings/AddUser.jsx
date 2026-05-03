@@ -121,7 +121,7 @@ function AddUser({ onClose, onRefresh }) {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
           />
-          <a className='add-eye-toggle' onClick={() => setShow(!eyeToggle)}>
+          <a className='eye-toggle' onClick={() => setShow(!eyeToggle)}>
             {eyeToggle ? <img src={eyeShowToggle}/> : <img src={eyeHideToggle}/>}
           </a>
           {errors.password && <span className="error-msg">{errors.password}</span>}
@@ -141,6 +141,8 @@ function AddUser({ onClose, onRefresh }) {
           <input
             className={`add-user-input ${errors.contactNum ? 'input-error' : ''}`}
             type="text"
+            inputMode="numeric"
+            onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
             id="contact"
             value={contactNum}
             onChange={(e) => setContactNum(e.target.value)}

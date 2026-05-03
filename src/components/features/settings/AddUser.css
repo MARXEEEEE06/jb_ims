@@ -2,13 +2,13 @@
     border: 1px solid #000000;
 }
 
-.role-dropdown{
-    width: 30%;
-    height: 100%;
+.eye-toggle{
+    position: relative;
+    right: 3%;
+    z-index: 1;
 }
 
-.add-eye-toggle img{
-    position: relative;
-    right: 200%;
-    z-index: 1;
+.role-dropdown{
+    width: 97%;
+    /* height: 100%; */
 }

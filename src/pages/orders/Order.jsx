@@ -53,13 +53,7 @@ function Order() {
     const addToCart = (product) => {
         setCart(prev => {
             const existing = prev.find(i => i.product_id === product.product_id);
-            if (existing) {
-                return prev.map(i =>
-                    i.product_id === product.product_id
-                        ? { ...i, quantity: i.quantity + 1 }
-                        : i
-                );
-            }
+            if (existing) return prev; // already in cart, do nothing
             return [...prev, { ...product, quantity: 1 }];
         });
     };
@@ -140,7 +134,7 @@ function Order() {
     };
 
     return (
-        <div className="main-container">
+        <div className="main-container no-scroll">
             <HeaderOveriew
                 items={items}
                 field="product_name"
@@ -192,13 +186,35 @@ function Order() {
                                     <th>PRICE</th>
                                     <th>STOCK</th>
                                     <th>STATUS</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* ✅ use finalFiltered instead of products */}
-                                {finalFiltered.filter(p => p.quantity > 0).map(p => (
-                                    <tr key={p.product_id}>
+                            {finalFiltered.filter(p => p.quantity > 0).map(p => {
+                                const isSelected = cart.some(i => i.product_id === p.product_id);
+
+                                return (
+                                    // <tr
+                                    //     key={p.product_id}
+                                    //     onClick={() => addToCart(p)}
+                                    //     style={{
+                                    //         backgroundColor: isSelected ? '#ddd' : '',
+                                    //         cursor: isSelected ? 'default' : 'pointer'
+                                    //     }}
+                                    // >
+                                    <tr
+                                        key={p.product_id}
+                                        onClick={() => {
+                                            if (isSelected) {
+                                                removeFromCart(p.product_id);
+                                            } else {
+                                                addToCart(p);
+                                            }
+                                        }}
+                                        style={{
+                                            backgroundColor: isSelected ? '#ddd' : '',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
                                         <td>{p.product_name}</td>
                                         <td>{p.brand ?? 'N/A'}</td>
                                         <td>₱{p.price}</td>
@@ -208,11 +224,9 @@ function Order() {
                                                 {p.status}
                                             </div>
                                         </td>
-                                        <td>
-                                            <button onClick={() => addToCart(p)}>Add</button>
-                                        </td>
                                     </tr>
-                                ))}
+                                );
+                            })}
                             </tbody>
                         </table>
                     )}
@@ -238,18 +252,36 @@ function Order() {
                     <div className="cart-items">
                         {cart.length === 0 ? (
                             <p className="empty-cart">No items added yet.</p>
-                        ) : cart.map(i => (
-                            <div className="cart-row" key={i.product_id}>
-                                <span>{i.product_name}</span>
-                                <div className="qty-control">
-                                    <button onClick={() => updateQty(i.product_id, i.quantity - 1)}>-</button>
-                                    <span>{i.quantity}</span>
-                                    <button onClick={() => updateQty(i.product_id, i.quantity + 1)}>+</button>
-                                </div>
-                                <span>₱{i.price * i.quantity}</span>
-                                <button className="remove-btn" onClick={() => removeFromCart(i.product_id)}>✕</button>
-                            </div>
-                        ))}
+                        ) : (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cart.map(i => (
+                                        <tr key={i.product_id}>
+                                            <td>{i.product_name}</td>
+                                            <td>
+                                                <div className="qty-control">
+                                                    <button onClick={() => updateQty(i.product_id, i.quantity - 1)}>-</button>
+                                                    <span>{i.quantity}</span>
+                                                    <button onClick={() => updateQty(i.product_id, i.quantity + 1)}>+</button>
+                                                </div>
+                                            </td>
+                                            <td>₱{i.price * i.quantity}</td>
+                                            <td>
+                                                <button className="remove-btn" onClick={() => removeFromCart(i.product_id)}>✕</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                     <div className="order-totals">
                         <div><span>Subtotal</span><span>₱{subtotal}</span></div>

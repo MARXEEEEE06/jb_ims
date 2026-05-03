@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import BASE_URL from "../../../hooks/server/config";
-import AddUser from "../inventory/AddUser";
+import AddUser from "./AddUser";
 import "./AccountManagement.css";
 
 function AccountManagement() {

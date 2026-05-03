@@ -223,6 +223,7 @@ function Reports() {
                 {/* ── LOGS TAB ── */}
                 {activeTab === 'logs' && (
                     <>
+                    {/* --- filters --- */}
                         <div className="filters-panel filters-row">
                             <div className="filter-group">
                                 <label>From</label>
@@ -249,6 +250,7 @@ function Reports() {
                             <button className="reset-btn" onClick={resetLogFilters}>Reset</button>
                         </div>
 
+                        {/* --- table --- */}
                         <div className="item-table">
                             {logsLoading ? <p>Loading...</p> : (
                                 <table>

@@ -1,14 +1,20 @@
+.main-container.no-scroll {
+    overflow: hidden !important;
+}
+
 .orders-container {
     grid-area: content;
     display: flex;
     gap: 20px;
     padding: 10px;
-    /* overflow-y: auto; */
+    overflow-y: auto;
+    align-items: flex-start;
+    height: 100%;        /* fill the 1fr row */
+    box-sizing: border-box;
 }
 
 .orders-products {
     flex: 2;
-    /* overflow-y: auto; */
 }
 
 .orders-summary {
@@ -19,6 +25,11 @@
     background: #e6edf0;
     border-radius: 15px;
     padding: 15px;
+    position: sticky;
+    top: 0;
+    max-height: calc(100vh - 50px - 10px - 20px); /* viewport - header - gap - padding */
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .customer-info {
@@ -31,8 +42,9 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 200px;
-    /* overflow-y: auto; */
+    overflow-y: auto;   /* only this scrolls */
+    flex: 1;            /* takes remaining space before totals */
+    min-height: 0;      /* required — flex children don't shrink below content size without this */
 }
 
 .cart-row {
@@ -115,24 +127,16 @@
 
 .submit-order-btn {
     margin-top: auto;
-    padding: 12px;
-    background: #1f2933;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-size: 16px;
-    cursor: pointer;
+    font-size: 14px;
     transition: 400ms;
 }
 
 .submit-order-btn:hover {
-    font-size: 18px;
-    font-family: garet-heavy;
+    background-color: #c6d5db;
+    color: #000;
 }
 
-button{
-    border: none;
-    border-radius: 50px;
+.addToCart-btn{
     padding: 5px;
     &:hover{cursor: pointer; background-color: #cccccc;}
 }

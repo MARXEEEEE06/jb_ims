@@ -1,15 +1,12 @@
 .stock-adjust-btn{
-    border: none;
-    background-color: #e6edf0;
     margin-left: 12px;
     padding: 6px 14px;
-    border-radius: 50px;
-    cursor: pointer;
     font-size: 0.95rem;
 }
 
 .stock-adjust-btn:hover{
-    background-color: #d8e2e6;
+    background-color: #c6d5db;
+    color: #000;
 }
 
 .stock-modal{

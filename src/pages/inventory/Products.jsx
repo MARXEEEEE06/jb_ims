@@ -195,50 +195,12 @@ return(
                     <table>
                         <thead>
                             <tr>
-                                {/* <th>SKU</th>
-                                <th>PRODUCT</th>
-                                <th>BRAND</th>
-                                <th>VARIETY</th>
-                                <th>SUPPLIER</th>
-                                <th>PRICE</th>
-                                <th>TYPE</th>
-                                <th>CATEGORY</th>
-                                <th>STATUS</th> */}
                                 {columns.map(col => (
                                     <th key={col.key} className={col.key}>{col.label}</th>
                                 ))}
                                 </tr>
                         </thead>
                         <tbody className="products-tbody">
-                        {/* {items.map((item) => {
-                            const isSelected = selectedItem?.product_id === item.product_id;
-
-                            return (
-                            <tr
-                                key={item.product_id}
-                                onClick={() =>
-                                setSelectedItem(prev =>
-                                    prev?.product_id === item.product_id ? null : item
-                                )}
-                                style={{
-                                backgroundColor: isSelected ? '#ddd' : ''
-                            }}>
-                                <td>{item.sku}</td>
-                                <td>{item.product_name}</td>
-                                <td>{item.brand ?? 'N/A'}</td>
-                                <td>{item.variant}</td>
-                                <td>{item.price}</td>
-                                <td>{item.unit_type}</td>
-                                <td>{item.category_type}</td>
-                                <td>
-                                    <div className={`status-container ${getStatusClass(item.quantity)}`}>
-                                        {item.status}
-                                    </div>
-                                </td>
-                            </tr>
-                            );
-                        })} */}
-                        
                         {finalFiltered.map((item) => {
                             const isSelected = selectedItem?.product_id === item.product_id;
 
