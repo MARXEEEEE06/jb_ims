@@ -24,6 +24,8 @@ function HeaderOverview({ items, field, keyword, setKeyword }) {
         "/products", 
         "/suppliers",
         "/order",
+        "/brands",
+        "/supplier",
         "/stocks",
         "/reports",];
     const hideSearch = showSearchOn.includes(pathname);

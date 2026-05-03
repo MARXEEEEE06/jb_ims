@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import BASE_URL from "../../../hooks/server/config";
+import ConfirmModal from "../modals/ConfirmModal";
 import "./AddSupplier.css";
 
 function AddSupplier({ onClose, onRefresh }) {
@@ -9,11 +10,10 @@ function AddSupplier({ onClose, onRefresh }) {
     const [address, setAddress] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const validate = () => {
         const newErrors = {};
-
-        // Name: required, 2–100 chars, letters/spaces/hyphens/apostrophes only
         const trimmedName = name.trim();
         if (!trimmedName) {
             newErrors.name = "Supplier name is required.";
@@ -23,7 +23,6 @@ function AddSupplier({ onClose, onRefresh }) {
             newErrors.name = "Name can only contain letters, spaces, hyphens, and apostrophes.";
         }
 
-        // Phone: PH mobile format 09XXXXXXXXX
         const trimmedPhone = contact_num.trim();
         if (!trimmedPhone) {
             newErrors.contact_num = "Contact number is required.";
@@ -31,7 +30,6 @@ function AddSupplier({ onClose, onRefresh }) {
             newErrors.contact_num = "Enter a valid PH mobile number (e.g. 09171234567).";
         }
 
-        // Email: standard format
         const trimmedEmail = email.trim();
         if (!trimmedEmail) {
             newErrors.email = "Email address is required.";
@@ -39,7 +37,6 @@ function AddSupplier({ onClose, onRefresh }) {
             newErrors.email = "Enter a valid email address.";
         }
 
-        // Address: required, min 5 chars, not numeric-only
         const trimmedAddress = address.trim();
         if (!trimmedAddress) {
             newErrors.address = "Address is required.";
@@ -53,15 +50,22 @@ function AddSupplier({ onClose, onRefresh }) {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) return;
+        setShowConfirm(true);
+    };
 
+    const handleConfirm = async () => {
         setIsLoading(true);
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${BASE_URL}/suppliers`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify({
                     name: name.trim(),
                     contact_num: contact_num.trim(),
@@ -73,12 +77,13 @@ function AddSupplier({ onClose, onRefresh }) {
             if (response.ok) {
                 onRefresh();
                 onClose();
-                alert("Supplier added successfully!");
             } else {
-                alert(data.error);
+                setShowConfirm(false);
+                setErrors({ form: data.error });
             }
-        } catch (error) {
-            alert("Server Error");
+        } catch {
+            setShowConfirm(false);
+            setErrors({ form: 'Server Error' });
         }
         setIsLoading(false);
     };
@@ -87,7 +92,6 @@ function AddSupplier({ onClose, onRefresh }) {
         <div className="modal-add-product">
             <div className="modal-header">
                 <h1>Add Supplier</h1>
-                <button type="button" onClick={onClose}>X</button>
             </div>
             <div className="add-product-form">
                 <form onSubmit={handleSubmit}>
@@ -131,6 +135,7 @@ function AddSupplier({ onClose, onRefresh }) {
                         placeholder="e.g: Quezon City"
                     />
                     {errors.address && <span className="error-msg">{errors.address}</span>}
+                    {errors.form && <span className="error-msg">{errors.form}</span>}
 
                     <div className="form-button">
                         <button type="submit" className="add-btn" disabled={isLoading}>Add</button>
@@ -138,6 +143,19 @@ function AddSupplier({ onClose, onRefresh }) {
                     </div>
                 </form>
             </div>
+
+            {showConfirm && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <ConfirmModal
+                            message={`Add "${name.trim()}" as a new supplier?`}
+                            onConfirm={handleConfirm}
+                            onCancel={() => setShowConfirm(false)}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

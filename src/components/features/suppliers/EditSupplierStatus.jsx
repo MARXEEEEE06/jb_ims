@@ -1,5 +1,5 @@
 import React from "react";
-import BASE_URL from "../../../hooks/server/config";
+import BASE_URL from "../../../hooks/server/config.js";
 import "./EditSupplierStatus.css";
 
 function EditSupplierStatus({ item, onClose, onConfirmed }) {
@@ -7,10 +7,14 @@ function EditSupplierStatus({ item, onClose, onConfirmed }) {
 
     const handleConfirm = async () => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${BASE_URL}/suppliers/status/${item.sup_info_id}`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus })
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ status: newStatus }),
             });
             const data = await response.json();
             if (response.ok) {

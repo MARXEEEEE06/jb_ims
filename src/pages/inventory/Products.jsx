@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
-import HeaderOveriew from "../../components/header/Header.jsx";
-import AddProduct from "../../components/features/inventory/AddProduct.jsx";
-import EditProduct from "../../components/features/inventory/EditProduct.jsx";
-import RemoveProduct from '../../components/features/inventory/RemoveModal.jsx';
 import BASE_URL from "../../hooks/server/config"
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
 import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
 import { COLUMNS } from '../../hooks/data/tableColumns.js';
+
+import HeaderOveriew from "../../components/header/Header.jsx";
+import AddProduct from "../../components/features/inventory/AddProduct.jsx";
+import EditProduct from "../../components/features/inventory/EditProduct.jsx";
+import RemoveProduct from '../../components/features/modals/RemoveProductModal.jsx';
+import Toast from "../../components/features/modals/Toast.jsx";
+import { useToast } from "../../hooks/useToast.js";
 
 import "./Products.css";
 import "./Inventory.jsx"
@@ -28,27 +31,20 @@ import { useSort } from '../../hooks/filters/useSort';
 function Products(){
 const [sku, setSKU] = useState(''); 
 const [product, setProduct] = useState(''); 
-// const [brand, setBrand] = useState(''); 
 const [variety, setVariety] = useState(''); 
-// const [supplier, setSupplier] = useState(''); 
 const [stock, setStock] = useState(''); 
-// const [prod_status, setStatus] = useState('');
 const [items, setItems] = useState([]);
 
-// Start from raw items
 const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
-// Apply brand filter on keywordFiltered
 const { filtered: brandFiltered, brand, setBrand, brands } = useBrandFilter(keywordFiltered, items);
-// Apply supplier filter on brandFiltered
 const { filtered: supplierFiltered, supplier, setSupplier, suppliers } = useSupplierFilter(brandFiltered, items);
-// Apply status filter on supplierFiltered
-const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'status');
-// Apply sorting on statusFiltered
+const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'quantity');
 const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
 const [showAdd, setShowAdd] = useState(false);
 const [showEdit, setShowEdit] = useState(false);
 const [showRemove, setShowRemove] = useState(false);
+const { toast, showToast, clearToast } = useToast();
 
 const [selectedItem, setSelectedItem] = useState(null);
 
@@ -70,10 +66,11 @@ const handleRemoveProduct = async (productId) => {
 
         const data = await response.json();
         if (response.ok) {
-        alert("Product removed successfully");
+        showToast("Product removed successfully");
         setItems(prev => prev.filter(item => item.product_id !== productId)); // remove from UI
         } else {
         alert(data.error || "Failed to remove product");
+        showToast(data.error || "Failed to remove product");
         }
     } catch (error) {
         alert("Server error");
@@ -129,12 +126,6 @@ return(
             <Sidebar />
             <div className="container products-container">
                 <div className="filters-panel">
-                    {/* <input
-                        type="text"
-                        placeholder="Search product..."
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                    /> */}
                     <select value={brand} onChange={(e) => setBrand(e.target.value)}>
                         <option value="">All Brands</option>
                         {brands.map(b => (
@@ -171,10 +162,7 @@ return(
                     <button
                         className="editProd-btn"
                         onClick={() => {
-                            if (!selectedItem) {
-                            alert("Select a product first");
-                            return;
-                            }
+                            if (!selectedItem) { showToast("Select a product first"); return; }
                             setShowEdit(true);
                     }}>
                         <img src={pencil}/> Edit Product
@@ -182,10 +170,7 @@ return(
                     <button 
                         className="removeProd-btn" 
                             onClick={() => {
-                            if (!selectedItem) {
-                            alert("Select a product first");
-                            return;
-                            }
+                            if (!selectedItem) { showToast("Select a product first"); return; }
                             setShowRemove(true);
                         }}>
                         <img src={trashbin}/> 
@@ -206,6 +191,7 @@ return(
 
                             return (
                                 <tr
+                                    className='tr-selectable'
                                     key={item.product_id}
                                     onClick={() =>
                                         setSelectedItem(prev =>
@@ -264,6 +250,14 @@ return(
                             />
                         </div>
                     </div>
+                )}
+                {toast && (
+                    <Toast
+                        key={toast.key}
+                        message={toast.message}
+                        duration={toast.duration}
+                        onDone={clearToast}
+                    />
                 )}
             </div>
         </div>

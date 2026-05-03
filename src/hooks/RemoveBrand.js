@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./DB');
-const logActivity = require('./Logger');
+const db = require('./DB.js');
+const logActivity = require('./Logger.js');
+const verifyToken = require('./Auth.js')
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', verifyToken, (req, res) => {
   const { id } = req.params;
   const userId = req.user?.user_id ?? null;
 

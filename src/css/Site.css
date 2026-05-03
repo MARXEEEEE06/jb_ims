@@ -194,13 +194,13 @@ th{
 }
 
 tr{
-  cursor: pointer;
   align-content: center;
   background-color: #ffffff;
 }
 
-tr:hover{
+.tr-selectable:hover{
   background-color: #c6d5db;
+  cursor: pointer;
 }
 
 td{

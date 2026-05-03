@@ -9,7 +9,10 @@ function Login() {
     const [password, setPassword] = useState('');
     const [eyeToggle, setShow] = useState(false);
     const [isloading, setIsLoading] = useState(false);
+    
     const [errors, setErrors] = useState({});
+    const [lockoutMsg, setLockoutMsg] = useState('');
+    const [isLocked, setIsLocked] = useState(false);
     const navigate = useNavigate();
 
     const validate = () => {
@@ -43,10 +46,11 @@ function Login() {
 
             if (response.ok) {
                 localStorage.setItem("token", data.token);
-                setUserName('');
-                setPassword('');
                 navigate("/dashboard");
             } else {
+                if (response.status === 429) {
+                    setIsLocked(true);
+                }
                 setErrors({ form: data.error });
             }
         } catch (error) {
@@ -86,10 +90,10 @@ function Login() {
                     </div>
                     {errors.password && <span className="error-msg">{errors.password}</span>}
                 </div>
-                <button disabled={isloading}>
+                <button disabled={isloading || isLocked}>
                     {isloading ? "Logging in..." : "Login"}
                 </button>
-                {errors.form && <span className="error-msg">{errors.form}</span>}
+                {errors.form && <span className="error-msg emsg-login">{errors.form}</span>}
             </form>
         </div></>
     );

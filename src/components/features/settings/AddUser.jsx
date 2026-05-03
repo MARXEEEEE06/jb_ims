@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import BASE_URL from "../../../hooks/server/config";
+import BASE_URL from "../../../hooks/server/config.js";
 
 import "./AddUser.css"
 import { eyeHideToggle, eyeShowToggle } from "../../../assets/ui/Icons";

@@ -40,8 +40,6 @@
 }
 
 .login-container button:hover{
-    /* font-size: 20px;
-    font-family: garet-heavy; */
     background-color: #e6edf0;
     color: #000;
 }
@@ -74,4 +72,8 @@
     top: 32%;
     transform: translateY(-32%);
     transition: 400ms; /* ✅ moves with the input on resize */
+}
+
+.emsg-login{
+    margin-top: 0 !important;
 }

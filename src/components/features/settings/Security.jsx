@@ -175,7 +175,7 @@ function Security() {
                                             return (
                                                 <tr
                                                     key={u.login_id}
-                                                    className={isSelected ? "member-row selected" : "member-row"}
+                                                    className={`tr-selectable {isSelected ? "member-row selected" : "member-row"}`}
                                                     onClick={() => setSelectedUser(isSelected ? null : u)}
                                                 >
                                                     <td>{u.username}</td>

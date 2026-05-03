@@ -55,15 +55,15 @@ app.use('/api/edit-product', verifyToken, editProductRoute);
 app.use('/api/removeproduct', verifyToken, removeProductRoute);
 app.use('/api/getprodcount', getProdCountRoute);
 
-app.use('/api/suppliers', suppliersRoute);
+app.use('/api/suppliers', verifyToken, suppliersRoute);
 app.use('/api/getsuppliers', getSuppliersRoute);
 
 app.use('/api/getbrands', getBrandsRoute);
-app.use('/api/addBrand', addBrandRoute);
-app.use('/api/editBrand', editBrandRoute);
-app.use('/api/removeBrand', removeBrandRoute);
+app.use('/api/addBrand', verifyToken, addBrandRoute);
+app.use('/api/editBrand', verifyToken, editBrandRoute);
+app.use('/api/removeBrand', verifyToken, removeBrandRoute);
 
-app.use('/api/reports', reportsRoute);
+app.use('/api/reports', verifyToken, reportsRoute);
 
 app.use(express.static(path.join(__dirname, 'build')));
 

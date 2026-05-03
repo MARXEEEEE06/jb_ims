@@ -46,11 +46,11 @@ router.get('/monthly', (req, res) => {
 
       SELECT
         v.product_id AS product_id,
-        GREATEST(CAST(JSON_UNQUOTE(JSON_EXTRACT(al.details, '$.adjustment')) AS SIGNED), 0) AS supply
+          GREATEST(CAST(JSON_UNQUOTE(JSON_EXTRACT(al.details, '$.adjustment')) AS SIGNED), 0) AS supply
       FROM activity_logs al
       JOIN variants v ON v.variant_id = al.target_id
-      WHERE al.action = 'STOCK_UPDATE'
-        AND al.created_at >= ? AND al.created_at < ?
+      WHERE al.action IN ('STOCK_UPDATE', 'RESTOCK')
+          AND al.created_at >= ? AND al.created_at < ?
     ) x
     JOIN products p ON p.product_id = x.product_id
     GROUP BY p.product_id, p.product_name

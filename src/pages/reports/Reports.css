@@ -23,7 +23,8 @@
 .tab-btn:hover {
     /* background-color: rgb(218, 218, 218); */
     /* border: 2px solid #000; */
-    background-color: #384a5e;
+    background-color: #c6d5db;
+    color: #000;
 }
 
 .tab-active {
@@ -58,6 +59,55 @@
     border: 2px solid #000;
 }
 
+.autocomplete-wrapper {
+    position: relative;
+}
+
+.autocomplete-wrapper input {
+    width: auto;
+    margin-bottom: 10px;
+    height: auto;
+    padding: 10px 16px;
+    border-radius: 50px;
+    border: 1px solid #aaa;
+    font-family: garet-book, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.autocomplete-wrapper input:hover {
+    background-color: rgb(218, 218, 218);
+    border: 2px solid #000;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.autocomplete-dropdown li {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: garet-book, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+}
+
+.autocomplete-dropdown li:hover {
+    background: #e6edf0;
+}
+
 .filter-group {
     display: flex;
     align-items: center;
@@ -78,8 +128,8 @@
 }
 
 .reset-btn:hover {
-    background-color: rgb(218, 218, 218);
-    border: 2px solid #000;
+    background-color: #c6d5db;
+    color: #000;
 }
 
 /* ── Table ── */
@@ -103,6 +153,7 @@
 .action-badge {
     display: inline-block;
     padding: 4px 12px;
+    border: 1px solid #000;
     border-radius: 50px;
     font-size: 12px;
     font-weight: bold;
@@ -113,28 +164,30 @@
 .badge-failed   { background-color: #ffd0d0; color: #791f1f; }
 .badge-security { background-color: #dff6ff; color: #0b3a5c; }
 .badge-security-failed { background-color: #ffe1e1; color: #7a1a1a; }
+.badge-restock    { background-color: #d5f0d5; color: #27500a; }
+.badge-correction { background-color: #fff3cd; color: #856404; }
 .badge-stock    { background-color: #d5f0d5; color: #27500a; }
 .badge-product  { background-color: #fff0d0; color: #633806; }
 .badge-brand    { background-color: #e8e0ff; color: #3c3489; }
 .badge-supplier { background-color: #d0f5ec; color: #085041; }
 .badge-user     { background-color: #ffe0ef; color: #72243e; }
 .badge-user-update { background-color: #e1f0ff; color: #173a67; }
-.badge-order    { background-color: #fde8d8; color: #712b13; }
+.badge-order { background-color: #fde8d8; color: #712b13; }
 
 /* ── Details / View button ── */
 .details-btn {
     padding: 4px 14px;
     /* border: 1px solid #aaa; */
     /* background: transparent; */
+    
     font-size: 12px;
     font-family: garet-book, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     transition: 400ms;
 }
 
 .details-btn:hover {
-    /* background-color: rgb(218, 218, 218); */
-    border: 2px solid #000;
-    font-size: 13px;
+    background-color: #c6d5db;
+    color: #000;
 }
 
 /* ── Modal ── */
@@ -186,18 +239,18 @@
     margin-top: 1.5rem;
     width: 100%;
     padding: 10px;
-    /* border-radius: 50px; */
-    /* border: 1px solid #aaa; */
-    /* background: transparent; */
     font-family: garet-book, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     font-size: 14px;
     transition: 400ms;
 }
 
 .modal-close-btn:hover {
-    /* background-color: #000; */
-    /* border: 2px solid #000; */
-    border: 2px solid #000;
-    font-size: 15px;
-    /* font-family: garet-heavy; */
+    background-color: #c6d5db;
+    color: #000;
+}
+
+.results-count {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
 }

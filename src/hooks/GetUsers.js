@@ -38,7 +38,7 @@ router.get("/", verifyToken, requireAdmin, (req, res) => {
   });
 });
 
-// PUT /api/getusers/:userId - update user details (admin only)
+// PUT /api/getusers/:userId - update user details 
 router.put("/:userId", verifyToken, requireAdmin, async (req, res) => {
   const actorId = req.user?.user_id ?? null;
   const userId = Number(req.params.userId);

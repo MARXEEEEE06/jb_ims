@@ -61,7 +61,10 @@ function AccountManagement() {
                             </thead>
                             <tbody>
                                 {users.map((u) => (
-                                    <tr key={u.login_id}>
+                                    <tr 
+                                        className="tr-selectable"
+                                        key={u.login_id}
+                                    >
                                         <td>{u.username}</td>
                                         <td>{u.email}</td>
                                         <td>{u.contact_num}</td>

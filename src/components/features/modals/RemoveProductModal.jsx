@@ -1,9 +1,9 @@
 import React from "react";
-import BASE_URL from "../../../hooks/server/config";
+import BASE_URL from "../../../hooks/server/config.js";
 import getAuthHeaders from "../../../hooks/server/getAuthHeaders.js";
-import "./EditProduct.css";
+import "../inventory/EditProduct.css";
 
-function RemoveProduct({ item, onClose, onRemoved }) {
+function RemoveProductModal({ item, onClose, onRemoved }) {
 
     const handleRemove = async () => {
         try {
@@ -50,4 +50,4 @@ function RemoveProduct({ item, onClose, onRemoved }) {
     );
 }
 
-export default RemoveProduct;
+export default RemoveProductModal;

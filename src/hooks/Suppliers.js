@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('./DB');
 const logActivity = require('./Logger');
+const verifyToken = require('./Auth');
 
 // GET /api/suppliers
-router.get('/', (req, res) => {
+router.get('/', verifyToken, (req, res) => {
   const sql = `
     SELECT
       si.sup_info_id,
@@ -32,7 +33,7 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/suppliers — add new supplier
-router.post('/', (req, res) => {
+router.post('/', verifyToken, (req, res) => {
   const { name, contact_num, email, address } = req.body;
   const userId = req.user?.user_id ?? null;
 
@@ -52,6 +53,8 @@ router.post('/', (req, res) => {
         return res.status(500).json({ error: 'Server error' });
       }
 
+      console.log("User FOUND:", userId);
+
       logActivity(userId, 'SUPPLIER_ADDED', 'supplier', results.insertId, {
         name,
         contact_num,
@@ -65,7 +68,7 @@ router.post('/', (req, res) => {
 });
 
 // POST /api/suppliers/status/:sup_info_id — toggle status
-router.post('/status/:sup_info_id', (req, res) => {
+router.post('/status/:sup_info_id', verifyToken, (req, res) => {
   const { sup_info_id } = req.params;
   const { status } = req.body;
   const userId = req.user?.user_id ?? null;

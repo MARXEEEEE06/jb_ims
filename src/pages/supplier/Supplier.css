@@ -9,35 +9,6 @@
     overflow-x: auto;
 }
 
-/* .suppliers-table table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.suppliers-table thead th {
-    text-align: left;
-    padding: 10px 12px;
-    background-color: #f0f0f0;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.suppliers-tbody tr {
-    cursor: pointer;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.suppliers-tbody tr:hover {
-    background-color: #f9f9f9;
-}*/
-
-.suppliers-tbody tr:hover {
-    /* padding: 10px 12px; */
-    /* font-size: 14px; */
-    cursor: pointer;
-    background-color: #cccccc;
-}
-
 .supplier-actions-button button{
     display: inline-flex;
     align-items: center;
@@ -62,4 +33,12 @@
 
 .status-clickable:hover {
     opacity: 0.8;
+}
+
+.status-active{
+    color: #22c55e;
+}
+
+.status-active{
+    color: red;
 }

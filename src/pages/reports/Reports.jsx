@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOverview from "../../components/header/Header.jsx";
 import BASE_URL from '../../hooks/server/config.js';
+import useAuth from '../../hooks/UserAuth.js';
 import "./Reports.css";
 
 const ACTION_LABELS = {
@@ -11,6 +12,8 @@ const ACTION_LABELS = {
     PASSWORD_CHANGED: 'Password Changed',
     PASSWORD_CHANGE_FAILED: 'Password Change Failed',
     STOCK_UPDATE: 'Stock Update',
+    RESTOCK: 'Restock',
+    CORRECTION: 'Stock Correction',
     PRODUCT_CREATED: 'Product Created',
     PRODUCT_UPDATE: 'Product Update',
     PRODUCT_DELETED: 'Product Deleted',
@@ -30,6 +33,8 @@ const ACTION_CLASS = {
     FAILED_LOGIN: 'badge-failed',
     PASSWORD_CHANGED: 'badge-security',
     PASSWORD_CHANGE_FAILED: 'badge-security-failed',
+    RESTOCK: 'badge-restock',
+    CORRECTION: 'badge-correction',
     STOCK_UPDATE: 'badge-stock',
     PRODUCT_CREATED: 'badge-product',
     PRODUCT_UPDATE: 'badge-product',
@@ -46,6 +51,7 @@ const ACTION_CLASS = {
 
 function Reports() {
     const [activeTab, setActiveTab] = useState('logs');
+    const { user } = useAuth();
 
     // --- Logs state ---
     const [logs, setLogs] = useState([]);
@@ -63,12 +69,12 @@ function Reports() {
     const [receiptsLoading, setReceiptsLoading] = useState(false);
     const [receiptKeyword, setReceiptKeyword] = useState('');
     const [receiptSortOrder, setReceiptSortOrder] = useState('desc');
-    // Add these alongside receiptSortOrder
     const [receiptFilterStart, setReceiptFilterStart] = useState('');
     const [receiptFilterEnd, setReceiptFilterEnd] = useState('');
     const [receiptFilterPayment, setReceiptFilterPayment] = useState('');
     const [receiptSortField, setReceiptSortField] = useState('date');
     const [receiptFilterCustomer, setReceiptFilterCustomer] = useState('');
+    const [receiptCustomerOpen, setReceiptCustomerOpen] = useState(false);
 
     // --- Modal state ---
     const [modal, setModal] = useState(null); // { type: 'log'|'receipt', data: {} }
@@ -85,7 +91,12 @@ function Reports() {
                 if (res.ok) {
                     setLogs(Array.isArray(data) ? data : []);
                     // Derive unique users
-                    const uniqueUsers = [...new Set(data.map(l => l.username).filter(Boolean))];
+                    const uniqueUsers = [...new Set(
+                        data
+                            .filter(l => l.user_id !== null)
+                            .map(l => l.username)
+                            .filter(Boolean)
+                    )];
                     setUsers(uniqueUsers);
                 } else {
                     alert(data.error);
@@ -143,27 +154,40 @@ function Reports() {
 
     // --- Receipt filtering ---
     const filteredReceipts = receipts
-        .filter(r => {
-            if (receiptFilterPayment && r.payment_method !== receiptFilterPayment) return false;
-            if (receiptFilterStart && r.date < receiptFilterStart) return false;
-            if (receiptFilterEnd && r.date > receiptFilterEnd) return false;
-            if (!receiptKeyword) return true;
-            const hay = `${r.customer_name} ${r.contact_num} ${r.address} ${r.payment_method}`.toLowerCase();
-            return hay.includes(receiptKeyword.toLowerCase());
-        })
-        .sort((a, b) => {
-            let aKey, bKey;
-            if (receiptSortField === 'customer_name') {
-                aKey = a.customer_name?.toLowerCase() ?? '';
-                bKey = b.customer_name?.toLowerCase() ?? '';
+    .filter(r => {
+        if (receiptFilterPayment && r.payment_method !== receiptFilterPayment) return false;
+        if (receiptFilterStart && r.date < receiptFilterStart) return false;
+        if (receiptFilterEnd && r.date > receiptFilterEnd) return false;
+        if (receiptFilterCustomer && r.customer_name !== receiptFilterCustomer) return false;
+        if (receiptKeyword) {
+            const raw = receiptKeyword.trim();
+            if (raw.startsWith('#')) {
+                // exact match on receipt ID
+                const id = raw.replace(/^#/, '');
+                if (String(r.receipt_id) !== id) return false;
             } else {
-                aKey = `${a.date} ${a.time}`;
-                bKey = `${b.date} ${b.time}`;
+                // partial match on other fields
+                const keyword = raw.toLowerCase();
+                const hay = `${r.customer_name} ${r.contact_num} ${r.address} ${r.payment_method}`.toLowerCase();
+                if (!hay.includes(keyword)) return false;
             }
-            return receiptSortOrder === 'asc'
-                ? aKey.localeCompare(bKey)
-                : bKey.localeCompare(aKey);
-        });
+        }
+        return true;
+    })
+    .sort((a, b) => {
+        let aKey, bKey;
+        if (receiptSortField === 'customer_name') {
+            aKey = a.customer_name?.toLowerCase() ?? '';
+            bKey = b.customer_name?.toLowerCase() ?? '';
+        } else {
+            aKey = `${a.date} ${a.time}`;
+            bKey = `${b.date} ${b.time}`;
+        }
+        return receiptSortOrder === 'asc'
+            ? aKey.localeCompare(bKey)
+            : bKey.localeCompare(aKey);
+    });
+    
     const resetLogFilters = () => {
         setKeyword('');
         setFilterUser('');
@@ -233,10 +257,12 @@ function Reports() {
                                 <label>To</label>
                                 <input type="date" value={filterEnd} onChange={e => setFilterEnd(e.target.value)} />
                             </div>
-                            <select value={filterUser} onChange={e => setFilterUser(e.target.value)}>
-                                <option value="">All Users</option>
-                                {users.map(u => <option key={u} value={u}>{u}</option>)}
-                            </select>
+                            {user?.role_type !== 'staff' && (
+                                <select value={filterUser} onChange={e => setFilterUser(e.target.value)}>
+                                    <option value="">All Users</option>
+                                    {users.map(u => <option key={u} value={u}>{u}</option>)}
+                                </select>
+                            )}
                             <select value={filterAction} onChange={e => setFilterAction(e.target.value)}>
                                 <option value="">All Events</option>
                                 {Object.entries(ACTION_LABELS).map(([val, label]) => (
@@ -249,6 +275,7 @@ function Reports() {
                             </select>
                             <button className="reset-btn" onClick={resetLogFilters}>Reset</button>
                         </div>
+                        <p className="results-count">{filteredLogs.length} result{filteredLogs.length !== 1 ? 's' : ''}</p>
 
                         {/* --- table --- */}
                         <div className="item-table">
@@ -302,26 +329,49 @@ function Reports() {
                                 <label>To</label>
                                 <input type="date" value={receiptFilterEnd} onChange={e => setReceiptFilterEnd(e.target.value)} />
                             </div>
+                            <select value={receiptSortOrder} onChange={e => setReceiptSortOrder(e.target.value)}>
+                                <option value="desc">Descending</option>
+                                <option value="asc">Ascending</option>
+                            </select>
+
+                            <select value={receiptSortField} onChange={e => setReceiptSortField(e.target.value)}>
+                                <option value="date">Sort by Date</option>
+                                <option value="customer_name">Sort by Customer Name Alphabetical</option>
+                            </select>
                             <select value={receiptFilterPayment} onChange={e => setReceiptFilterPayment(e.target.value)}>
                                 <option value="">All Payments</option>
                                 <option value="cash">Cash</option>
                                 <option value="gcash">GCash</option>
                                 <option value="cod">COD</option>
                             </select>
-                            <select value={receiptFilterCustomer} onChange={e => setReceiptFilterCustomer(e.target.value)}>
-                                <option value="">All Customers</option>
-                                {[...new Set(receipts.map(r => r.customer_name).filter(Boolean))].map(c => (
-                                    <option key={c} value={c}>{c}</option>
-                                ))}
-                            </select>
-                            <select value={receiptSortOrder} onChange={e => setReceiptSortOrder(e.target.value)}>
-                                <option value="desc">Latest First</option>
-                                <option value="asc">Oldest First</option>
-                            </select>
-                            <select value={receiptSortField} onChange={e => setReceiptSortField(e.target.value)}>
-                                <option value="date">Sort by Date</option>
-                                <option value="customer_name">Sort by Customer</option>
-                            </select>
+                            <div className="autocomplete-wrapper">
+                                <input
+                                    type="text"
+                                    placeholder="Search customer..."
+                                    value={receiptFilterCustomer}
+                                    onChange={e => {
+                                        setReceiptFilterCustomer(e.target.value);
+                                        setReceiptCustomerOpen(true);
+                                    }}
+                                    onFocus={() => setReceiptCustomerOpen(true)}
+                                    onBlur={() => setTimeout(() => setReceiptCustomerOpen(false), 150)}
+                                />
+                                {receiptCustomerOpen && (
+                                    <ul className="autocomplete-dropdown">
+                                        <li onMouseDown={() => { setReceiptFilterCustomer(''); setReceiptCustomerOpen(false); }}>
+                                            All Customers
+                                        </li>
+                                        {[...new Set(receipts.map(r => r.customer_name).filter(Boolean))]
+                                            .filter(c => c.toLowerCase().includes(receiptFilterCustomer.toLowerCase()))
+                                            .map(c => (
+                                                <li key={c} onMouseDown={() => { setReceiptFilterCustomer(c); setReceiptCustomerOpen(false); }}>
+                                                    {c}
+                                                </li>
+                                            ))
+                                        }
+                                    </ul>
+                                )}
+                            </div>
                             <button className="reset-btn" onClick={() => {
                                 setReceiptKeyword('');
                                 setReceiptFilterStart('');
@@ -331,11 +381,12 @@ function Reports() {
                                 setReceiptSortOrder('desc');
                             }}>Reset</button>
                         </div>
+                        <p className="results-count">{filteredReceipts.length} result{filteredReceipts.length !== 1 ? 's' : ''}</p>
 
                         <div className="item-table">
                             {receiptsLoading ? <p>Loading...</p> : (
                                 <table>
-                                    <thead>
+                                    <thead className="receipt-thead">
                                         <tr>
                                             <th>Receipt #</th>
                                             <th>Customer</th>
@@ -345,7 +396,7 @@ function Reports() {
                                             <th>Details</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="receipt-tbody">
                                         {filteredReceipts.length === 0 ? (
                                             <tr>
                                                 <td colSpan={6} className="empty-row">No receipts found.</td>

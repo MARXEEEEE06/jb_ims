@@ -213,7 +213,7 @@ return (
                 return (
                   <tr
                     key={u.login_id}
-                    className={isSelected ? "member-row selected" : "member-row"}
+                    className= {`tr-selectable {isSelected ? "member-row selected" : "member-row"}`}
                     onClick={() => setSelectedUserId(isSelected ? null : Number(u.user_id))} // toggle unselect
                   >
                     <td>{u.username}</td>

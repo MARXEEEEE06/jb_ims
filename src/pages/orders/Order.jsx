@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
-import ReceiptModal from "../../components/features/order/ReceiptModal.jsx";
+import ReceiptModal from "../../components/features/modals/ReceiptModal.jsx";
 import useAuth from "../../hooks/UserAuth.js";
 import BASE_URL from "../../hooks/server/config.js";
 import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
@@ -24,6 +24,7 @@ function Order() {
     const [isLoading, setIsLoading] = useState(false);
     const [receipt, setReceipt] = useState(null);
     const [showReceipt, setShowReceipt] = useState(false);
+    const [orderErrors, setOrderErrors] = useState({});
 
     // ✅ Filter/sort chain on items
     const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
@@ -67,6 +68,7 @@ function Order() {
 
     const removeFromCart = (product_id) => {
         setCart(prev => prev.filter(i => i.product_id !== product_id));
+        setOrderErrors(prev => ({ ...prev, cart: '' }));
     };
 
     const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -75,11 +77,19 @@ function Order() {
     const change = (Number(payment.tendered) || 0) - grandTotal;
 
     const handleSubmit = async () => {
-        if (!customer.name) return alert('Enter customer name');
-        if (cart.length === 0) return alert('Add items to order');
-        if (!payment.tendered || Number(payment.tendered) < grandTotal)
-            return alert('Amount tendered is less than grand total');
+        const newErrors = {};
+        if (!customer.name) newErrors.name = 'Customer name is required.';
+        if (!customer.address) newErrors.address = 'Address is required.';
+        if (!customer.contact) newErrors.contact = 'Contact Number is required.';
+        if (cart.length === 0) newErrors.cart = 'Add items to order.';
+        if (!payment.tendered) newErrors.tendered = 'Amount tendered is required.';
+        else if (Number(payment.tendered) < grandTotal) newErrors.tendered = 'Amount tendered is less than grand total.';
 
+        if (Object.keys(newErrors).length > 0) {
+            setOrderErrors(newErrors);
+            return;
+        }
+        setOrderErrors({});
         setIsLoading(true);
         try {
             const res = await fetch(`${BASE_URL}/orders`, {
@@ -127,9 +137,9 @@ function Order() {
                 setShowReceipt(true);
                 // ... reset state
             } else {
-                alert(data.error);
+                setOrderErrors({ form: data.error });
             }
-        } catch { alert('Server error'); }
+            } catch { setOrderErrors({ form: 'Server error' }); }
         setIsLoading(false);
     };
 
@@ -193,15 +203,8 @@ function Order() {
                                 const isSelected = cart.some(i => i.product_id === p.product_id);
 
                                 return (
-                                    // <tr
-                                    //     key={p.product_id}
-                                    //     onClick={() => addToCart(p)}
-                                    //     style={{
-                                    //         backgroundColor: isSelected ? '#ddd' : '',
-                                    //         cursor: isSelected ? 'default' : 'pointer'
-                                    //     }}
-                                    // >
                                     <tr
+                                        className='tr-selectable'
                                         key={p.product_id}
                                         onClick={() => {
                                             if (isSelected) {
@@ -236,18 +239,28 @@ function Order() {
                 <div className="orders-summary">
                     <h2>Order Summary</h2>
                     <div className="customer-info">
+                        <label className="required" htmlFor="customer-name">Customer Name</label>
                         <input
-                            placeholder="Customer Name *"
+                            className={`summary-field ${orderErrors.name ? 'input-error' : ''}`}
+                            placeholder="Customer Name"
                             value={customer.name}
-                            onChange={e => setCustomer(p => ({ ...p, name: e.target.value }))} />
+                            onChange={e => { setCustomer(p => ({ ...p, name: e.target.value })); setOrderErrors(p => ({ ...p, name: '' })); }}
+                        />
+                        {orderErrors.name && <span className="error-msg">{orderErrors.name}</span>}
+                        <label className="required" htmlFor="customer-name">Address</label>
                         <input
+                            className={`summary-field ${orderErrors.address ? 'input-error' : ''}`}
                             placeholder="Address"
                             value={customer.address}
                             onChange={e => setCustomer(p => ({ ...p, address: e.target.value }))} />
+                        {orderErrors.address && <span className="error-msg">{orderErrors.name}</span>}
+                        <label className="required" htmlFor="customer-name">Contact Number</label>
                         <input
+                            className={`summary-field ${orderErrors.contact ? 'input-error' : ''}`}
                             placeholder="Contact Number"
                             value={customer.contact}
                             onChange={e => setCustomer(p => ({ ...p, contact: e.target.value }))} />
+                        {orderErrors.contact && <span className="error-msg">{orderErrors.name}</span>}
                     </div>
                     <div className="cart-items">
                         {cart.length === 0 ? (
@@ -275,7 +288,7 @@ function Order() {
                                             </td>
                                             <td>₱{i.price * i.quantity}</td>
                                             <td>
-                                                <button className="remove-btn" onClick={() => removeFromCart(i.product_id)}>✕</button>
+                                                <button className="remove-cross" onClick={() => removeFromCart(i.product_id)}>✕</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -283,6 +296,7 @@ function Order() {
                             </table>
                         )}
                     </div>
+                    {orderErrors.cart && <span className="error-msg">{orderErrors.cart}</span>}
                     <div className="order-totals">
                         <div><span>Subtotal</span><span>₱{subtotal}</span></div>
                         <div><span>Tax (10%)</span><span>₱{tax}</span></div>
@@ -300,15 +314,19 @@ function Order() {
                         </select>
                         <input
                             type="number"
+                            className={orderErrors.tendered ? 'input-error' : ''}
                             placeholder="Amount Tendered"
                             value={payment.tendered}
-                            onChange={e => setPayment(p => ({ ...p, tendered: e.target.value }))} />
+                            onChange={e => { setPayment(p => ({ ...p, tendered: e.target.value })); setOrderErrors(p => ({ ...p, tendered: '' })); }}
+                        />
+                        {orderErrors.tendered && <span className="error-msg">{orderErrors.tendered}</span>}
                         {payment.tendered && (
                             <div className="change-display">
                                 Change: ₱{change >= 0 ? change : 0}
                             </div>
                         )}
                     </div>
+                    {orderErrors.form && <span className="error-msg">{orderErrors.form}</span>}
                     <button
                         className="submit-order-btn"
                         onClick={handleSubmit}

@@ -3,17 +3,28 @@ import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import HeaderOveriew from "../../components/header/Header.jsx";
 import AddBrand from "../../components/features/brands/AddBrand.jsx";
 import EditBrand from "../../components/features/brands/EditBrand.jsx";
-import RemoveBrand from "../../components/features/brands/RemoveBrand.jsx";
+import ConfirmModal from "../../components/features/modals/ConfirmModal.jsx";
+import Toast from "../../components/features/modals/Toast.jsx";
+import { useToast } from "../../hooks/useToast.js";
+
 import BASE_URL from "../../hooks/server/config";
 import "./Brand.css";
-import { plus, pencil, trashbin } from "../../assets/ui/Icons.js";
+import { plus, pencil } from "../../assets/ui/Icons.js";
+import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
+import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
+import { useSort } from '../../hooks/filters/useSort';
 
 function Brand() {
     const [items, setItems] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
     const [showAdd, setShowAdd] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [showRemove, setShowRemove] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [confirmModal, setConfirmModal] = useState(null);
+    const { toast, showToast, clearToast } = useToast();
+
+    const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items, ['brand_name', 'description']);
+    const { filtered: statusFiltered, status, setStatus } = useStatusFilter(keywordFiltered, 'status');
+    const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
     const fetchBrands = async () => {
         try {
@@ -36,12 +47,82 @@ function Brand() {
         fetchBrands();
     }, []);
 
+    const handleStatusToggleClick = (e, item) => {
+        e.stopPropagation();
+        setConfirmModal({ item });
+    };
+
+    const handleStatusConfirm = async () => {
+        const item = confirmModal.item;
+        const newStatus = item.status === 'active' ? 'inactive' : 'active';
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${BASE_URL}/editBrand/status/${item.brand_id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setItems(prev =>
+                    prev.map(i =>
+                        i.brand_id === item.brand_id ? { ...i, status: data.status } : i
+                    )
+                );
+            } else {
+                alert(data.error);
+            }
+        } catch {
+            alert("Server Error");
+        }
+        setConfirmModal(null);
+    };
+
     return (
         <>
             <div className="main-container">
-                <HeaderOveriew />
+                <HeaderOveriew
+                    items={items}
+                    field="brand_name"
+                    keyword={keyword}
+                    setKeyword={setKeyword}
+                />
                 <Sidebar />
                 <div className="container brands-container">
+                    <div className="filters-panel">
+                        <select value={status} onChange={e => setStatus(e.target.value)}>
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select value={sortKey} onChange={e => setSortKey(e.target.value)}>
+                            <option value="">Sort by...</option>
+                            <option value="brand_name">Alphabetical</option>
+                            <option value="total_products">Total Products</option>
+                        </select>
+                        <select value={order} onChange={e => setOrder(e.target.value)}>
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+
+                    <div className="product-actions-button">
+                        <button className="addProd-btn" onClick={() => setShowAdd(true)}>
+                            <img src={plus} /> Add Brand
+                        </button>
+                        <button
+                            className="editProd-btn"
+                            onClick={() => {
+                                if (!selectedItem) { showToast("Select a brand first"); return; }
+                                setShowEdit(true);
+                            }}
+                        >
+                            <img src={pencil} /> Edit Brand
+                        </button>
+                    </div>
+
                     <div className="brands-table">
                         <table>
                             <thead>
@@ -49,13 +130,15 @@ function Brand() {
                                     <th>BRAND NAME</th>
                                     <th>DESCRIPTION</th>
                                     <th>TOTAL PRODUCTS</th>
+                                    <th>STATUS</th>
                                 </tr>
                             </thead>
                             <tbody className="brands-tbody">
-                                {items.map((item) => {
+                                {finalFiltered.map((item) => {
                                     const isSelected = selectedItem?.brand_id === item.brand_id;
                                     return (
                                         <tr
+                                            className='tr-selectable'
                                             key={item.brand_id}
                                             onClick={() =>
                                                 setSelectedItem(prev =>
@@ -67,35 +150,19 @@ function Brand() {
                                             <td>{item.brand_name}</td>
                                             <td>{item.description || '—'}</td>
                                             <td>{item.total_products}</td>
+                                            <td>
+                                                <div
+                                                    className={`status-container ${item.status === 'active' ? 'status-in' : 'status-out'} status-clickable`}
+                                                    onClick={(e) => handleStatusToggleClick(e, item)}
+                                                >
+                                                    {item.status === 'active' ? 'Active' : 'Inactive'}
+                                                </div>
+                                            </td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
-                    </div>
-
-                    <div className="product-actions-button">
-                        <button className="addProd-btn" onClick={() => setShowAdd(true)}>
-                            <img src={plus} /> Add Brand
-                        </button>
-                        <button
-                            className="editProd-btn"
-                            onClick={() => {
-                                if (!selectedItem) { alert("Select a brand first"); return; }
-                                setShowEdit(true);
-                            }}
-                        >
-                            <img src={pencil} /> Edit Brand
-                        </button>
-                        <button
-                            className="removeProd-btn"
-                            onClick={() => {
-                                if (!selectedItem) { alert("Select a brand first"); return; }
-                                setShowRemove(true);
-                            }}
-                        >
-                            <img src={trashbin} /> Remove Brand
-                        </button>
                     </div>
 
                     {showAdd && (
@@ -104,11 +171,11 @@ function Brand() {
                                 <AddBrand
                                     onClose={() => setShowAdd(false)}
                                     onRefresh={fetchBrands}
+                                    brands={items}
                                 />
                             </div>
                         </div>
                     )}
-
                     {showEdit && (
                         <div className="modal-overlay">
                             <div className="modal-content">
@@ -116,24 +183,29 @@ function Brand() {
                                     item={selectedItem}
                                     onClose={() => setShowEdit(false)}
                                     onRefresh={fetchBrands}
+                                    brands={items}
                                 />
                             </div>
                         </div>
                     )}
-
-                    {showRemove && (
+                    {confirmModal && (
                         <div className="modal-overlay">
                             <div className="modal-content">
-                                <RemoveBrand
-                                    item={selectedItem}
-                                    onClose={() => setShowRemove(false)}
-                                    onRemoved={(id) => {
-                                        setItems(prev => prev.filter(i => i.brand_id !== id));
-                                        setSelectedItem(null);
-                                    }}
+                                <ConfirmModal
+                                    message={`Set "${confirmModal.item.brand_name}" to ${confirmModal.item.status === 'active' ? 'Inactive' : 'Active'}?`}
+                                    onConfirm={handleStatusConfirm}
+                                    onCancel={() => setConfirmModal(null)}
                                 />
                             </div>
                         </div>
+                    )}
+                    {toast && (
+                        <Toast
+                            key={toast.key}
+                            message={toast.message}
+                            duration={toast.duration}
+                            onDone={clearToast}
+                        />
                     )}
                 </div>
             </div>

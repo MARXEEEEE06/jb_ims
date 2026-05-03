@@ -27,7 +27,7 @@
 }
 
 .stock-adjustment-input{
-    width: 100%;
+    width: 98%;
     padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid #ccd6dd;
@@ -41,15 +41,17 @@
 }
 
 .stock-macro-row button{
-    border: none;
-    background-color: #eef3f6;
+    border: 1px solid #000;
+    /* background-color: #eef3f6; */
     border-radius: 10px;
     padding: 8px 12px;
     cursor: pointer;
 }
 
 .stock-macro-row button:hover{
-    background-color: #e2eaef;
+    /* background-color: #e2eaef; */
+    background-color: #e6edf0;
+    color: #000;
 }
 
 .stock-macro-row button:disabled{
@@ -108,15 +110,17 @@
 .stock-type-toggle button {
     flex: 1;
     padding: 8px 0;
-    border: 1px solid #ccd6dd;
+    /* border: 1px solid #ccd6dd;
     border-radius: 50px;
     background: #eef3f6;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 0.95rem; */
 }
 
 .stock-type-toggle button:hover {
-    background: #e2eaef;
+    /* background: #e2eaef; */
+    background-color: #e6edf0;
+    color: #000;
 }
 
 .stock-type-toggle button.active {
@@ -160,11 +164,11 @@
 .stock-confirm-row span {
     display: block;
     font-size: 0.8rem;
-    color: #7f8c8d;
+    /* color: #7f8c8d; */
     margin-bottom: 4px;
 }
 
 .stock-confirm-row strong {
     font-size: 1.2rem;
-    color: #2c3e50;
+    /* color: #2c3e50; */
 }

@@ -1,14 +1,9 @@
 .dashboard-container{
     display: flex;
     flex-direction: column;
-    /* grid-template-areas:  */
-    /* "cards" */
-    /* "charts"; */
-    /* grid-template-columns: 1fr 1fr ; */
-    /* grid-template-rows: 500px; */
     padding: 10px;
     margin: 10px;
-    gap: 100%;
+    gap: 10%;
     height: 100%;
 }
 
@@ -42,7 +37,6 @@
     gap: 10px;
 }
 
-
 .card-data h1{
     font-family: garet-heavy;
     font-size: 1.5rem;
@@ -68,13 +62,11 @@
 }
 
 .charts-histogram{
-    /* background-color: red; */
     grid-area: cards;
     width: 100%;
 }
 
 .charts-bar1{
-    /* background-color: blue; */
     grid-area: charts;
     width: 100%;
 }

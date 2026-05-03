@@ -1,15 +1,9 @@
-.main-container.no-scroll {
-    overflow: hidden !important;
-}
-
 .orders-container {
     grid-area: content;
     display: flex;
     gap: 20px;
     padding: 10px;
-    overflow-y: auto;
     align-items: flex-start;
-    height: 100%;        /* fill the 1fr row */
     box-sizing: border-box;
 }
 
@@ -25,26 +19,17 @@
     background: #e6edf0;
     border-radius: 15px;
     padding: 15px;
-    position: sticky;
-    top: 0;
-    max-height: calc(100vh - 50px - 10px - 20px); /* viewport - header - gap - padding */
     box-sizing: border-box;
-    overflow: hidden;
-}
-
-.customer-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
 }
 
 .cart-items {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    overflow-y: auto;   /* only this scrolls */
-    flex: 1;            /* takes remaining space before totals */
-    min-height: 0;      /* required — flex children don't shrink below content size without this */
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .cart-row {
@@ -54,7 +39,7 @@
     background: #fff;
     border-radius: 10px;
     padding: 6px 10px;
-    gap: 8px;
+    /* gap: 8px; */
     font-size: 10px;
 }
 
@@ -76,7 +61,7 @@
     padding: 0;
 }
 
-.remove-btn {
+.remove-cross {
     background: none;
     border: none;
     color: red;
@@ -140,3 +125,7 @@
     padding: 5px;
     &:hover{cursor: pointer; background-color: #cccccc;}
 }
+
+/* .summary-field{
+    max-height: 10px;
+} */
