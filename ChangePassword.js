@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("./DB");
 const bcrypt = require('bcrypt');
 const verifyToken = require("./Auth");
-const logActivity = require("./Logger");
+const logActivity = require("./src/hooks/logger");
 
 function requireAdmin(req, res, next) {
   const role = String(req.user?.role ?? "").toLowerCase();

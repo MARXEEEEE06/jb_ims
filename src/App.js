@@ -11,7 +11,7 @@ import Settings from "./pages/settings/Settings.jsx";
 import AccountManagement from "./components/features/settings/AccountManagement.jsx";
 import Security from "./components/features/settings/Security.jsx";
 import AccountDetails from "./components/features/settings/AccountDetails.jsx";
-import RequireAccess from "./components/auth/RequireAccess.jsx";
+import RequireAccess from "./components/auth/RequireAccess.jsx"
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 

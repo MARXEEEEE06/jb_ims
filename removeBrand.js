@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./DB.js');
-const logActivity = require('./Logger.js');
+const logActivity = require('./src/hooks/logger.js');
 const verifyToken = require('./Auth.js')
 
 router.delete('/:id', verifyToken, (req, res) => {

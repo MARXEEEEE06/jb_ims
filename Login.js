@@ -5,7 +5,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const db = require('./DB.js');
-const logActivity = require('./Logger');
+const logActivity = require('./src/hooks/logger.js');
 
 const app = express();
 app.use(cors());

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./DB.js');
-const logActivity = require('./Logger');
+const logActivity = require('./src/hooks/logger.js');
 
 // POST /api/orders
 router.post('/', (req, res) => {

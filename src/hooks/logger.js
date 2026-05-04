@@ -1,4 +1,4 @@
-const db = require('./DB.js');
+const db = require('../../DB.js');
 
 /**
  * Fire-and-forget activity logger.

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./DB.js');
-const logActivity = require('./Logger');
+const logActivity = require('./src/hooks/logger.js');
 
 function generateSKU(product_name, brand_name, variant) {
   const p = product_name.substring(0, 3).toUpperCase();

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require('./DB.js');
 const verifyToken = require("./Auth");
-const logActivity = require("./Logger");
+const logActivity = require("./src/hooks/logger.js");
 const bcrypt = require('bcrypt');
 
 function requireAdmin(req, res, next) {

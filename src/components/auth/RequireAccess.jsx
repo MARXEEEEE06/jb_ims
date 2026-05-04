@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import useAuth from "../../hooks/UserAuth";
+import useAuth from "../../hooks/UserAuth.js";
 import Sidebar from "../sidebar/Sidebar";
 
 const STAFF_ALLOWED_PATHS = new Set([
