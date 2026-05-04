@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const db = require('./DB');
+const db = require('./DB.js');
 const verifyToken = require('./Auth');
 const logActivity = require('./Logger');
 

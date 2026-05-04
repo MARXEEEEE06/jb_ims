@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./DB');
+const db = require('./DB.js');
 
 // GET /api/reports/logs
 router.get('/logs', (req, res) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./DB');
+const db = require('./DB.js');
 const logActivity = require('./Logger');
 
 function generateSKU(product_name, brand_name, variant) {

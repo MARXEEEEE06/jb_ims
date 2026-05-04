@@ -4,7 +4,7 @@ const cors = require('cors');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const db = require('./DB');
+const db = require('./DB.js');
 const logActivity = require('./Logger');
 
 const app = express();

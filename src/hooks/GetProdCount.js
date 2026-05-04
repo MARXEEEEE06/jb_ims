@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./DB');
+const db = require('./DB.js');
 
 // GET counts for dashboard
 router.get('/', (req, res) => {
