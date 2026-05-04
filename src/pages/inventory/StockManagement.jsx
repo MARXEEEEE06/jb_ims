@@ -205,6 +205,9 @@ return (
                                 >
                                     Next
                                 </button>
+                                <button type="button" className="cancel-btn" onClick={closeModal} disabled={isSaving}>
+                                    Back
+                                </button>
                             </>
                         ) : (
                             <>

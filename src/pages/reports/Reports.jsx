@@ -25,6 +25,11 @@ const ACTION_LABELS = {
     USER_ADDED: 'User Added',
     USER_UPDATED: 'User Updated',
     ORDER_CREATED: 'Order / Receipt',
+    EXPORT_INVENTORY: 'Export Inventory',
+    EXPORT_LOGS: 'Export Logs',
+EXPORT_RECEIPTS: 'Export Receipts',
+    EXPORT_AUTH_SUCCESS:'Export Auth Success',
+    EXPORT_AUTH_FAILED:'Export Auth Failed',
 };
 
 const ACTION_CLASS = {
@@ -47,6 +52,11 @@ const ACTION_CLASS = {
     USER_ADDED: 'badge-user',
     USER_UPDATED: 'badge-user-update',
     ORDER_CREATED: 'badge-order',
+    EXPORT_INVENTORY: 'badge-export-inventory',
+    EXPORT_LOGS: 'badge-export-logs',
+    EXPORT_RECEIPTS: 'badge-export-receipts',
+    EXPORT_AUTH_SUCCESS:'badge-export-auth-success',
+    EXPORT_AUTH_FAILED:'badge-export-auth-failed',
 };
 
 function Reports() {

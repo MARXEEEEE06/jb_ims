@@ -173,6 +173,12 @@
 .badge-user     { background-color: #ffe0ef; color: #72243e; }
 .badge-user-update { background-color: #e1f0ff; color: #173a67; }
 .badge-order { background-color: #fde8d8; color: #712b13; }
+.badge-export-inventory { background-color: #dad8fd; color: #4b1371; }
+.badge-export-logs { background-color: #e8d8fd; color: #611371; }
+.badge-export-receipts { background-color: #fdd8fb; color: #711369; }
+.badge-export-receipts { background-color: #fdd8fb; color: #711369; }
+.badge-export-auth-success { background-color: #e6fdd8; color: #297113; }
+.badge-export-auth-failed { background-color: #fdd8d8; color: #711313; }
 
 /* ── Details / View button ── */
 .details-btn {
