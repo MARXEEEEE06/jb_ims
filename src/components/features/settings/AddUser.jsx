@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import BASE_URL from "../../../hooks/server/config.js";
 
+import Toast from "../modals/Toast.jsx";
+import { useToast } from "../../../hooks/useToast.js";
+
 import "./AddUser.css"
 import { eyeHideToggle, eyeShowToggle } from "../../../assets/ui/Icons";
 
-function AddUser({ onClose, onRefresh }) {
+function AddUser({ onClose, onRefresh, onToast }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -13,6 +16,7 @@ function AddUser({ onClose, onRefresh }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [eyeToggle, setShow] = useState(false);
+  const {toast, showToast, clearToast} = useToast();
 
   const validate = () => {
     const newErrors = {};
@@ -27,13 +31,19 @@ function AddUser({ onClose, onRefresh }) {
       newErrors.username = "Username can only contain letters, numbers, and underscores.";
     }
 
-    // Password: required, min 8 chars, at least 1 number
+    // Password: required, min 8 chars, at least 1 number, at least 1 symbol
     if (!password) {
       newErrors.password = "Password is required.";
-    } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters.";
-    } else if (!/\d/.test(password)) {
-      newErrors.password = "Password must contain at least one number.";
+    } else {
+      const passwordChecks = {
+        minLength: password.length >= 8,
+        hasNumber: /[0-9]/.test(password),
+        hasSymbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      };
+
+      if (!(passwordChecks.minLength && passwordChecks.hasNumber && passwordChecks.hasSymbol)) {
+        newErrors.password = "Must be 8+ chars with 1 number and 1 symbol.";
+      }
     }
 
     // Email: required, standard format
@@ -80,15 +90,17 @@ function AddUser({ onClose, onRefresh }) {
 
       const data = await response.json();
       if (response.ok) {
+        if (typeof onToast === "function") onToast("User added successfully!");
+        else showToast("User added successfully!");
         onRefresh();
         onClose();
-        alert("User added successfully!");
       } else {
-        alert(data.error || "Failed to add user");
+        if (typeof onToast === "function") onToast(data.error || "Failed to add user");
+        else showToast(data.error || "Failed to add user");
       }
     } catch (error) {
-      alert("Server Error");
-      console.error(error);
+      if (typeof onToast === "function") onToast("Server Error");
+      else showToast("Server Error");
     }
     setIsLoading(false);
   };
@@ -165,6 +177,14 @@ function AddUser({ onClose, onRefresh }) {
           </div>
         </form>
       </div>
+      {toast && (
+          <Toast
+              key={toast.key}
+              message={toast.message}
+              duration={toast.duration}
+              onDone={clearToast}
+          />
+      )}
     </div>
   );
 }

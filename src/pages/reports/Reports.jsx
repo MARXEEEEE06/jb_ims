@@ -5,6 +5,9 @@ import BASE_URL from '../../hooks/server/config.js';
 import useAuth from '../../hooks/UserAuth.js';
 import "./Reports.css";
 
+import Toast from '../../components/features/modals/Toast.jsx';
+import { useToast } from '../../hooks/useToast.js';
+
 const ACTION_LABELS = {
     LOGIN: 'Login',
     LOGOUT: 'Logout',
@@ -62,6 +65,7 @@ const ACTION_CLASS = {
 function Reports() {
     const [activeTab, setActiveTab] = useState('logs');
     const { user } = useAuth();
+    const {toast, showToast, clearToast} = useToast();
 
     // --- Logs state ---
     const [logs, setLogs] = useState([]);
@@ -109,7 +113,7 @@ function Reports() {
                     )];
                     setUsers(uniqueUsers);
                 } else {
-                    alert(data.error);
+                    showToast(data.error);
                 }
             } catch {
                 alert('Server Error');
@@ -132,7 +136,7 @@ function Reports() {
                 if (res.ok) {
                     setReceipts(Array.isArray(data) ? data : []);
                 } else {
-                    alert(data.error);
+                    showToast(data.error);
                 }
             } catch {
                 alert('Server Error');
@@ -480,6 +484,14 @@ function Reports() {
                         <button className="modal-close-btn" onClick={closeModal}>Close</button>
                     </div>
                 </div>
+            )}
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    duration={toast.duration}
+                    onDone={clearToast}
+                />
             )}
         </div>
     );

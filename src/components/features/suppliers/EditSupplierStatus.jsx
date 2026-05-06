@@ -1,9 +1,12 @@
 import React from "react";
 import BASE_URL from "../../../hooks/server/config.js";
 import "./EditSupplierStatus.css";
+import Toast from "../modals/Toast.jsx";
+import { useToast } from "../../../hooks/useToast.js";
 
 function EditSupplierStatus({ item, onClose, onConfirmed }) {
     const newStatus = item?.status === "Active" ? "Inactive" : "Active";
+    const {toast, showToast, clearToast} = useToast();
 
     const handleConfirm = async () => {
         try {
@@ -18,11 +21,11 @@ function EditSupplierStatus({ item, onClose, onConfirmed }) {
             });
             const data = await response.json();
             if (response.ok) {
-                alert(`Supplier marked as ${newStatus}`);
+                showToast(`Supplier marked as ${newStatus}`);
                 if (onConfirmed) onConfirmed(item.sup_info_id, newStatus);
                 onClose();
             } else {
-                alert(data.error);
+                showToast(data.error);
             }
         } catch (error) {
             alert("Server Error");
@@ -39,6 +42,14 @@ function EditSupplierStatus({ item, onClose, onConfirmed }) {
                 <button className="add-btn" onClick={handleConfirm}>Confirm</button>
                 <button className="cancel-btn" onClick={onClose}>Cancel</button>
             </div>
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    duration={toast.duration}
+                    onDone={clearToast}
+                />
+            )}
         </div>
     );
 }

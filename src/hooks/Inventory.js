@@ -20,13 +20,15 @@ router.post('/', (req, res) => {
     v.quantity,
     p.product_id,
     p.product_name,
+    b.brand_id,
     b.brand_name AS brand,
     c.category_type,
     u.unit_type,
+    si.sup_info_id,
     si.name AS supplier
     FROM VARIANTS v
     JOIN PRODUCTS p ON v.product_id = p.product_id
-    LEFT JOIN BRAND b ON p.brand_id = b.brand_id
+    LEFT JOIN BRAND b ON p.brand_id = b.brand_id AND b.status = 'active'
     LEFT JOIN CATEGORY c ON p.category_id = c.category_id
     LEFT JOIN UNIT u ON v.unit_id = u.unit_id
     LEFT JOIN supplier_items sim ON p.product_id = sim.product_id

@@ -15,12 +15,17 @@ import { useSupplierFilter } from '../../hooks/filters/useSupplierFilter';
 import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
 import { useSort } from '../../hooks/filters/useSort';
 
+import Toast from '../../components/features/modals/Toast.jsx';
+import { useToast } from '../../hooks/useToast.js';
+
 function Inventory() {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'supplier', 'quantity', 'status'];
     const columns = COLUMNS.filter(col => visibleKeys.includes(col.key));
+
+    const {toast, showToast, clearToast} = useToast();
 
     // Start from raw items
     const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
@@ -47,7 +52,7 @@ function Inventory() {
                 if (response.ok) {
                     setItems(Array.isArray(data) ? data : [data]);
                 } else {
-                    alert(data.error);
+                    showToast(data.error);
                 }
             } catch (error) {
                 alert("Server Error");
@@ -117,6 +122,8 @@ function Inventory() {
                     </select>
                 </div>
 
+                <p className="results-count">{finalFiltered.length} result{finalFiltered.length !== 1 ? 's' : ''}</p>
+
                 <div className="item-table">
                     {isLoading ? <p>Loading...</p> : (
                         <table>
@@ -156,6 +163,14 @@ function Inventory() {
                     )}
                 </div>
             </div>
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    duration={toast.duration}
+                    onDone={clearToast}
+                />
+            )}
         </div>
     );
 }

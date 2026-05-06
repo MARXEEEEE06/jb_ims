@@ -11,3 +11,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.results-count {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}

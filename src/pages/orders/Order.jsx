@@ -8,6 +8,9 @@ import getAuthHeaders from "../../hooks/server/getAuthHeaders.js";
 import "../../css/Site.css";
 import "./Order.css";
 
+import Toast from '../../components/features/modals/Toast.jsx';
+import { useToast } from '../../hooks/useToast.js';
+
 import getStatusClass from '../../hooks/inventory/GetStatus.js';
 import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter.js';
 import { useBrandFilter } from '../../hooks/filters/useBrandFilter.js';
@@ -25,6 +28,7 @@ function Order() {
     const [receipt, setReceipt] = useState(null);
     const [showReceipt, setShowReceipt] = useState(false);
     const [orderErrors, setOrderErrors] = useState({});
+    const { toast, showToast, clearToast } = useToast();
 
     // ✅ Filter/sort chain on items
     const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
@@ -44,8 +48,8 @@ function Order() {
                 });
                 const data = await response.json();
                 if (response.ok) setItems(Array.isArray(data) ? data : [data]);
-                else alert(data.error);
-            } catch { alert('Failed to load products'); }
+                else showToast(data.error);
+            } catch { showToast('Failed to load products'); }
             finally { setIsLoading(false); }
         };
         fetchInventory();
@@ -186,6 +190,8 @@ function Order() {
                             <option value="desc">Descending</option>
                         </select>
                     </div>
+
+                    <p className="results-count">{finalFiltered.filter(p => p.quantity > 0).length} result{finalFiltered.filter(p => p.quantity > 0).length !== 1 ? 's' : ''}</p>
 
                     {isLoading ? <p>Loading...</p> : (
                         <table>
@@ -340,6 +346,14 @@ function Order() {
                 <ReceiptModal
                     receipt={receipt}
                     onClose={() => setShowReceipt(false)} />
+            )}
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    duration={toast.duration}
+                    onDone={clearToast}
+                />
             )}
         </div>
     );

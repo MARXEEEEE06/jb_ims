@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/UserAuth.js";
 import ConfirmModal from "../features/modals/ConfirmModal.jsx";
 
@@ -13,10 +13,11 @@ import {
 } from "../../assets/ui/Icons";
 
 function Sidebar() {
-    const { user, logout, loading } = useAuth();
-    const navigate = useNavigate();
     const [username, setUsername] = useState("User");
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const { user, logout, loading } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
     const isAdmin = String(user?.role ?? "").toLowerCase() === "admin";
 
     const handleLogout = async () => {
@@ -34,6 +35,17 @@ function Sidebar() {
 
     if (loading) return null;
 
+    const navItems = [
+        { path: '/dashboard', icon: home, label: 'Dashboard', adminOnly: false },
+        { path: '/inventory', icon: clipboard, label: 'Inventory', adminOnly: false },
+        { path: '/products', icon: box, label: 'Products', adminOnly: true },
+        { path: '/order', icon: order, label: 'Order', adminOnly: true },
+        { path: '/brands', icon: brand, label: 'Brands', adminOnly: true },
+        { path: '/suppliers', icon: supplier, label: 'Supplier', adminOnly: true },
+        { path: '/stocks', icon: stock_manage, label: 'Stock Management', adminOnly: false },
+        { path: '/reports', icon: reports, label: 'Report/Logs', adminOnly: false },
+    ];
+
     return (
         <div className="sidebar">
             <div className="sidebar-header">
@@ -42,45 +54,32 @@ function Sidebar() {
             </div>
 
             <div className="sidebar-nav-item">
-                <span className="nav-item nav-item-dashboard">
-                    <a href='/dashboard'><img src={home} alt="Dashboard" />Dashboard</a>
-                </span>
-                <span className="nav-item nav-item-inventory">
-                    <a href='/inventory'><img src={clipboard} alt="Inventory" />Inventory</a>
-                </span>
-                {isAdmin && (
-                    <>
-                        <span className="nav-item nav-item-products">
-                            <a href='/products'><img src={box} alt="Products" />Products</a>
-                        </span>
-                        <span className="nav-item nav-item-order">
-                            <a href='/order'><img src={order} alt="Order" />Order</a>
-                        </span>
-                        <span className="nav-item nav-item-brands">
-                            <a href='/brands'><img src={brand} alt="Brands" />Brands</a>
-                        </span>
-                        <span className="nav-item nav-item-supplier">
-                            <a href='/suppliers'><img src={supplier} alt="Supplier" />Supplier</a>
-                        </span>
-                    </>
-                )}
-                <span className="nav-item nav-item-stock">
-                    <a href='/stocks'><img src={stock_manage} alt="Stock Management" />Stock Management</a>
-                </span>
-                <span className="nav-item nav-item-reports">
-                    <a href='/reports'><img src={reports} alt="Report/Logs" />Report/Logs</a>
-                </span>
+                {navItems
+                    .filter(item => !item.adminOnly || isAdmin)
+                    .map(item => (
+                    <a 
+                        key={item.path}  
+                        href={item.path}
+                        className={`nav-item nav-item-${item.label.toLowerCase().replace(/\s+/g, '-')} ${location.pathname === item.path ? 'active' : ''}`}
+                    >
+                        <img src={item.icon} alt={item.label} />
+                        {item.label}
+                    </a>
+                    ))
+                }
             </div>
 
             <div className="sidebar-footer">
                 {isAdmin && (
-                    <a className="sidebar-footer-item nav-item sidebar-item-settings" href="/settings">
+                    <a
+                        className={`sidebar-footer-item nav-item sidebar-item-settings ${location.pathname === '/settings' ? 'active' : ''}`}
+                        href="/settings"
+                    >
                         <img src={settings} alt="Settings" />Settings
                     </a>
                 )}
-                
                 <a
-                    className="sidebar-footer-item nav-item sidebar-item-logout"
+                    className={`sidebar-footer-item nav-item sidebar-item-logout ${showLogoutConfirm ? 'active' : ''}`}
                     onClick={() => setShowLogoutConfirm(true)}
                 >
                     <img src={logout_icon} alt="Logout" />Logout

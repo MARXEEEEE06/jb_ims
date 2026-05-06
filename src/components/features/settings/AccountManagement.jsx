@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import BASE_URL from "../../../hooks/server/config";
 import AddUser from "./AddUser";
+import Toast from "../modals/Toast.jsx";
+import { useToast } from "../../../hooks/useToast.js";
 import "./AccountManagement.css";
 
 function AccountManagement() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAdd, setShowAdd] = useState(false);
+    const { toast, showToast, clearToast } = useToast();
 
     const fetchUsers = async () => {
         try {
@@ -82,11 +85,20 @@ function AccountManagement() {
                             <AddUser
                                 onRefresh={fetchUsers}
                                 onClose={() => setShowAdd(false)}
+                                onToast={showToast}
                             />
                         </div>
                     </div>
                 )}
             </div>
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    duration={toast.duration}
+                    onDone={clearToast}
+                />
+            )}
         </div>
     );
 }

@@ -56,7 +56,7 @@ h1{
   grid-template-areas: 
       "sidebar header"
       "sidebar content";
-  grid-template-columns: 16% 83%;
+  grid-template-columns: 12% 87%;
   grid-template-rows: 50px 1fr;
   gap: 10px;
   height: 100vh;

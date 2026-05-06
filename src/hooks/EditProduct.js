@@ -16,6 +16,7 @@ router.post('/', (req, res) => {
     product_id,
     product_name,
     brand_id,       // ← now an ID
+    supplier_id,    // ← now an ID
     category_type,
     variant,
     price,
@@ -25,7 +26,7 @@ router.post('/', (req, res) => {
 
     const userId = req.user?.user_id ?? null; // add this
 
-  if (!variant_id || !product_id || !product_name || !brand_id || !category_type || !variant || !price || !unit_type) {
+  if (!variant_id || !product_id || !product_name || !brand_id || !supplier_id || !category_type || !variant || price === undefined || price === null || !unit_type) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -57,32 +58,42 @@ router.post('/', (req, res) => {
                   (err) => {
                     if (err) return res.status(500).json({ error: 'Server error' });
 
-                    logActivity(userId, 'PRODUCT_UPDATED', 'variant', Number(variant_id), {                      product_name,
-                      brand: brand_name,
-                      category: category_type,
-                      variant,
-                      price: Number(price),
-                      quantity: Number(quantity),
-                    });
-
                     db.query(
-                      `SELECT p.product_id, p.product_name, b.brand_name AS brand, b.brand_id,
-                              c.category_type, c.category_id,
-                              v.variant_id, v.sku, v.variant, v.price, v.quantity,
-                              u.unit_type, u.unit_id,
-                              si.name AS supplier
-                      FROM PRODUCTS p
-                      LEFT JOIN BRAND b ON p.brand_id = b.brand_id
-                      LEFT JOIN CATEGORY c ON p.category_id = c.category_id
-                      LEFT JOIN VARIANTS v ON v.product_id = p.product_id
-                      LEFT JOIN UNIT u ON v.unit_id = u.unit_id
-                      LEFT JOIN supplier_items sim ON p.product_id = sim.product_id
-                      LEFT JOIN supplier_info si ON sim.sup_info_id = si.sup_info_id
-                      WHERE v.variant_id = ?`,
-                      [variant_id],
-                      (err, rows) => {
-                        if (err) return res.status(500).json({ error: 'Server error' });
-                        res.json({ message: 'Product updated', sku, product: rows[0] });
+                      `UPDATE supplier_items SET sup_info_id = ? WHERE product_id = ?`,
+                      [supplier_id, product_id],
+                      (err) => {
+                        if (err) return res.status(500).json({ error: 'Server error updating supplier' });
+                        
+                        logActivity(userId, 'PRODUCT_UPDATE', 'variant', Number(variant_id), {                      
+                          product_name,
+                          brand: brand_name,
+                          supplier_id: Number(supplier_id),
+                          category: category_type,
+                          variant,
+                          price: Number(price),
+                          quantity: Number(quantity),
+                        });
+
+                        db.query(
+                          `SELECT p.product_id, p.product_name, b.brand_name AS brand, b.brand_id,
+                                  c.category_type, c.category_id,
+                                  v.variant_id, v.sku, v.variant, v.price, v.quantity,
+                                  u.unit_type, u.unit_id,
+                                  si.name AS supplier
+                          FROM PRODUCTS p
+                          LEFT JOIN BRAND b ON p.brand_id = b.brand_id
+                          LEFT JOIN CATEGORY c ON p.category_id = c.category_id
+                          LEFT JOIN VARIANTS v ON v.product_id = p.product_id
+                          LEFT JOIN UNIT u ON v.unit_id = u.unit_id
+                          LEFT JOIN supplier_items sim ON p.product_id = sim.product_id
+                          LEFT JOIN supplier_info si ON sim.sup_info_id = si.sup_info_id
+                          WHERE v.variant_id = ?`,
+                          [variant_id],
+                          (err, rows) => {
+                            if (err) return res.status(500).json({ error: 'Server error' });
+                            res.json({ message: 'Product updated', sku, product: rows[0] });
+                          }
+                        );
                       }
                     );
                   }

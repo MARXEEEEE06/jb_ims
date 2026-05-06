@@ -56,14 +56,14 @@ function Histogram() {
       labels,
       datasets: [
         {
-          label: 'Supply (this month)',
+          label: 'Supply (previous month)',
           data: supplyData,
           backgroundColor: 'rgb(75, 192, 75)',
           borderColor: 'rgb(0, 0, 0)',
           borderWidth: 1,
         },
         {
-          label: 'Demand (this month)',
+          label: 'Demand (previous month)',
           data: demandData,
           backgroundColor: 'rgb(192, 75, 75)',
           borderColor: 'rgb(0, 0, 0)',

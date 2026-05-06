@@ -73,33 +73,41 @@ router.post('/status/:sup_info_id', verifyToken, (req, res) => {
   const { status } = req.body;
   const userId = req.user?.user_id ?? null;
 
-  if (!status) return res.status(400).json({ error: 'Missing status' });
-
-  // Fetch before-state for logging
+  // Fetch before-state, then toggle (default) or set explicit status
   db.query(`SELECT name, status FROM supplier_info WHERE sup_info_id = ?`, [sup_info_id], (err, beforeRows) => {
-    const before = beforeRows?.[0] ?? {};
-    const dbStatus = status.toLowerCase();
+    if (err) {
+      console.error('SQL Error:', err);
+      return res.status(500).json({ error: 'Server error' });
+    }
+
+    const before = beforeRows?.[0];
+    if (!before) return res.status(404).json({ error: 'Supplier not found' });
+
+    const hasExplicitStatus = status !== undefined && status !== null && String(status).trim() !== '';
+    const nextDbStatus = hasExplicitStatus
+      ? String(status).toLowerCase()
+      : (before.status === 'active' ? 'inactive' : 'active');
 
     db.query(
       `UPDATE supplier_info SET status = ? WHERE sup_info_id = ?`,
-      [dbStatus, sup_info_id],
-      (err, results) => {
-        if (err) {
-          console.error('SQL Error:', err);
+      [nextDbStatus, sup_info_id],
+      (uErr) => {
+        if (uErr) {
+          console.error('SQL Error:', uErr);
           return res.status(500).json({ error: 'Server error' });
-        }
-        if (results.affectedRows === 0) {
-          return res.status(404).json({ error: 'Supplier not found' });
         }
 
         logActivity(userId, 'SUPPLIER_UPDATE', 'supplier', Number(sup_info_id), {
           name: before.name,
           field: 'status',
           before: before.status,
-          after: dbStatus,
+          after: nextDbStatus,
         });
 
-        res.json({ message: `Status updated to ${status}` });
+        res.json({
+          message: `Status updated to ${nextDbStatus}`,
+          status: nextDbStatus === 'active' ? 'Active' : 'Inactive',
+        });
       }
     );
   });

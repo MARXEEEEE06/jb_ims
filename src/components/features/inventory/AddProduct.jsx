@@ -52,7 +52,7 @@ const handleSubmit = async (e) => {
             showToast(data.error);
         }
     }catch(error){
-        alert("JSX Server Error")
+        showToast("JSX Server Error")
     }
     setIsLoading(false);
 };

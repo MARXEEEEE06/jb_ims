@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./DB.js');
+const bcrypt = require('bcrypt');
 const logActivity = require('./Logger');
 const verifyToken = require('./Auth');
 
@@ -38,29 +39,36 @@ router.post('/', verifyToken, requireAdmin, (req, res) => {
 
       const user_id = result.insertId;
 
-      db.query(
-        `INSERT INTO login_credentials (user_id, username, password) VALUES (?, ?, ?)`,
-        [user_id, username, password],
-        (err, loginResult) => {
-          if (err) {
-            console.error('SQL Error (login_credentials):', err);
-            return res.status(500).json({ error: 'Server error inserting login credentials' });
-          }
-
-          logActivity(actorId, 'USER_ADDED', 'user', user_id, {
-            username,
-            email,
-            contact_num,
-            role_id,
-          });
-
-          res.json({
-            message: 'User added successfully',
-            user_id,
-            login_id: loginResult.insertId,
-          });
+      bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+        if (hashErr) {
+          console.error('Hash Error:', hashErr);
+          return res.status(500).json({ error: 'Server error hashing password' });
         }
-      );
+
+        db.query(
+          `INSERT INTO login_credentials (user_id, username, password) VALUES (?, ?, ?)`,
+          [user_id, username, hashedPassword],
+          (err, loginResult) => {
+            if (err) {
+              console.error('SQL Error (login_credentials):', err);
+              return res.status(500).json({ error: 'Server error inserting login credentials' });
+            }
+
+            logActivity(actorId, 'USER_ADDED', 'user', user_id, {
+              username,
+              email,
+              contact_num,
+              role_id,
+            });
+
+            res.json({
+              message: 'User added successfully',
+              user_id,
+              login_id: loginResult.insertId,
+            });
+          }
+        );
+      });
     }
   );
 });

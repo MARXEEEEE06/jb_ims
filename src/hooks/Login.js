@@ -70,7 +70,22 @@ router.post('/', (req, res) => {
             }
 
             const user = results[0];
-            const match = await bcrypt.compare(password, user.password);
+            const stored = String(user.password ?? '');
+            const isBcryptHash = stored.startsWith('$2a$') || stored.startsWith('$2b$') || stored.startsWith('$2y$');
+
+            let match = false;
+            if (isBcryptHash) {
+                match = await bcrypt.compare(password, stored);
+            } else {
+                // Legacy support: plaintext password in DB; if it matches, upgrade to bcrypt
+                match = password === stored;
+                if (match) {
+                    try {
+                        const upgraded = await bcrypt.hash(password, 10);
+                        db.query(`UPDATE login_credentials SET password = ? WHERE user_id = ?`, [upgraded, user.user_id]);
+                    } catch (_) {}
+                }
+            }
 
             if (!match) {
                 recordFailure();

@@ -36,7 +36,7 @@ function Brand() {
                     prev ? data.find(i => i.brand_id === prev.brand_id) ?? null : null
                 );
             } else {
-                alert(data.error);
+                showToast(data.error);
             }
         } catch {
             alert("Server Error");
@@ -54,7 +54,6 @@ function Brand() {
 
     const handleStatusConfirm = async () => {
         const item = confirmModal.item;
-        const newStatus = item.status === 'active' ? 'inactive' : 'active';
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(`${BASE_URL}/editBrand/status/${item.brand_id}`, {
@@ -72,7 +71,7 @@ function Brand() {
                     )
                 );
             } else {
-                alert(data.error);
+                showToast(data.error);
             }
         } catch {
             alert("Server Error");
@@ -108,9 +107,11 @@ function Brand() {
                         </select>
                     </div>
 
+                    <p className="results-count">{finalFiltered.length} result{finalFiltered.length !== 1 ? 's' : ''}</p>
+
                     <div className="product-actions-button">
                         <button className="addProd-btn" onClick={() => setShowAdd(true)}>
-                            <img src={plus} /> Add Brand
+                            <img src={plus} alt=""/> Add Brand
                         </button>
                         <button
                             className="editProd-btn"
@@ -119,7 +120,7 @@ function Brand() {
                                 setShowEdit(true);
                             }}
                         >
-                            <img src={pencil} /> Edit Brand
+                            <img src={pencil} alt=""/> Edit Brand
                         </button>
                     </div>
 

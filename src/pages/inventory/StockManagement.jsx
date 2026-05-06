@@ -6,6 +6,15 @@ import HeaderOveriew from "../../components/header/Header";
 import Sidebar from "../../components/sidebar/Sidebar";
 import "./StockManagement.css";
 
+import Toast from "../../components/features/modals/Toast.jsx";
+import { useToast } from "../../hooks/useToast.js";
+
+import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
+import { useBrandFilter } from '../../hooks/filters/useBrandFilter';
+import { useSupplierFilter } from '../../hooks/filters/useSupplierFilter';
+import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
+import { useSort } from '../../hooks/filters/useSort';
+
 function StockManagement() {
 const [items, setItems] = useState([]);
 const [activeItem, setActiveItem] = useState(null);
@@ -14,7 +23,14 @@ const [isSaving, setIsSaving] = useState(false);
 const [error, setError] = useState("");
 const [adjustType, setAdjustType] = useState('RESTOCK');
 const [confirmStep, setConfirmStep] = useState(false);
+const {toast, showToast, clearToast} = useToast();
 
+// Filter/sort chain
+const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
+const { filtered: brandFiltered, brand, setBrand, brands } = useBrandFilter(keywordFiltered, items);
+const { filtered: supplierFiltered, supplier, setSupplier, suppliers } = useSupplierFilter(brandFiltered, items);
+const { filtered: statusFiltered, status, setStatus } = useStatusFilter(supplierFiltered, 'quantity');
+const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
 const fetchInventory = async () => {
     try {
@@ -27,7 +43,7 @@ const fetchInventory = async () => {
         if (response.ok) {
             setItems(Array.isArray(data) ? data : [data]);
         } else {
-            alert(data.error);
+            showToast(data.error);
         }
     } catch (e) {
         alert("Server Error");
@@ -89,9 +105,49 @@ getStatusClass();
 
 return (
     <div className="main-container">
-        <HeaderOveriew />
+        <HeaderOveriew
+            items={items}
+            field="product_name"
+            keyword={keyword}
+            setKeyword={setKeyword}
+        />
         <Sidebar />
         <div className="container stocks-container">
+            <div className="filters-panel">
+                <select value={brand} onChange={(e) => setBrand(e.target.value)}>
+                    <option value="">All Brands</option>
+                    {brands.map(b => (
+                        <option key={b} value={b}>{b}</option>
+                    ))}
+                </select>
+
+                <select value={supplier} onChange={(e) => setSupplier(e.target.value)}>
+                    <option value="">All Suppliers</option>
+                    {suppliers.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                    ))}
+                </select>
+                <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <option value="">All Status</option>
+                    <option value="in-stock">In Stock</option>
+                    <option value="low">Low Stock</option>
+                    <option value="critical">Critical</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                </select>
+                <select value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+                    <option value="">Sort by...</option>
+                    <option value="product_name">Alphabetical</option>
+                    <option value="quantity">Stock</option>
+                    <option value="status">Status</option>
+                </select>
+                <select value={order} onChange={(e) => setOrder(e.target.value)}>
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+
+            <p className="results-count">{finalFiltered.length} result{finalFiltered.length !== 1 ? 's' : ''}</p>
+
             <table>
                 <thead>
                     <tr>
@@ -103,7 +159,7 @@ return (
                     </tr>
                 </thead>
                 <tbody>
-                    {items.map((item) => {
+                    {finalFiltered.map((item) => {
                         return (
                             <tr key={item.variant_id}>
                                 <td>{item.product_name}</td>
@@ -161,15 +217,27 @@ return (
                                     </button>
                                 </div>
 
-                                <label className="stock-modal-label" htmlFor="stock-adjustment">Adjustment (+/-)</label>
+                                <label className="stock-modal-label" htmlFor="stock-adjustment">
+                                    Adjustment ({adjustType === 'RESTOCK' ? '+' : '+/-'})
+                                </label>
                                 <input
                                     id="stock-adjustment"
                                     type="number"
                                     step="1"
                                     className="stock-adjustment-input"
                                     value={adjustment}
-                                    onChange={(e) => setAdjustment(e.target.value === "" ? "" : Number(e.target.value))}
+                                    min={adjustType === 'RESTOCK' ? 1 : undefined}
+                                    onChange={(e) => {
+                                        const raw = e.target.value;
+                                        if (raw === "") { setAdjustment(""); return; }
+                                        const next = Number(raw);
+                                        if (Number.isNaN(next)) return;
+                                        setAdjustment(adjustType === 'RESTOCK' ? Math.max(1, next) : next);
+                                    }}
                                     onKeyDown={(e) => {
+                                        if (adjustType === 'RESTOCK' && (e.key === "-" || e.key === "Subtract")) {
+                                            e.preventDefault();
+                                        }
                                         if (e.key === "Enter" && Number(adjustment)) {
                                             e.preventDefault();
                                             setConfirmStep(true);
@@ -255,6 +323,14 @@ return (
                 </div>
             )}
         </div>
+        {toast && (
+            <Toast
+                key={toast.key}
+                message={toast.message}
+                duration={toast.duration}
+                onDone={clearToast}
+            />
+        )}
     </div>
 );
 }

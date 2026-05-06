@@ -29,11 +29,7 @@ import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
 import { useSort } from '../../hooks/filters/useSort';
 
 function Products(){
-const [product, setProduct] = useState(''); 
-const [variety, setVariety] = useState(''); 
-const [stock, setStock] = useState(''); 
 const [items, setItems] = useState([]);
-
 const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items);
 const { filtered: brandFiltered, brand, setBrand, brands } = useBrandFilter(keywordFiltered, items);
 const { filtered: supplierFiltered, supplier, setSupplier, suppliers } = useSupplierFilter(brandFiltered, items);
@@ -49,31 +45,6 @@ const [selectedItem, setSelectedItem] = useState(null);
 
 const visibleKeys = ['sku', 'product-name', 'brand', 'variant', 'price', 'type', 'category', 'status'];
 const columns = COLUMNS.filter(col => visibleKeys.includes(col.key));
-
-const handleEdit = (item) => {
-    setSelectedItem(item);
-};
-
-const handleRemoveProduct = async (productId) => {
-    if (!window.confirm("Are you sure you want to remove this product?")) return;
-
-    try {
-        const response = await fetch(`${BASE_URL}/removeproduct/${productId}`, {
-        method: "DELETE",
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-        showToast("Product removed successfully");
-        setItems(prev => prev.filter(item => item.product_id !== productId)); // remove from UI
-        } else {
-        alert(data.error || "Failed to remove product");
-        showToast(data.error || "Failed to remove product");
-        }
-    } catch (error) {
-        alert("Server error");
-    }
-};
 
 const fetchInventory = async () => {
     try {
@@ -92,7 +63,8 @@ const fetchInventory = async () => {
                 prev ? newItems.find(i => i.product_id === prev.product_id) ?? null : null
             );
         } else {
-            alert(data.error);
+            // showToast(data.error);
+            showToast(data.eror);
         }
     } catch (error) {
         alert("Server Error");
@@ -102,13 +74,6 @@ const fetchInventory = async () => {
 useEffect(() => {
     fetchInventory(); // still runs on mount
 }, []);
-
-function getStatus(stock) {
-    if (stock === 0) return 'OUT OF STOCK';
-    if (stock < 10) return 'CRITICAL';
-    if (stock < 20) return 'LOW';
-    return 'IN-STOCK';
-}
 
 getStatusClass();
 
@@ -156,14 +121,14 @@ return(
                     </select>
                 </div>
                 <div className="product-actions-button">
-                    <button className="addProd-btn" onClick={() => setShowAdd(true)}><img src={plus}/> Add Product</button>
+                    <button className="addProd-btn" onClick={() => setShowAdd(true)}><img src={plus} alt=""/> Add Product</button>
                     <button
                         className="editProd-btn"
                         onClick={() => {
                             if (!selectedItem) { showToast("Select a product first"); return; }
                             setShowEdit(true);
                     }}>
-                        <img src={pencil}/> Edit Product
+                        <img src={pencil} alt=""/> Edit Product
                     </button>
                     <button 
                         className="removeProd-btn" 
@@ -171,9 +136,11 @@ return(
                             if (!selectedItem) { showToast("Select a product first"); return; }
                             setShowRemove(true);
                         }}>
-                        <img src={trashbin}/> 
+                        <img src={trashbin} alt=""/> 
                         Remove Product</button>
                 </div>
+
+                <p className="results-count">{finalFiltered.length} result{finalFiltered.length !== 1 ? 's' : ''}</p>
                 <div className="products-table">
                     <table>
                         <thead>
@@ -231,7 +198,8 @@ return(
                             <EditProduct 
                                 item={selectedItem}
                                 onClose={() => setShowEdit(false)}
-                                onRefresh={fetchInventory} />
+                                onRefresh={fetchInventory}
+                                onToast={showToast} />
                         </div>
                     </div>
                 )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import BASE_URL from "../../hooks/server/config";
 
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
@@ -13,16 +13,20 @@ import { useKeywordFilter } from '../../hooks/filters/useKeywordFilter';
 import { useStatusFilter } from '../../hooks/filters/useStatusFilter';
 import { useSort } from '../../hooks/filters/useSort';
 
+import Toast from '../../components/features/modals/Toast.jsx';
+import { useToast } from '../../hooks/useToast.js';
+
 function Supplier() {
 const [items, setItems] = useState([]);
 const [showAdd, setShowAdd] = useState(false);
 const [confirmModal, setConfirmModal] = useState(null);
+const {toast, showToast, clearToast} = useToast();
 
 const { filtered: keywordFiltered, keyword, setKeyword } = useKeywordFilter(items, ['name', 'email', 'address', 'contact_num']);
 const { filtered: statusFiltered, status, setStatus } = useStatusFilter(keywordFiltered, 'status');
 const { sorted: finalFiltered, sortKey, setSortKey, order, setOrder } = useSort(statusFiltered);
 
-const fetchSuppliers = async () => {
+const fetchSuppliers = useCallback(async () => {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(`${BASE_URL}/suppliers`, {
@@ -37,16 +41,16 @@ const fetchSuppliers = async () => {
             const newItems = Array.isArray(data) ? data : [data];
             setItems(newItems);
         } else {
-            alert(data.error);
+            showToast(data.error);
         }
     } catch {
         alert("Server Error");
     }
-};
+}, [setItems, showToast]);
 
 useEffect(() => {
     fetchSuppliers();
-}, []);
+}, [fetchSuppliers]);
 
 const handleStatusToggleClick = (e, item) => {
     e.stopPropagation();
@@ -71,8 +75,9 @@ const handleStatusConfirm = async () => {
                     i.sup_info_id === item.sup_info_id ? { ...i, status: data.status } : i
                 )
             );
+            showToast(`Set ${item.status} status for ${item.name}.`);
         } else {
-            alert(data.error);
+            showToast(data.error);
         }
     } catch {
         alert("Server Error");
@@ -108,6 +113,8 @@ return (
                         <option value="desc">Descending</option>
                     </select>
                 </div>
+
+                <p className="results-count">{finalFiltered.length} result{finalFiltered.length !== 1 ? 's' : ''}</p>
 
                 <div className="supplier-actions-button">
                     <button className="addProd-btn" onClick={() => setShowAdd(true)}>
@@ -167,7 +174,7 @@ return (
                     <div className="modal-overlay">
                         <div className="modal-content">
                             <ConfirmModal
-                                message={`Set "${confirmModal.item.name}" to ${confirmModal.item.status === 'active' ? 'Inactive' : 'Active'}?`}
+                                message={`Set "${confirmModal.item.name}" to ${confirmModal.item.status === 'Active' ? 'Inactive' : 'Active'}?`}
                                 onConfirm={handleStatusConfirm}
                                 onCancel={() => setConfirmModal(null)}
                                 suppliers={items}
@@ -176,6 +183,14 @@ return (
                     </div>
                 )}
             </div>
+            {toast && (
+                <Toast
+                    key={toast.key}
+                    message={toast.message}
+                    duration={toast.duration}
+                    onDone={clearToast}
+                />
+            )}
         </div>
     </>
 );
